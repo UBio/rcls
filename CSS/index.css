@@ -1,0 +1,143 @@
+/*#yui-main, .yui-g .yui-u .yui-g 
+{
+    width: 700px;
+}*/
+#element_windows .yui-overlay, #element_windows .yui-panel-container {
+	position:relative;
+}
+	#currentMicro
+	{
+		position:fixed;
+		top:5px;
+		left:5px;
+		z-index:-1;	
+/*		border: 1px solid #CCCCCC;*/
+	    height: 300px;
+	    width: 324px;
+	}
+	
+	div.jqcloud span.vertical {
+      -webkit-writing-mode: vertical-rl;
+      writing-mode: tb-rl;
+    }
+	 .expand {
+		position:absolute;
+			top:3px;
+			right:8px;
+			height:19px;
+			width:40px;
+		background:url(../IMG/expande.png) no-repeat;
+        z-index:1;
+	}
+	#ViewScanStep1_select
+	{
+		position:absolute;
+/*		height:20px;*/
+		font-size:11px;
+		display:none;
+		left:200px;
+	}
+	#ViewScanStep1
+	{
+		float:right;
+	}
+		
+.styled-select
+{
+	width: 200px;
+	height: 26px;
+	overflow:hidden;
+	border:1px solid #999999;
+	background: url(../IMG/split-button-arrow.png) no-repeat right center rgb(216,216,218);
+}
+
+.styled-select select { 
+/*  font-family: Georgia;*/
+  font-size: 16px;
+  background-color: transparent;
+  border: 0 none;
+  padding: 5px;
+  width: 240px;
+  height: 30px;
+  margin-left: 5px;
+  margin-top: -3px;
+}	
+
+.styled-select.button
+{ 
+	float:left;
+}	
+
+/*		.styled-select
+		{
+border-width:1px 0;
+border-style:solid;
+border-color:#808080;
+background:url(http://yui.yahooapis.com/2.9.0/build/assets/skins/sam/sprite.png) repeat-x 0 0;
+margin:auto .25em;
+background-image:url(http://yui.yahooapis.com/2.9.0/build/button/assets/skins/sam/split-button-arrow.png) no-repeat right #ddd;
+}*/
+	
+		.myTitle{width:100%;text-align:center;font-size:24px;font-weight:bold;}
+
+		#doc .bloques{margin-top:10px}
+		#SelectMicro{visibility:hidden;}
+		#SelectMicro .bd label
+		{
+			margin-left:-204px;
+		}
+		#Step1{visibility:hidden;}
+		#dialogAddContainer{visibility:hidden;}
+		#dialogDeleteContainer{visibility:hidden;}
+		#dialogEditContainer{visibility:hidden;}
+		#myLogger {position:absolute;margin:1em;} 
+		#myLogger {background-color:#935FCE;}
+		#PanelViewScanStep1 .bd{overflow:scroll;}
+		#PanelViewImageJ .bd{overflow:scroll;}
+		#PanelViewStitching .bd{overflow:scroll;}
+
+		
+		.window
+		{
+			position:absolute;
+			top:0px;
+			left:0px;
+		}
+		.macroView
+		{
+			resize: none;
+			width:600px;height:300px;border: 1px line gray;
+			margin-top:20px;
+		}
+		.buttonsView
+		{
+			margin-top:10px;
+			text-align:right;
+		}
+.bloques p
+{
+	margin-top:15px;
+}		
+.yuimenu
+{
+	z-index:6;
+}
+
+.control_process
+{
+    float: right;
+    margin-right: 18px;
+    margin-top: -24px;
+}
+
+.control_process .button:hover
+{
+	font-weight:bold;
+	cursor:pointer;
+}
+.currentStep
+{
+	font-weight:bold;
+	font-size:12px;
+}
+

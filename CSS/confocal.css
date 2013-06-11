@@ -1,0 +1,18 @@
+.title
+{
+	margin-top:50px;
+	font-weight:bold;
+	text-align:center;
+	font-size:25px;
+}
+#divJoin .more
+{
+/*	margin-left:20px;*/
+}
+#divJoin .more img
+{
+/*	margin-top:10px;*/
+	margin-top: -1px;
+    position: absolute;
+	
+}

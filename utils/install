@@ -1,0 +1,3 @@
+#/bin/bash
+./ConfApp.pl
+ssh-keygen -f "/home/confocal/.ssh/known_hosts" -R localhost

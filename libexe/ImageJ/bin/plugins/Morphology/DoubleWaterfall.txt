@@ -1,0 +1,8 @@
+// DoubleWaterfall
+// fills the holes and chops the peaks in an image
+// G. Landini at bham. ac. uk
+// 5 May 2009
+run("Fill Greyscale Holes");
+run("Invert");
+run("Fill Greyscale Holes");
+run("Invert");

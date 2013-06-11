@@ -1,0 +1,13 @@
+setBatchMode(true);
+file=getArgument()open("#file#");
+//run("Median...", "radius=3");
+//run("Subtract Background...", "rolling=2 separate create sliding");
+run("Enhance Contrast", "saturated=0.35");
+run("Rotate 90 Degrees Right");
+//setAutoThreshold("Default");
+setAutoThreshold("Default dark stack");
+setThreshold(31, 255);
+run("Convert to Mask");
+run("Set Scale...", "distance=0 known=0 pixel=1 unit=pixel");
+run("Set Measurements...", "  bounding redirect=None decimal=3");
+run("Analyze Particles...", "size=100000-Infinity circularity=0.00-1.00 show=Nothing display clear in_situ");

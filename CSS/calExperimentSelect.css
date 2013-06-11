@@ -1,0 +1,41 @@
+#aviablesExperiments
+{
+    border: 1px solid #808080;
+    height: 211px;
+    margin-left: 207px;
+    position: relative;
+    width: 304px;
+	background:rgb(204,204,204);
+	top:4px;
+}
+#CalendarImages 
+{
+	top:20px;
+}
+#aviablesExperiments .title
+{
+	font-size: 12px;
+    font-weight: bold;
+    margin-top: 5px;
+	margin-bottom: 5px;
+    text-align: center;
+}
+#listExperiments
+{
+    border: 1px solid #808080;
+    height: 182px;
+    margin-left: 2px;
+    width: 298px;
+	overflow:auto;
+	background:white;
+}
+
+#listExperiments ul
+{
+    margin-left: 5px;
+	margin-top:5px;
+}
+#listExperiments span
+{
+	margin-left:5px;
+}

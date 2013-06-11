@@ -1,0 +1,18 @@
+.autocomplete 
+{
+	margin-bottom:10px;
+}
+#myAutoCompleteStep1 input,#myAutoCompleteStep1  .yui-ac-container
+{
+	width:400px;
+}
+#myAutoCompleteStep2 input,#myAutoCompleteStep2  .yui-ac-container
+{
+	width:400px;
+}
+
+.ContainerAutoComplete .yui-ac-content
+{
+	max-height:200px;
+	overflow:auto;	
+}

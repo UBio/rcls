@@ -1,0 +1,78 @@
+.MicrosCopy
+{
+/*	border:1px solid red;*/
+	text-align:left;
+}
+.MicrosCopy input
+{
+	margin:10px;
+}
+.MicrosCopy label
+{
+/*	border:1px solid blue;*/
+	float:left;
+	width:200px;
+	margin-top:5px;
+	margin-left:5px;
+}
+.MicrosCopy p
+{
+	margin-top:5px;
+	border:1px solid #999;
+}
+
+.MicrosCopy .button
+{
+	border:0px;
+	margin-top:5px;
+}
+
+.step1 p
+{
+	margin-top:5px;
+	text-align: left;
+}
+
+.step1 .label
+{
+	width:100px;
+	float: left;
+}
+.step2 p
+{
+	margin-top:5px;
+	text-align: left;
+}
+
+.step2 .label
+{
+	width:200px;
+	float: left;
+}
+.step2 .marco
+{
+	border:1px solid gray;
+	margin-bottom:5px;
+	padding:5px;
+}
+
+.step2 .title
+{
+    background: none repeat scroll 0 0 rgb(63,109,225);
+    font-size: 13px;
+    margin: -5px -5px 0;
+    padding: 3px;
+}
+.buttons
+{
+	text-align:right;
+}
+.tabsAddMicroscopy .yui-content
+{
+	height:170px;
+}
+.parcentricity textarea
+{
+	width:100%;
+	height:150px;
+}

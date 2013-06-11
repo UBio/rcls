@@ -1,0 +1,153 @@
+#!/bin/bash
+
+# function to pad and extract binary image
+
+fuzzval=0				# fuzz threshold
+coords="NorthWest"		# coordinates to get color
+pad=1					# border pad size
+rotang=""				# rotation angle 0-45 or ""; 0 -- calc automatic; "" -- do not use
+lt=0					# left edge shift of trim (+/- is right/left)
+rt=0					# right edge shift of trim (+/- is right/left)
+tp=0					# top edge shift of trim (+/- is down/up)
+bm=0					# top bottom shift of trim (+/- is down/up)
+infile=$1
+dir="."
+# setup temporary images and auto delete upon exit
+# use mpc/cache to hold input image temporarily in memory
+tmpA="$dir/autotrim_$$.mpc"
+tmpB="$dir/autotrim_$$.cache"
+tmp00="$dir/autotrim_00_$$.png"
+tmp0="$dir/autotrim_0_$$.png"
+tmp1="$dir/autotrim_1_$$.png"
+tmp2="$dir/autotrim_2_$$.png"
+tmp3="$dir/autotrim_3_$$.png"
+# trap "rm -f $tmpA $tmpB $tmp00 $tmp0 $tmp1 $tmp2 $tmp3; exit 0" 0
+# trap "rm -f $tmpA $tmpB $tmp00 $tmp0 $tmp1 $tmp2 $tmp3; exit 1" 1 2 3 15
+
+	
+height="1562"
+width="5017"
+heightmp="1560"
+widthmp="5015"
+
+if convert -quiet -regard-warnings "$infile" +repage "$tmpA"
+	then
+	: ' do nothing '
+else
+	errMsg "--- FILE $infile DOES NOT EXIST OR IS NOT AN ORDINARY FILE, NOT READABLE OR HAS ZERO SIZE ---"
+fi
+
+paddedBinary()
+{
+	coords="0,0"
+	convert $tmpA -bordercolor $color -border ${pad}x${pad} $tmpA
+	convert $tmpA -fuzz $fuzzval% -fill none -draw "matte $coords floodfill" -fill white +opaque none $tmp0
+	convert \( -size ${width}x${height} xc:black \) $tmp0 -composite $tmp1
+}
+
+# function to get black to white transition location along row or column
+# specify arguments 1D image of data, dimension=width,height,widthm1 or heightm1, and direction=inc or dec
+getTransition()
+{
+	img1D=$1
+	dim=$2
+	dir=$3
+	rowcol=`convert $img1D -compress None -depth 8 txt:-`
+	vals=`echo "$rowcol" | sed -n 's/^[0-9]*,[0-9]*: [(].*[)]  #...... \(.*\)$/\1/p'`
+	vals_Array=($vals)
+	if [ "$dir" = "inc" ]
+		then
+		i=0
+		while [ $i -lt $dim ]
+			do
+			[ "${vals_Array[$i]}" = "white" ] && break
+			i=`expr $i + 1`
+		done
+		location=$i
+	elif [ "$dir" = "dec" ]
+		then
+		i=$dim
+		while [ $i -ge 0 ]
+			do
+			[ "${vals_Array[$i]}" = "white" ] && break
+			i=`expr $i - 1`
+		done
+		location=$i
+	fi
+}
+
+getColor()
+{
+		# case "$coords" in
+		# 	NorthWest|Northwest|northwest)	coords="0,0"
+		# 									;;
+		# 					  North|north)	coords="$midwidth,0"
+		# 									;;
+		# 	NorthEast|Northeast|northeast)	coords="$widthm1,0"
+		# 									;;
+		# 						East|east)	coords="$widthm1,$midheight"
+		# 									;;
+		# 	SouthEast|Southeast|southeast)	coords="$widthm1,$heightm1"
+		# 									;;
+		# 					  South|south)	coords="$midwidth,$heightm1"
+		# 									;;
+		# 	SouthWest|Southwest|southwest)	coords="0,$heightm1"
+		# 									;;
+		# 						West|west)	coords="0,$midheight"
+		# 									;;
+		# 					[0-9]*,[0-9]*)	coords=$coords
+		# 									;;
+		# 								*)	errMsg "--- INVALID COORDS ---"
+		# 									;;
+		# esac
+		coords="0,0"
+		echo "convert $tmpA -format "%[pixel:u.p{$coords}]" info:"
+		color=`convert $tmpA -format "%[pixel:u.p{$coords}]" info:`
+}
+
+computeRotation()
+{
+	# start with image already cropped to outside bounds of rotated image
+	
+	paddedBinary
+		
+	# trim off pad (repage to clear page offsets)
+	convert $tmp1[${widthmp}x${heightmp}+1+1] +repage $tmp1
+
+	# get rotation angle
+	# get coord of 1st white pixel in left column
+	getTransition $tmp1[1x${height}+0+0] $height "inc"
+	p1x=1
+	p1y=$location
+	
+	# get coord of 1st white pixel in top row
+	getTransition $tmp1[${width}x1+0+0] $width "inc"
+	p2x=$location
+	p2y=1
+	
+	# compute slope and angle (reverse sign of dely as y increases downward)
+	delx=`expr $p2x - $p1x`
+	dely=`expr $p1y - $p2y`
+
+	
+	if [ $delx -eq 0 ]
+		then
+		rotang=2
+	else
+		pi=`echo "scale=10; 4*a(1)" | bc -l`
+		angle=`echo "scale=5; (180/$pi) * a($dely / $delx)" | bc -l`
+
+		if [ `echo "$angle > 45" | bc` -eq 1 ]
+			then
+			rotang=`echo "scale=4; (90 - $angle) / 1" | bc`
+		else
+			rotang=`echo "scale=4; $angle / 1" | bc`
+		fi
+	fi
+	echo ""
+	echo "Rotation Angle=$rotang"
+	echo ""
+	}
+
+getColor
+computeRotation

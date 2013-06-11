@@ -1,0 +1,19 @@
+#!/usr/bin/env perl
+
+use strict;
+use FindBin qw($Bin);
+use lib "$Bin/../cgi-bin";
+
+open STDERR, '/dev/null';
+# 
+# $ENV{PERL5LIB}.=":$Bin/../libexe:$Bin/../cgi-bin";
+# print 'PERL5LIB='.$ENV{PERL5LIB}."\n";
+
+use LICENSE::check;
+
+my $license = LICENSE::check->new();
+
+print "\nYour MacAddress is: ".$license->get_mac_address()."\n\n";
+
+
+close STDERR;
