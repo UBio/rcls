@@ -115,6 +115,61 @@ sub box
 	$this->{image}->Draw(fill=>"rgba(255, 255, 255, 0.0)",primitive=>"Rectangle",points=>$args{-box},stroke=>"white");
 }
 
+sub empty_box
+{
+	my ($this,%args)=@_;
+	my ($x0,$y0);
+	if($args{-box} =~ /(.*),(.*)\s(.*),(.*)/)
+	{
+		$x0=$1;
+		$y0=$2;
+	}
+	if($args{-label})
+	{
+		my $color='white';
+		if($args{-color_label})
+		{
+			$color=$args{-color_label};
+		}
+		$this->{image}->Annotate(font=>"Arial.tff",pointsize=>25,text=>$args{-label},fill=>"rgb(255, 255, 255)",x=>$x0+5,y=>$y0+25,antialias=>"true");
+	}
+	$this->{image}->Draw(fill=>"rgba(255, 255, 255, 0.0)",primitive=>"Rectangle",points=>$args{-box},stroke=>$args{-stroke});
+}
+
+sub blackbox
+{
+	my ($this,%args)=@_;
+	my ($x0,$y0);
+	if($args{-box} =~ /(.*),(.*)\s(.*),(.*)/)
+	{
+		$x0=$1;
+		$y0=$2;
+	}
+	$this->{image}->Draw(fill=>"black",primitive=>"Rectangle",points=>$args{-box},stroke=>"black");
+}
+sub fillbox
+{
+	my ($this,%args)=@_;
+	my ($x0,$y0);
+	if($args{-box} =~ /(.*),(.*)\s(.*),(.*)/)
+	{
+		$x0=$1;
+		$y0=$2;
+	}
+	$this->{image}->Draw(fill=>$args{-color},primitive=>"Rectangle",points=>$args{-box},stroke=>"black");
+}
+sub whitebox
+{
+	my ($this,%args)=@_;
+	my ($x0,$y0);
+	if($args{-box} =~ /(.*),(.*)\s(.*),(.*)/)
+	{
+		$x0=$1;
+		$y0=$2;
+	}
+	$this->{image}->Draw(fill=>"white",primitive=>"Rectangle",points=>$args{-box},stroke=>"white");
+}
+
 sub binary
 {
 	my ($this,%args)=@_;
@@ -317,6 +372,7 @@ sub write
 		$format="svg";
 		$ext="svg";
 	}
+	print "\n\n\n".$args{-file}."\n\n\n";
 	my ($file,$dir,$extaux) = fileparse($args{-file}, qr/\.[^.]*/);
 	my $x=$this->{image}->write($format.":".$dir."/".$file.'.'.$ext);
 	if($x ne '')

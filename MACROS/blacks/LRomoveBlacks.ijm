@@ -6,7 +6,7 @@ hsizeRectangle = #heightRectangle#; //cambiar para definir la altura del roi
 
 
 
-//run("Median...", "radius=3");
+run("Median...", "radius=3");
 //run("Subtract Background...", "rolling=2 separate create sliding");
 //run("Brightness/Contrast...");
 run("Invert");
@@ -14,9 +14,10 @@ run("Enhance Contrast", "saturated=0.35");
 //run("Apply LUT");
 run("Rotate 90 Degrees Right");
 setAutoThreshold("Default");
-setThreshold(180, 255);
+setThreshold(#thresholdMin#, #thresholdMax#);
 run("Convert to Mask");
 run("Set Scale...", "distance=0 known=0 pixel=1 unit=pixel");
+
 
 
 

@@ -84,6 +84,30 @@ GetOptions(
 	
 );
 
+sub response
+{
+	my (%args)=@_;
+
+	my $json;
+	
+	
+	
+	
+
+	$json='{';
+	$json.='"code":'.$args{-code};
+	$json.=',"msg":"'.$args{-msg}.'"';
+	$json.=',"slice":"'.$args{-slice}.'"';
+	$json.=',"chamber":"'.$args{-chamber}.'"';
+	$json.=',"z":"'.$args{-z}.'"';
+	$json.=',"rotate":"'.$args{-rotate}.'"';
+	$json.='}';
+	
+	return $json;
+	
+	
+}
+
 sub help()
 {
 	my $usage = qq{
@@ -146,8 +170,16 @@ if(scalar(@param_merge_files)>1)
 		print STDERR "NOTICE: no output file, used default name: $param_merge_output\n";
 	}
 	my %error=LASAF::TEMPLATE::merge->new(-files=>\@param_merge_files,-templatesdir=>$templatesdir,-output=>$param_merge_output);
-	print "ERROR: ".$error{code}." MSG: ".$error{msg}." Slide:  Chamber:  Z:\n";
-	print STDERR "NOTICE: End Merge Files\n";
+	# print "ERROR: ".$error{code}." MSG: ".$error{msg}." Slide:  Chamber:  Z:\n";
+	
+	print response(-code=>$error{code},
+				-msg=>$error{msg},
+				-slice=>'',
+				-chamber=>'',
+				-z=>'',
+				-rotate=>'');
+				
+	print STDERR "\nNOTICE: End Merge Files\n";
 	
 }
 # print "Hollaaa\n";
@@ -184,6 +216,9 @@ if($param_macro_stitching)
 ##################################################################################################################
 ##################################################################################################################
 ##################################################################################################################
+##################################################################################################################
+##################################################################################################################
+my $image_control_grid=$cfg_confocal->val( 'FILES', 'tmp' )."/".$param_name_micro."_control_grid.tif";
 ##################################################################################################################
 ##################################################################################################################
 my $outputFileImageJ;
@@ -386,7 +421,7 @@ my (@all_slide_and_chamber);
 ##############################################################################################################################
 my $file; #Esta variable se le paso a la funcion get_all_images para que te devuelva el nombre del working directori
 ##############################################################################################################################
-
+my $utils;
 if($imagej || $search_black_fields || $create)
 {
 	@all_slide_and_chamber=get_all_images(-file=>\$file,-dirImagenes=>$dirImagenes,-MatrixScreenerImagesDir=>$MatrixScreenerImagesDir,-host=>$host);
@@ -451,6 +486,7 @@ foreach $NameImageFileStep1 (@all_slide_and_chamber)
 								-thresholdMax=>$thresholdMax[0],
 								-type=>'>');
 		}
+		
 		if($error{code}<0)
 		{
 			$error{msg}=~s/\n/ /gi;
@@ -460,12 +496,11 @@ foreach $NameImageFileStep1 (@all_slide_and_chamber)
 		$rotate=$imageJ->{ROTATE};
 		#$imageJ->run();
 		print STDERR "******FINISH IMAGEJ**************************************************************\n";
-		my $utils=Image::utils->new(-file=>$NameImageFileStep1);
+		$utils=Image::utils->new(-file=>$NameImageFileStep1);
 		
 		# $sizes_images{WIDTH_WITH_STITCHING}=$utils->getWidth();
 		# $sizes_images{HEIGHT_WITH_STITCHING}=$utils->getHeight();
-		$sizes_images{WIDTH_WITH_STITCHING}=$utils->getHeight();
-		$sizes_images{HEIGHT_WITH_STITCHING}=$utils->getWidth();	
+	
 		
 	
 	}
@@ -480,7 +515,7 @@ foreach $NameImageFileStep1 (@all_slide_and_chamber)
 		#my ($w,$h)=split(/x|X/,$dimension);
 		my $magnetificationStep1=$templateStep1->getMagnification();
 	
-		my $templateStep2=LASAF::TEMPLATE::template->new(-template=>$STEP2FILE,-errorfile=>$outputFileImageJ);
+		my $templateStep2=LASAF::TEMPLATE::template->new(-template=>$STEP2FILE,-errorfile=>$outputFileImageJ,-step1=>$templateStep1);
 		#my ($w,$h)=$templateStep2->getDimension();
 		my $magnetificationStep2=$templateStep2->getMagnification();
 		my $zoom=$templateStep2->getZoom();
@@ -488,23 +523,50 @@ foreach $NameImageFileStep1 (@all_slide_and_chamber)
 	
 		my @posCelulas=$templateStep1->readFileInPixels(-file=>$outputFileImageJ);
 	
-		my $widthBlackRectangle=($w/($magnetificationStep2/$magnetificationStep1))/$zoom;
-		my $heightBlackRectangle=($h/($magnetificationStep2/$magnetificationStep1))/$zoom;
-	
 
+# Cambio realizado el 25 de junio	#####
+		# my $widthBlackRectangle=($w/($magnetificationStep2/$magnetificationStep1))/$zoom;
+		# my $heightBlackRectangle=($h/($magnetificationStep2/$magnetificationStep1))/$zoom;
 		# my ($widthBlackRectangle,$heightBlackRectangle)=$templateStep2->getDimension();
-	
+		my $widthBlackRectangle=$templateStep2->meters2pixel(-meters=>$templateStep2->getFieldDistanceX());
+		my $heightBlackRectangle=$templateStep2->meters2pixel(-meters=>$templateStep2->getFieldDistanceY());
+##################################	#####
 		print STDERR "\tMagnetification Step1: ".$magnetificationStep1."\n";
 		print STDERR "\tMagnetification Step2: ".$magnetificationStep2."\n";
-		print STDERR "\tDimension Step:".$w."X".$h."\n";
-		print STDERR "\tZOOM: ".$zoom."\n";
+		print STDERR "\tDimension Step 1     : ".$w."X".$h."\n";
+		print STDERR "\tZOOM Step1           : ".$templateStep1->getZoom()."\n";
+		print STDERR "\tZOOM Step2           : ".$zoom."\n";
 		
-		print STDERR "\tBlack Size: w".$widthBlackRectangle."\th:".$heightBlackRectangle."\n";
-	
+		print STDERR "\tBlack Size: w: ".$widthBlackRectangle."\th: ".$heightBlackRectangle."\n";
+		
 		for(my $i=0;$i<=$#posCelulas;$i++)
 		{
 			# Ponemos como type >> porque queremos que las posiciones de los cuadrados negros se vayan añadiendo al fichero de salida
-			my %error=$imageJ->runPipe(-width=>$widthBlackRectangle,-height=>$heightBlackRectangle,-pos=>$posCelulas[$i],-type=>'>>');
+			
+			
+			if($#sizeParticuleMax>0)
+			{
+				print STDERR "Threshold: ".$thresholdMin[$chamber]."\t".$thresholdMax[$chamber]."\n";
+				my %error=$imageJ->runPipe(-width=>$widthBlackRectangle,
+											-height=>$heightBlackRectangle,
+											-pos=>$posCelulas[$i],
+											-thresholdMin=>$thresholdMin[$chamber],
+											-thresholdMax=>$thresholdMax[$chamber],
+											-type=>'>>');
+										}
+			else
+			{
+				print STDERR "Threshold: ".$thresholdMin[0]."\t".$thresholdMax[0]."\n";
+			
+				my %error=$imageJ->runPipe(-width=>$widthBlackRectangle,
+											-height=>$heightBlackRectangle,
+											-pos=>$posCelulas[$i],
+											-thresholdMin=>$thresholdMin[0],
+											-thresholdMax=>$thresholdMax[0],
+											-type=>'>>');
+			}
+			
+			
 			if($error{code}<0)
 			{
 				print STDERR "ERROR: ".$error{code}." MSG: ".$error{msg}." Rotate: ".$imageJ->{ROTATE}." Slide: Chamber: Z:\n";
@@ -517,11 +579,11 @@ foreach $NameImageFileStep1 (@all_slide_and_chamber)
 		{
 			chomp;
 			my @linea=split(/\s+/,$_);
-			my $pointBlack={'x'=>$linea[0],'y'=>$linea[1]};
+			my $pointBlack={'x'=>$linea[0],'y'=>$linea[1],'w'=>$widthBlackRectangle,'h'=>$heightBlackRectangle};
 			push @blackPoints,$pointBlack;
 		}
 		close BLACK;
-		unlink $fileBlackList;
+		# unlink $fileBlackList;
 		print STDERR "******FINISH SEARCH BLACKS*******************************************************\n";
 	}
 	# __END__
@@ -571,7 +633,12 @@ foreach $NameImageFileStep1 (@all_slide_and_chamber)
 		# $iniPosition[0]=$iniPosition[0]-$templateStep1->{CONVERSION}->microns2meters(-microns=>$templateStep1->{MosaicSingleImage}->{$templateStep1->getMagnification()})/(2*$zoom);
 		# $iniPosition[1]=$iniPosition[1]-$templateStep1->{CONVERSION}->microns2meters(-microns=>$templateStep1->{MosaicSingleImage}->{$templateStep1->getMagnification()})/(2*$zoom);
 		
-		$template=LASAF::TEMPLATE::template->new(-errorfile=>$outputFileImageJ,-zoom=>$zoom,-dimension=>$w."X".$h,-template=>$STEP2FILE,-step1=>$templateStep1,-magnification=>$magnetificationStep2);
+		$template=LASAF::TEMPLATE::template->new(-errorfile=>$outputFileImageJ,
+													-zoom=>$zoom,
+													-dimension=>$w."X".$h,
+													-template=>$STEP2FILE,
+													-step1=>$templateStep1,
+													-magnification=>$magnetificationStep2);
 		print STDERR "\tZOOM STEP2: ".$zoom."x\n";
 		print STDERR "DATA Step2: \n\tObjetivo Step2: ".$magnetificationStep2 ."x\n\tDIMENSION STEP 2: ".$w."X".$h." px\n";
 		print STDERR "\tINIT POSITION  STEP2 X:".$iniPosition[0]."\tY: ".$iniPosition[1]."\n";
@@ -605,25 +672,25 @@ foreach $NameImageFileStep1 (@all_slide_and_chamber)
 		{
 			 eval
 			 {
-				my $tmp='/tmp/rotate_tmp.tif';
-				print STDERR "FICHERO: ".$NameImageFileStep1."\n";
+				# my $tmp='/tmp/rotate_tmp.tif';
+				# print STDERR "FICHERO: ".$NameImageFileStep1."\n";
 				
-				my $p=Image::utils->new(-file=>$NameImageFileStep1);
-				$p->rotate();
-				$p->write(-file=>$tmp);
+				# my $p=Image::utils->new(-file=>$NameImageFileStep1);
+		# 		$p->rotate();
+		# 		$p->write(-file=>$tmp);
 
 				# 
-				my $p=Image::utils->new(-file=>$tmp);
+				my $p=Image::utils->new(-file=>$NameImageFileStep1);
 				my @angles=$p->get_angles();
-				print STDERR "\nANGLES: ".$angles[0]."Grados y ".$angles[1]."Grados\n\n";
 
+				$template->coor(-angles=>\@angles,-height=>$utils->getHeight(),-width=>$utils->getWidth());
 
 				# unlink $tmp;
-				$template->coor(-width_with_stitching=>$sizes_images{WIDTH_WITH_STITCHING},
-							-height_with_stitching=>$sizes_images{HEIGHT_WITH_STITCHING},
-							-width_without_stitching=>$templateStep1->getMosaicImageWidth(),
-							-height_without_stitching=>$templateStep1->getMosaicImageHeight(),
-							-inix=>$iniPosition[0],-iniy=>$iniPosition[1],-angles=>\@angles);
+				# $template->coor(-width_with_stitching=>$sizes_images{WIDTH_WITH_STITCHING},
+				# 			-height_with_stitching=>$sizes_images{HEIGHT_WITH_STITCHING},
+				# 			-width_without_stitching=>$templateStep1->getMosaicImageWidth(),
+				# 			-height_without_stitching=>$templateStep1->getMosaicImageHeight(),
+				# 			-inix=>$iniPosition[0],-iniy=>$iniPosition[1],-angles=>\@angles);
 			 }or do
 			 {
 				my $e;
@@ -647,14 +714,19 @@ foreach $NameImageFileStep1 (@all_slide_and_chamber)
 				
 		print STDERR "Paracentry Correction X: ".($parcentricity_correction{$magnetificationStep1}{X}-$parcentricity_correction{$magnetificationStep2}{X})."\n";
 		print STDERR "Paracentry Correction Y: ".($parcentricity_correction{$magnetificationStep1}{Y}-$parcentricity_correction{$magnetificationStep2}{Y})."\n";
+		print STDERR "FICHERO: ".$NameImageFileStep1."\n";
+		
+		system('cp '.$NameImageFileStep1.' '.$image_control_grid);
+
 		
 		($gridXStep2,$gridYStep2)=$template->createTemplateFromFile(-sort=>$sort,
-																	-black=>\@blackPoints ,
+																	-black=>\@blackPoints,
 																	-file=>$outputFileImageJ,
 																	-output_template=>$coordenatesXML,
 																	-inix=>$iniPosition[0],-iniy=>$iniPosition[1],
 																	-parcentricity_x=>$parcentricity_correction{$magnetificationStep1}{X}-$parcentricity_correction{$magnetificationStep2}{X},
 																	-parcentricity_y=>$parcentricity_correction{$magnetificationStep1}{Y}-$parcentricity_correction{$magnetificationStep2}{Y},
+																	-control_image=>$image_control_grid
 																	);
 	
 		print STDERR "ERROR: $error{code} MSG: ".$template->getNameTemplate()." Rotate: $rotate Slide: $slide Chamber: $chamber Z:$z\n";		

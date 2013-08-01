@@ -14,7 +14,7 @@ run("Enhance Contrast", "saturated=0.35");
 //run("Apply LUT");
 //run("Rotate 90 Degrees Right");
 setAutoThreshold("Default");
-setThreshold(20, 115);
+setThreshold(237, 255);
 run("Convert to Mask");
 run("Set Scale...", "distance=0 known=0 pixel=1 unit=pixel");
 

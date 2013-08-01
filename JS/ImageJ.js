@@ -13,12 +13,12 @@ imagej=function(imagej,container,manager,MyMicro)
 	this.panelChangeImage=null;
 	this.panelOptiones=null;
 	this.PanelViewImageJ=null;
-	
+
 	this.rotate=0;
 
-	this.SelectChangeImage=document.createElement('select');												
+	this.SelectChangeImage=document.createElement('select');
 	this.isRun=false;
-	
+
 	var optionWindow={
 						expand:false,
 						width:"750px",
@@ -28,12 +28,12 @@ imagej=function(imagej,container,manager,MyMicro)
 						center:false,
 						visible:true
 					};
-	
+
 	this.imagej=new itemWindow(imagej,container,manager,optionWindow);
 	this.create_window(MyMicro.conf.getMacros('Detect'),MyMicro.conf.getTemplates());
 
 
-	
+
 	this.unlockEvent=new YAHOO.util.CustomEvent("unLock",null);
 	this.lockEvent=new YAHOO.util.CustomEvent("Lock",null);
 	this.onReadyEvent=new YAHOO.util.CustomEvent("onReady",null);
@@ -41,12 +41,12 @@ imagej=function(imagej,container,manager,MyMicro)
 	this.onErrorEvent=new YAHOO.util.CustomEvent("onError",null);
 	this.onRemoveBlacksEvent=new YAHOO.util.CustomEvent("onRemoveBlacks",null);
 	this.onChangeTemplateStep2Event=new YAHOO.util.CustomEvent("onChangeTemplateStep2",null);
-	
+
 	MyMicro.changeMicroEvent.subscribe(function(event,args,me){
 																me.oAC.destroy();
 																me.oAC=new autoCompleteConfocal(me.MyMicro.conf.getTemplates(),"step2","myContainerACStep2");
 																},this);
-	
+
 // this.getParams();
 }
 
@@ -55,7 +55,7 @@ imagej.prototype.show=function()
 {
 	this.imagej.show();
 	this.running=true;
-	this.container.style.display='inline';	
+	this.container.style.display='inline';
 }
 imagej.prototype.hide=function()
 {
@@ -66,35 +66,34 @@ imagej.prototype.hide=function()
 
 
 imagej.prototype.CreateListMacroDetect=function(listMacrosDetect)
-{	
+{
 	var p=document.createElement(p);
-	this.ListMacrosDetect=new combo('Select Objects detection Routine',p,listMacrosDetect);	
+	this.ListMacrosDetect=new combo('Select Objects detection Routine',p,listMacrosDetect);
 	return p;
 }
 imagej.prototype.CreateListMacroBlack=function(listMacrosBlacks)
-{	
+{
 	var p=document.createElement('p');
-	
-	this.chkremoveblacks = new YAHOO.widget.Button({ 
-	                            type: "checkbox", 
-	                            label: "Remove Blacks: Off", 
-	                            value: "1", 
-	                            container: p, 
+
+	this.chkremoveblacks = new YAHOO.widget.Button({
+	                            type: "checkbox",
+	                            label: "Remove Blacks: Off",
+	                            value: "1",
+	                            container: p,
 	                            checked: false });
-	
+
 	this.chkremoveblacks.subscribe("checkedChange",this.onRemoveBlacks,this);
-	
+
 	this.ListMacrosBlack=new combo('Select Remove Blacks Routine',p,listMacrosBlacks);
-	this.ListMacrosBlack.disabled();	
+	this.ListMacrosBlack.disabled();
 	return p;
 }
 imagej.prototype.RefreshListMacroDetect=function(listMacrosDetect)
-{	
-	this.ListMacrosDetect.refresh(listMacrosDetect);	
+{
+	this.ListMacrosDetect.refresh(listMacrosDetect);
 }
-
 imagej.prototype.RefreshListMacroBlack=function(listMacrosBlacks)
-{	
+{
 	this.ListMacrosBlack.refresh(listMacrosBlacks);
 }
 
@@ -108,48 +107,48 @@ imagej.prototype.create_window=function(macrosDetect,templates)
 {
 	var label=document.createElement('label');
 	label.innerHTML=this.name;
-	
+
 	this.imagej.getHead().appendChild(label);
 
 	this.imagej.getBody().appendChild(this.CreateListMacroDetect(macrosDetect));
-	
+
 	var p=document.createElement('p');
 	var divautocomplete=document.createElement('div');
 	divautocomplete.className="autocomplete";
 	divautocomplete.setAttribute('id','myAutoCompleteStep2');
-	
+
 	var label=document.createElement('label');
 	label.innerHTML="Select Template 2:";
 	divautocomplete.appendChild(label);
-	
+
 	var input=document.createElement('input');
 	input.setAttribute('id',"step2");
 	input.setAttribute('name',"step2");
 	input.setAttribute('type',"text");
 	divautocomplete.appendChild(input);
-	
+
 	var div=document.createElement('div');
 	div.setAttribute("id",'myContainerACStep2');
 	div.className="ContainerAutoComplete";
 	divautocomplete.appendChild(div);
 	p.appendChild(divautocomplete);
 	this.imagej.getBody().appendChild(p);
-	
-	
+
+
 	this.imagej.getBody().appendChild(this.CreateListMacroBlack(this.MyMicro.conf.getMacros('Blacks')));
-	
-	
-	
+
+
+
 	var p=document.createElement('p');
 
-	
-	this.chkCoordinateCorrection = new YAHOO.widget.Button({ 
-	                            type: "checkbox", 
-	                            label: "Coordinate correction: Off", 
-	                            value: "1", 
-	                            container: p, 
+
+	this.chkCoordinateCorrection = new YAHOO.widget.Button({
+	                            type: "checkbox",
+	                            label: "Coordinate correction: Off",
+	                            value: "1",
+	                            container: p,
 	                            checked: false });
-	
+
 	this.chkCoordinateCorrection.subscribe("checkedChange",function(event)
 															{
 																if(event.newValue)
@@ -160,23 +159,23 @@ imagej.prototype.create_window=function(macrosDetect,templates)
 																{
 																	this.set('label',"Coordinate correction: Off");
 																}
-		
+
 															});
-	
-	
+
+
 	this.imagej.getBody().appendChild(p);
-	
-	
+
+
 	var input=document.createElement('input');
 	input.setAttribute('type','button');
 	input.setAttribute('id','searchcreate');
 	input.setAttribute('name','searchcreate');
 	input.setAttribute('value','Analize Images');
 	this.imagej.getFooter().appendChild(input);
-	
-	this.searchcreatebtn=new YAHOO.widget.Button("searchcreate"); 
+
+	this.searchcreatebtn=new YAHOO.widget.Button("searchcreate");
 	YAHOO.util.Event.addListener(document.getElementById('searchcreate'),"click",this.run,this);
-	
+
 	var input=document.createElement('input');
 	input.setAttribute('type','button');
 	input.setAttribute('id','AdvanceOptions');
@@ -192,7 +191,7 @@ imagej.prototype.create_window=function(macrosDetect,templates)
 	input.setAttribute('name','ViewDetectImageJ');
 	input.setAttribute('value','View Detected Image');
 	this.imagej.getFooter().appendChild(input);
-	this.ViewDetectImageJBtn=new YAHOO.widget.Button("ViewDetectImageJ"); 
+	this.ViewDetectImageJBtn=new YAHOO.widget.Button("ViewDetectImageJ");
 	YAHOO.util.Event.addListener(document.getElementById("ViewDetectImageJ"),"click",this.ViewDetectImageJ,this);
 
 	var input=document.createElement('input');
@@ -205,9 +204,9 @@ imagej.prototype.create_window=function(macrosDetect,templates)
 	YAHOO.util.Event.addListener(document.getElementById("ChangeImage"),"click",this.showPanelChangeImage,this);
 
 	this.oAC=new autoCompleteConfocal(templates,"step2","myContainerACStep2");
-	
+
 	this.oAC.onChangeEvent.subscribe(function(event,args,me){me.onChangeTemplateStep2Event.fire(args);},this);
-	
+
 }
 imagej.prototype.onRemoveBlacks=function(event,me)
 {
@@ -222,7 +221,7 @@ imagej.prototype.onRemoveBlacks=function(event,me)
 		this.set('label','Remove Blacks: Off');
 		me.ListMacrosBlack.disabled();
 		me.onRemoveBlacksEvent.fire(false);
-	}	
+	}
 }
 
 imagej.prototype.getParametersDefaultImage=function()
@@ -288,15 +287,15 @@ imagej.prototype.panelChangeImageOk=function(event,me)
 }
 imagej.prototype.enabledAllButtons=function()
 {
-	this.ViewDetectImageJBtn.set('disabled',false); 
-	this.searchcreatebtn.set('disabled',false); 
+	this.ViewDetectImageJBtn.set('disabled',false);
+	this.searchcreatebtn.set('disabled',false);
 	this.AdvanceOptionsbtn.set('disabled',false);
-	// document.getElementById('chkremoveblacks').removeAttribute('disabled');	
+	// document.getElementById('chkremoveblacks').removeAttribute('disabled');
 }
 imagej.prototype.disabledAllButtons=function()
 {
-	this.ViewDetectImageJBtn.set('disabled',true); 
-	this.searchcreatebtn.set('disabled',true); 
+	this.ViewDetectImageJBtn.set('disabled',true);
+	this.searchcreatebtn.set('disabled',true);
 	this.AdvanceOptionsbtn.set('disabled',true);
 	// document.getElementById('chkremoveblacks').setAttribute('disabled',true);
 }
@@ -311,8 +310,8 @@ imagej.prototype.showPanelChangeImage=function(event,me)
 			me.panelChangeImage.setHeader("Change Image");
 			me.panelChangeImage.setBody(me.SelectChangeImage);
 			me.panelChangeImage.setFooter("<button id='btnpanelChangeImageOk'>Ok</button>");
-			me.panelChangeImage.render(document.body);		
-			me.btnpanelChangeImageOk=new YAHOO.widget.Button("btnpanelChangeImageOk"); 
+			me.panelChangeImage.render(document.body);
+			me.btnpanelChangeImageOk=new YAHOO.widget.Button("btnpanelChangeImageOk");
 			YAHOO.util.Event.addListener(document.getElementById("btnpanelChangeImageOk"),"click",me.panelChangeImageOk,me);
 		}
 		me.panelChangeImage.show();
@@ -343,7 +342,7 @@ imagej.prototype.refresh=function(event,me)
 
 imagej.prototype.viewResul=function(image)
 {
-	this.PanelViewImageJ.setBody("<img src='"+image+"' width='600' />");	
+	this.PanelViewImageJ.setBody("<img src='"+image+"' width='600' />");
 }
 
 
@@ -351,18 +350,18 @@ imagej.prototype.ViewImage=function(response)
 {
 	if(!this.PanelViewImageJ)
 	{
-		this.PanelViewImageJ =  
-				new YAHOO.widget.Panel("PanelViewImageJ",  
+		this.PanelViewImageJ =
+				new YAHOO.widget.Panel("PanelViewImageJ",
 					{ width:"600px",
 					  height:"500px",
-					  fixedcenter:true, 
+					  fixedcenter:true,
 					  constraintoviewport:true,
-					  close:true, 
-					  draggable:true, 
+					  close:true,
+					  draggable:true,
 					  zindex:4,
 					  modal:true,
 					  visible:false
-					} 
+					}
 				);
 		this.PanelViewImageJ.setHeader("ImageJ Result ");
 	}
@@ -373,7 +372,7 @@ imagej.prototype.ViewImage=function(response)
 	}
 	else
 	{
-		this.PanelViewImageJ.setBody("<p>No Existe La Imagen Seleccionada</p>");	
+		this.PanelViewImageJ.setBody("<p>No Existe La Imagen Seleccionada</p>");
 	}
 	this.PanelViewImageJ.render(document.body);
 	if(response != "")
@@ -381,7 +380,7 @@ imagej.prototype.ViewImage=function(response)
 		YAHOO.util.Event.addListener("btnPanelOptiones", "click", this.panelOptiones.show, this.panelOptiones, true);
 		this.btnPanelOptionesRefresh.set("label","Refresh");
 	}
-		
+
 	this.PanelViewImageJ.show();
 }
 
@@ -396,14 +395,14 @@ imagej.prototype.ViewDetectImageJ=function(event,me)
 								{
 									me.panelOptiones.hide();
 								}
-								
-	
+
+
 								me.MyMicro.conf.progressbar.hide();
-															
+
 							},
 	  failure: function(o) {myLogWriter.log(o.status+":"+o.statusText, "info");me.MyMicro.conf.progressbar.hide();}
 	};
-	
+
 	if(me.isRun)
 	{
 		var url='cgi-bin/coordenates.cgi?conf='+document.getElementById("micro").value;
@@ -414,12 +413,12 @@ imagej.prototype.ViewDetectImageJ=function(event,me)
 	}
 	else
 	{
-		new dialog_alert("Notice","Please click in run button first",'notice');		
+		new dialog_alert("Notice","Please click in run button first",'notice');
 	}
 }
 imagej.prototype.check_url=function()
 {
-	
+
 	if(!this.panelOptiones)
 	{
 		this.setParamatersOptionsImage();
@@ -429,42 +428,42 @@ imagej.prototype.check_url=function()
 	var template_step2=document.getElementById("step2").value;
 	if(template_step1 =='')
 	{
-		new dialog_alert("Error",'Falta el template 1','error');											
-		
+		new dialog_alert("Error",'Falta el template 1','error');
+
 		this.onErrorEvent.fire('Error:Missing template 1');
 		return -1;
 	}
 	if(template_step2 =='')
 	{
-		new dialog_alert("Error",'Falta el template 2','error');											
+		new dialog_alert("Error",'Falta el template 2','error');
 		this.onErrorEvent.fire('Error:Missing template 2');
 		return -1;
 	}
 	if(dirImages =='' || dirImages==undefined)
 	{
-		new dialog_alert("Error",'Check Leica Application, stitching is check','error');											
+		new dialog_alert("Error",'Check Leica Application, stitching is check','error');
 		this.onErrorEvent.fire('Error:Check Leica Application, stitching is check');
 		return -1;
 	}
 	if(this.ListMacrosDetect.getValue() == undefined)
 	{
-		new dialog_alert("Error",'Missing Detect Macro','error');											
+		new dialog_alert("Error",'Missing Detect Macro','error');
 		this.onErrorEvent.fire('Error:Missing Detect Macro');
 		return -1;
 	}
-	
+
 	if(this.chkremoveblacks.get('checked') && this.ListMacrosBlack.getValue() == undefined)
 	{
-		new dialog_alert("Error",'Missing Balck Macro','error');											
+		new dialog_alert("Error",'Missing Balck Macro','error');
 		this.onErrorEvent.fire('Error:Missing Black Macro');
 		return -1;
 	}
-	
+
 	var url='cgi-bin/LeicaConfocal.cgi?action=create&step=imagej&black='+this.chkremoveblacks.get('checked');
 	url+='&template_step1='+template_step1;
-	
+
 	url+='&coor='+this.chkCoordinateCorrection.get("checked");
-	
+
 	url+='&template_step2='+template_step2;
 	url+="&name="+document.getElementById("micro").value;
 	url+="&dir="+dirImages;
@@ -486,12 +485,12 @@ imagej.prototype.run=function(event,me)
 	var url=me.check_url()
 	if(url!=-1)
 	{
-	
+
 		var callback = {
 		  success: function(o) {
 									myLogWriter.log(o.responseText, "info");
 									me.MyMicro.conf.progressbar.hide();
-								
+
 									if(event == "refresh")
 									{
 										me.ViewDetectImageJ('refresh',me);
@@ -506,7 +505,7 @@ imagej.prototype.run=function(event,me)
 										var templates=new Array();
 										var itemplates=0;
 
-									
+
 										for(var i=0;i<response.length;i++)
 										{
 											if(response[i].ERROR==0)
@@ -538,7 +537,7 @@ imagej.prototype.run=function(event,me)
 											if(schemasErr == '')
 											{
 												results="<p><b>Load:</b><ul>"+schemas+"</ul></p>";
-										
+
 											}
 											else
 											{
@@ -548,9 +547,9 @@ imagej.prototype.run=function(event,me)
 										}
 										else
 										{
-											new dialog_alert("Unexpected error",'Please, contact with your administrator','error');											
+											new dialog_alert("Unexpected error",'Please, contact with your administrator','error');
 										}
-										
+
 										me.onFinishedEvent.fire(templates,document.getElementById("step2").value);
 									}
 								},
@@ -559,11 +558,11 @@ imagej.prototype.run=function(event,me)
 									me.lockEvent.fire();
 									me.disabledAllButtons();
 									me.MyMicro.conf.progressbar.hide();
-									new dialog_alert("Notice",o.responseText,'notice');											
+									new dialog_alert("Notice",o.responseText,'notice');
 								}
 		};
 
-	
+
 		var cObj = YAHOO.util.Connect.asyncRequest('GET', url, callback);
 		if(event != 'RUNAllProcess')
 		{
@@ -584,10 +583,10 @@ imagej.prototype.getParams=function()
 	// </detection>
 	// var params_array=new Array();
 	// var params={'template':'','routine':{'macro':'','threshold':{'max':0,'min':0},'size':{'max':0,'min':0},'circulary':0.0}};
-	
+
 	// alert(this.currentOptionsImagen[slide][chamber]);
-	
-	
+
+
 	// for(var islide=0;islide<this.currentOptionsImagen.length;islide++)
 	// {
 	// 	for(var ichamber=0;ichamber<this.currentOptionsImagen[islide].length;ichamber++)
@@ -595,19 +594,19 @@ imagej.prototype.getParams=function()
 	// 		var params={'template':'','routine':{'macro':'','threshold':{'max':0,'min':0},'size':{'max':0,'min':0},'circulary':0.0}};
 	// 		params.template=document.getElementById('step2').value;
 	// 		params.routine.macro=document.getElementById("selectmacro_detect").value;
-	// 
+	//
 	// 		params.routine.threshold.max=document.getElementById("thresholdmax").value;
 	// 		params.routine.threshold.min=document.getElementById("thresholdmin").value;
-	// 
+	//
 	// 		params.routine.size.max=document.getElementById("maxsize").value;
 	// 		params.routine.size.min=document.getElementById("size").value;
-	// 
+	//
 	// 		params.routine.circulary=document.getElementById("circularity").value;
 	// 	}
 	// }
-	// 
-	// 
-	// 
-	
+	//
+	//
+	//
+
 	return params;
 }

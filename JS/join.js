@@ -100,12 +100,20 @@ join.prototype.actionjoin=function(event,me)
 	
 	var callback = {
 	  success: function(o) {
+		  						var response=eval(o.responseText); 
 								myLogWriter.log(o.responseText, "info");
-								me.MyMicro.conf.progressbar.hide();
 								
-								me.win_join.hide();
-								new dialog_alert("Finish",me.name,"info");									
-														
+								me.MyMicro.conf.progressbar.hide();
+								if(response[0].ERROR==-1)
+								{
+									new dialog_alert("Error",response[0].MSG,"error");									
+									
+								}
+								else
+								{
+									me.win_join.hide();
+									new dialog_alert("Finish",me.name,"info");									
+								}					
 							},
 	  failure: function(o) {myLogWriter.log(o.status+":"+o.statusText, "info");me.MyMicro.conf.progressbar.hide();
 	;}

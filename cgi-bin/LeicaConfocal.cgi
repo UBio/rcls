@@ -3,7 +3,7 @@ $|=1;
 use strict;
 use Config::IniFiles;
 use LIB::http_response_error;
-
+use JSON qw( decode_json );
 use CGI ;
 
 
@@ -170,8 +170,24 @@ my $PERL5LIB="export PERL5LIB=\$PERL5LIB:".$cfg_confocal->val( 'WEB', 'PERL5LIB'
 print STDERR $PERL5LIB.";".$CMD." ".$args."\n";
 
 my $error=`$PERL5LIB && $CMD $args`;
+if($step eq 'merge')
+{
+	my $response = decode_json($error);
+	print STDERR "Code: ".$response->{code}."\n";
+	
+	if($response->{code}==0)
+	{
+		$error="[]";
+	}
+	else
+	{
+		$error= "[{'ERROR':".$response->{code}.",'MSG':'".$response->{msg}."'}]";
+		
+	}
+	
+}
 
-if($step ne 'step1' && $step ne 'high')
+if($step ne 'step1' && $step ne 'high' & $step ne 'merge')
 {
 	my @resume=split(/\n/,$error);
 	my $JSON="";

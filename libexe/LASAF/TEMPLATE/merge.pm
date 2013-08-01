@@ -60,22 +60,35 @@ sub check
 	my $rows=$this->{FILES}->[0]->getRows();
 	$this->{TOTALWELLS}=$this->{FILES}->[0]->getTotalWells();
 	$this->{TOTALFIELDS}=$this->{FILES}->[0]->getTotalFields();
+
+	$this->{COLS}=$this->{FILES}->[0]->getCols();
+	$this->{ROWS}=$this->{FILES}->[0]->getRows();
+
 	$this->{TOTALASIGNEDJOB}=$this->{FILES}->[0]->getTotalJobs();
+	
+	
 	for(my $i=1;$i<scalar(@{$this->{FILES}});$i++)
 	{
 		$this->{TOTALWELLS}+=$this->{FILES}->[$i]->getTotalWells();
 		$this->{TOTALFIELDS}+=$this->{FILES}->[$i]->getTotalFields();
 		$this->{TOTALASIGNEDJOB}+=$this->{FILES}->[$i]->getTotalJobs();
 		
-		if($cols!=$this->{FILES}->[$i]->getCols() || $rows != $this->{FILES}->[$i]->getRows())
+		if($this->{FILES}->[$i]->getCols()>$this->{COLS})
 		{
-			print "ERROR\n";
-			$this->{ERROR}->{'code'}=-1;
-			$this->{ERROR}->{'msg'}="Well Size Incorrect";
-			return -1;
+			$this->{COLS}=$this->{FILES}->[$i]->getCols();
 		}
+		if($this->{FILES}->[$i]->getRows()>$this->{ROWS})
+		{
+			$this->{ROWS}=$this->{FILES}->[$i]->getRows();
+		}
+		# if($cols!=$this->{FILES}->[$i]->getCols() || $rows != $this->{FILES}->[$i]->getRows())
+		# {
+		# 	$this->{ERROR}->{'code'}=-1;
+		# 	$this->{ERROR}->{'msg'}="Well Size Incorrect";
+		# 	return -1;
+		# }
 	}
-	print "OK\n";
+	# print "OK\n";
 	return 0;
 }
 
@@ -88,6 +101,9 @@ sub merge()
 	$this->{FILES}->[0]->setTotalJobs(-jobs=>$this->{TOTALASIGNEDJOB});
 	$this->{FILES}->[0]->setWellsDistance(-wellsX=>$this->{FILES}->[0]->getCols()-1,-wellsY=>$this->{FILES}->[0]->getRows()-1);
 	$this->{FILES}->[0]->setCountOfWells(-wells=>$this->{TOTALWELLS});
+	
+	print STDERR $this->{COLS}."\t".$this->{ROWS}."\n";
+	$this->{FILES}->[0]->setCountOfScanFields(-fieldsx=>$this->{COLS},-fieldsy=>$this->{ROWS});
 	
 	my $ScanWellArray=$this->{FILES}->[0]->getScanWellArray();
 	my $ScanFieldArray=$this->{FILES}->[0]->getScanFieldArray();
@@ -106,7 +122,7 @@ sub merge()
 		my $currentWell=0;
 		for(my $iFieldData=0;$iFieldData<$len;$iFieldData++)
 		{
-			my $ScanFieldData=$this->{FILES}->[1]->getScanFieldData(-item=>$iFieldData);
+			my $ScanFieldData=$this->{FILES}->[$i]->getScanFieldData(-item=>$iFieldData);
 			if($ScanFieldData)
 			{
 				my $nodeField=$ScanFieldData->cloneNode(1);
@@ -114,7 +130,7 @@ sub merge()
 				if($nodeField->getAttribute('FieldX')==1 and $nodeField->getAttribute('FieldY')==1)
 				{
 					$nextWellX++;
-					my $ScanWellData=$this->{FILES}->[1]->getScanWellData(-item=>$currentWell);
+					my $ScanWellData=$this->{FILES}->[$i]->getScanWellData(-item=>$currentWell);
 					my $node=$ScanWellData->cloneNode(1);
 					$node->setOwnerDocument($owner);
 					$node->setAttribute ("WellX",$nextWellX);

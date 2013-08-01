@@ -393,6 +393,22 @@ sub getCols()
 =head2 new
 
   Example    : template->new();
+  Description: Retorna el numero de columnas que tiene cada well
+  Params:	 : none
+  Returntype : int
+  Exceptions : none
+  Caller     : web drawing code
+  Status     : Stable
+
+=cut
+sub getRows()
+{
+	my ($this)=@_;
+	return $this->{root}->getElementsByTagName("Properties")->item(0)->getElementsByTagName("CountOfScanFieldsY")->item(0)->getFirstChild->getNodeValue;
+}
+=head2 new
+
+  Example    : template->new();
   Description: Retorna la distancia entre un field y el siguiente a la izquierda dentro de una misma well
   Params:	 : none
   Returntype : float
@@ -692,7 +708,7 @@ sub getMagnification
 }
 =head2 new
 
-  Example    : template->new();
+  Example    : template->pixel2meters();
   Description: tranforma pixel a metros usando una matriz de conversion sacada 
 				La anchura se saca de un matriz de tranformacion con la manificacion del paso anterior
 				y el numero de pixel
@@ -731,8 +747,30 @@ sub pixel2meters
 }
 =head2 new
 
-  Example    : template->new();
-  Description: lee el fichero de posiciones la x,y ,w y h de cada celula detectada 
+  Example    : template->meters2pixel();
+  Description: tranforma pixel a metros usando una matriz de conversion sacada 
+				La anchura se saca de un matriz de tranformacion con la manificacion del paso anterior
+				y el numero de pixel
+				 son los pixel de las fotos del paso de baja resolucion
+  Params:	 : none
+  Returntype : none
+  Exceptions : none
+  Caller     : web drawing code
+  Status     : Stable
+
+=cut
+sub meters2pixel
+{
+	my ($this,%args)=@_;
+	my $width=$this->{CONVERSION}->microns2meters(-microns=>$this->{MosaicSingleImage}->{$this->{STEP1}->getMagnification()}->{w});
+	my ($w,$h)=$this->{STEP1}->getDimension();
+	my $result=(($args{-meters})*$w)/$width;
+	return $result;
+}
+=head2 new
+
+  Example    : template->readFile();
+  Description: lee el fichero de posiciones la x,y ,w y h de cada celula detectada en metros
   Params:	 : none
   Returntype : none
   Exceptions : none
@@ -826,6 +864,14 @@ sub readFileInPixels
 	{
 		chomp;
 		my ($index,$x,$y,$width,$height)=split(/\s+/,$_);
+		if($width==0)
+		{
+			$width=$this->pixel2meters(-pixel=>1);
+		}
+		if($height==0)
+		{
+			$height=$this->pixel2meters(-pixel=>1);
+		}
 		$pos[$index-1]={index=>$index,x=>$x,y=>$y,h=>$height,w=>$width};
 
 		
@@ -1344,119 +1390,182 @@ sub setZWide()
 	}
 }
 
+# sub coor
+# {
+# 	my ($this,%args)=@_;
+# 	
+# 	my $width_with_stitching=$this->pixel2meters(-pixel=>$args{-width_with_stitching});
+# 	my $height_with_stitching=$this->pixel2meters(-pixel=>$args{-height_with_stitching});
+# 	
+# 	# my $width_without_stitching=$this->pixel2meters(-pixel=>$args{-width_without_stitching});
+# 	# my $height_without_stitching=$this->pixel2meters(-pixel=>$args{-height_without_stitching});
+# 	my $width_without_stitching=$args{-width_without_stitching};
+# 	my $height_without_stitching=$args{-height_without_stitching};
+# 	print STDERR "******START CORRECTION POINTS****************************************************************\n";
+# 	
+# 	print STDERR "\nANGLES: ".$args{-angles}->[0]." r y ".$args{-angles}->[1]." r\n\n";
+# 	
+# 	print STDERR "---------------------------------------------------------------------------------------------\n";
+# 	print STDERR "Size Image with stitching (".$args{-width_with_stitching}."x".$args{-height_with_stitching}."): ".$width_with_stitching."x".$height_with_stitching."\n";
+# 	print STDERR "Size: (".$args{-width_without_stitching}."x".$args{-height_without_stitching}."): ".$width_without_stitching."x".$height_without_stitching."\n";
+# 	print STDERR "---------------------------------------------------------------------------------------------\n";
+# 	my $radio=sqrt(($width_without_stitching/2)**2+($height_without_stitching/2)**2);
+# 	print STDERR "Radio: $radio\n";
+# 	print STDERR "---------------------------------------------------------------------------------------------\n";
+# 	
+# 	my $Xcentro_stitching_image=$width_with_stitching/2;
+# 	my $Ycentro_stitching_image=$height_with_stitching/2;
+# 	
+# 	# Calculamos los vectores DE y BD
+# 	# DE=DF-EF
+# 	my $EF;
+# 	eval
+# 	{
+# 		$EF=sqrt($radio**2-$Xcentro_stitching_image**2); # EF=sqrt(r**2-CF**2)
+# 	} or do
+# 	{
+# 		print STDERR "Error raiz negaticva el la correcion al calcular el segmetno EF\n";
+# 		LASAF::TEMPLATE::template::CoorSQRTnegative->throw('CoorSQRTnegative');
+# 		return;
+# 	};
+# 	
+# 	my $DF=$Ycentro_stitching_image;
+# 	my $DE=$DF-$EF; # DE=DF-EF
+# 	
+# 	my $BC;
+# 	eval
+# 	{
+# 		$BC=sqrt($radio**2-$Ycentro_stitching_image**2);
+# 	} or do
+# 	{
+# 		print STDERR "Error raiz negaticva el la correcion al calcular el segmetno BC\n";
+# 		LASAF::TEMPLATE::template::CoorSQRTnegative->throw('CoorSQRTnegative');
+# 		return ;
+# 	};
+# 	
+# 	my $AC=$Xcentro_stitching_image;
+# 	my $AB=$AC-$BC;
+# 	
+# 	my $AD=$width_with_stitching;
+# 	my $BD=$AD-$AB;
+# 
+# 	print STDERR "---------------------------------------------------------------------------------------------\n";
+# 	print STDERR "Yo calculo Segmento AB=$AB\n";
+# 	print STDERR "Yo calculo Segmento DE=$DE\n";
+# 	
+# 	# $AB=$this->pixel2meters(-pixel=>19);
+# 	# $DE=$this->pixel2meters(-pixel=>20);
+# 	
+# 	print STDERR "---------------------------------------------------------------------------------------------\n";
+# 	print STDERR "Segmento AB=$AB\n";
+# 	print STDERR "Segmento DE=$DE\n";
+# 	
+# 	print STDERR "Segmento BD=$BD\n";
+# 	print STDERR "Segmento EF=$EF\n";
+# 	print STDERR "---------------------------------------------------------------------------------------------\n";
+# 	
+# 	
+# 	#calculamos alfa;
+# 	my $alfa=atan($DE/$BD);
+# 	print STDERR "El Angulo alpa es: $alfa\n";
+# 	
+# 	print STDERR "El Angulo alpa es: ". $args{-angles}->[0]."\n";
+# 	
+# 	
+# 	# $alfa=0.00915993;
+# 	my @pos=@{$this->{POS}};
+# 	
+# 	# $alfa=3.14159265358979+$alfa;
+# 	for(my $i=0;$i<=$#pos;$i++)
+# 	{
+# 		$pos[$i]->{xo}=$pos[$i]->{x};
+# 		$pos[$i]->{yo}=$pos[$i]->{y};
+# 		
+# 		my $x=$pos[$i]->{x};
+# 		my $y=$pos[$i]->{y};
+# 		
+# 		my $BCp=$x-$AB;
+# 		my $beta=atan($y/$BCp);
+# 		
+# 		# my $alfap=$beta-$alfa;
+# 		my $hp=sqrt($y**2+$BCp**2);
+# 		
+# 		#punto corregido es
+# 		
+# 		my $ab=$hp*sin($beta-$alfa);
+# 		my $Bb=$hp*cos($beta-$alfa);
+# 		
+# 		# $pos[$i]->{x}=$pos[$i]->{x}*cos($args{-angles}->[0]);
+# 		# $pos[$i]->{y}=$pos[$i]->{y}*sin($args{-angles}->[0]);
+# 		
+# 		# print STDERR "==============================================\n";
+# 		# print STDERR "$i\n";
+# 		# print STDERR "Centro: X: ".($width_with_stitching/2)." Y: ".($height_with_stitching/2)."\n";
+# 		# print STDERR "X: ".$x." Y: ".$y."\n";
+# 		# print STDERR "X corregida: ".$Bb." Y Corregida: ".$ab."\n";
+# 		# print STDERR "X Template corregida: ".($Bb+$args{-inix})." Y Corregida: ".($ab+$args{-iniy})."\n";
+# 		# print STDERR "==============================================\n";
+# 		$pos[$i]->{x}=$Bb;
+# 		$pos[$i]->{y}=$ab;
+# 	}
+# 	$this->{POS}=\@pos;
+# 	print STDERR "Despues: ".$this->{POS}->[0]->{x}.",".$this->{POS}->[0]->{y}."\n";
+# 	print STDERR "******END CORRECTION POINTS******************************************************************\n";
+# }
 sub coor
 {
 	my ($this,%args)=@_;
 	
-	my $width_with_stitching=$this->pixel2meters(-pixel=>$args{-width_with_stitching});
-	my $height_with_stitching=$this->pixel2meters(-pixel=>$args{-height_with_stitching});
+	print STDERR "******START CORRECTION POINTS****************************************************************\n";	
+	print STDERR "\nANGLES: x=".$args{-angles}->[0]." r y=".$args{-angles}->[1]." r\n\n";
+	print STDERR "Pixels width: ". $args{-width}."\tHeght: ".$args{-height}."\n";
 	
-	# my $width_without_stitching=$this->pixel2meters(-pixel=>$args{-width_without_stitching});
-	# my $height_without_stitching=$this->pixel2meters(-pixel=>$args{-height_without_stitching});
-	my $width_without_stitching=$args{-width_without_stitching};
-	my $height_without_stitching=$args{-height_without_stitching};
-	print STDERR "******START CORRECTION POINTS****************************************************************\n";
+		my $width=$this->pixel2meters(-pixel=>$args{-width});
+		my $height=$this->pixel2meters(-pixel=>$args{-height});
+		my $alfa=($args{-angles}->[1]+$args{-angles}->[0])/2;
 	
-	print STDERR "---------------------------------------------------------------------------------------------\n";
-	print STDERR "Size Image with stitching (".$args{-width_with_stitching}."x".$args{-height_with_stitching}."): ".$width_with_stitching."x".$height_with_stitching."\n";
-	print STDERR "Size: (".$args{-width_without_stitching}."x".$args{-height_without_stitching}."): ".$width_without_stitching."x".$height_without_stitching."\n";
-	print STDERR "---------------------------------------------------------------------------------------------\n";
-	my $radio=sqrt(($width_without_stitching/2)**2+($height_without_stitching/2)**2);
-	print STDERR "Radio: $radio\n";
-	print STDERR "---------------------------------------------------------------------------------------------\n";
+	print STDERR "width: ". $width."\tHeght: ".$height."\n";
 	
-	my $Xcentro_stitching_image=$width_with_stitching/2;
-	my $Ycentro_stitching_image=$height_with_stitching/2;
+	print STDERR "El Angulo alpa es: ".$alfa."\n";
 	
-	# Calculamos los vectores DE y BD
-	# DE=DF-EF
-	my $EF;
-	eval
-	{
-		$EF=sqrt($radio**2-$Xcentro_stitching_image**2); # EF=sqrt(r**2-CF**2)
-	} or do
-	{
-		print STDERR "Error raiz negaticva el la correcion al calcular el segmetno EF\n";
-		LASAF::TEMPLATE::template::CoorSQRTnegative->throw('CoorSQRTnegative');
-		return;
-	};
-	
-	my $DF=$Ycentro_stitching_image;
-	my $DE=$DF-$EF; # DE=DF-EF
-	
-	my $BC;
-	eval
-	{
-		$BC=sqrt($radio**2-$Ycentro_stitching_image**2);
-	} or do
-	{
-		print STDERR "Error raiz negaticva el la correcion al calcular el segmetno BC\n";
-		LASAF::TEMPLATE::template::CoorSQRTnegative->throw('CoorSQRTnegative');
-		return ;
-	};
-	
-	my $AC=$Xcentro_stitching_image;
-	my $AB=$AC-$BC;
-	
-	my $AD=$width_with_stitching;
-	my $BD=$AD-$AB;
-
-	print STDERR "---------------------------------------------------------------------------------------------\n";
-	print STDERR "Yo calculo Segmento AB=$AB\n";
-	print STDERR "Yo calculo Segmento DE=$DE\n";
-	
-	# $AB=$this->pixel2meters(-pixel=>19);
-	# $DE=$this->pixel2meters(-pixel=>20);
-	
-	print STDERR "---------------------------------------------------------------------------------------------\n";
-	print STDERR "Segmento AB=$AB\n";
-	print STDERR "Segmento DE=$DE\n";
-	
-	print STDERR "Segmento BD=$BD\n";
-	print STDERR "Segmento EF=$EF\n";
-	print STDERR "---------------------------------------------------------------------------------------------\n";
-	
-	
-	#calculamos alfa;
-	my $alfa=atan($DE/$BD);
-	
-	$alfa=$args{-angles}->[0];
-	
-	print STDERR "El Angulo alpa es: $alfa\n";
-	# $alfa=0.00915993;
 	my @pos=@{$this->{POS}};
 	
-	# $alfa=3.14159265358979+$alfa;
+	
+	# my $xDistance=$this->getFieldDistanceX();
+	# my $yDistance=$this->getFieldDistanceY();
+	
 	for(my $i=0;$i<=$#pos;$i++)
 	{
-		my $x=$pos[$i]->{x};
-		my $y=$pos[$i]->{y};
-		my $BCp=$x-$AB;
-		my $beta=atan($y/$BCp);
-		
-		# my $alfap=$beta-$alfa;
-		my $hp=sqrt($y**2+$BCp**2);
-		
-		#punto corregido es
-		
-		my $ab=$hp*sin($beta-$alfa);
-		my $Bb=$hp*cos($beta-$alfa);
+		$pos[$i]->{xo}=$pos[$i]->{x};
+		$pos[$i]->{yo}=$pos[$i]->{y};
 
-		# print STDERR "==============================================\n";
-		# print STDERR "$i\n";
-		# print STDERR "Centro: X: ".($width_with_stitching/2)." Y: ".($height_with_stitching/2)."\n";
-		# print STDERR "X: ".$x." Y: ".$y."\n";
-		# print STDERR "X corregida: ".$Bb." Y Corregida: ".$ab."\n";
-		# print STDERR "X Template corregida: ".($Bb+$args{-inix})." Y Corregida: ".($ab+$args{-iniy})."\n";
-		# print STDERR "==============================================\n";
-		$pos[$i]->{x}=$Bb;
-		$pos[$i]->{y}=$ab;
+		$pos[$i]->{x}=$pos[$i]->{x}+$width/2;
+		$pos[$i]->{y}=$pos[$i]->{y}+$height/2;
+
+		
+		# my $coorX=$pos[$i]->{x}*cos($alfa)-$pos[$i]->{y}*sin($alfa);
+		# my $coorY=$pos[$i]->{x}*sin($alfa)+$pos[$i]->{y}*cos($alfa);
+		
+		my $coorX=$pos[$i]->{x}*cos($alfa)+$pos[$i]->{y}*sin($alfa);
+		my $coorY=-1*$pos[$i]->{x}*sin($alfa)+$pos[$i]->{y}*cos($alfa);
+
+
+		
+		$pos[$i]->{x}=$pos[$i]->{x}-abs($pos[$i]->{x}-$coorX);
+		$pos[$i]->{y}=$pos[$i]->{y}+abs($pos[$i]->{y}-$coorY);
+		
+		# $pos[$i]->{x}=$coorX;
+		# $pos[$i]->{y}=$coorY;
+
+		$pos[$i]->{x}=$pos[$i]->{x}-$width/2;
+		$pos[$i]->{y}=$pos[$i]->{y}-$height/2;
+
+		print  "original: ".$this->meters2pixel(-meters=>$pos[$i]->{xo})."\t".$this->meters2pixel(-meters=>$pos[$i]->{yo})."\n";
+		print  "calculado: ".$this->meters2pixel(-meters=>$pos[$i]->{x})."\t".$this->meters2pixel(-meters=>$pos[$i]->{y})."\n";
 	}
 	$this->{POS}=\@pos;
-	print STDERR "Despues: ".$this->{POS}->[0]->{x}.",".$this->{POS}->[0]->{y}."\n";
 	print STDERR "******END CORRECTION POINTS******************************************************************\n";
 }
-
 =head2 new
 
   Example    : template->createTemplateFromFile();
@@ -1526,8 +1635,6 @@ sub createTemplateFromFile
 	$this->{TOTALFIELDY}=round(($this->{hWellMax}/$yDistance)+0.5);
 	
 	
-	print STDERR "\tSize Field Size X: ".$xDistance."\tSize Field Size Y: ".$yDistance."\n";
-	
 	my $TotalFields=$this->{TOTALFIELDX}*$this->{TOTALFIELDY};
 	print STDERR "\tTotalWells: $TotalWells\n";
 	# <Properties Version="Version: 1.0.3.153 -- Build 13.01.2011" TotalCountOfFields="16" TotalCountOfWells="4" TotalAssignedJobs="16" UniqueJobCounter="1">
@@ -1546,28 +1653,42 @@ sub createTemplateFromFile
 	my $first=0;
 	my %graph_black;
 	
+	my $imageUtils=Image::utils->new(-file=>$args{-control_image});
+	$imageUtils->rotate();
+
 	if($#black>0)
 	{
+		
 		for(my $i=0;$i<=$#black;$i++)
 		{
-			$black[$i]->{x}=$this->pixel2meters(-pixel=>$black[$i]->{x})+$args{-inix};
-			$black[$i]->{y}=$this->pixel2meters(-pixel=>$black[$i]->{y})+$args{-iniy};
+			my $box=$black[$i]->{x}.",".$black[$i]->{y}." ".($black[$i]->{x}+$black[$i]->{w}).",".($black[$i]->{y}+$black[$i]->{h});
+			$imageUtils->blackbox(-box=>$box);
+			$black[$i]->{E}=0;
+			$black[$i]->{tx}=$this->pixel2meters(-pixel=>$black[$i]->{x})+$args{-inix}-$this->{CONVERSION}->microns2meters(-microns=>$args{-parcentricity_x});
+			$black[$i]->{ty}=$this->pixel2meters(-pixel=>$black[$i]->{y})+$args{-iniy}-$this->{CONVERSION}->microns2meters(-microns=>$args{-parcentricity_y});
 		}
-		$CONFIANZA=$this->searchEvaLue(-sort=>$args{-sort},-black=>$args{-black} ,-file=>$args{-file},-inix=>$args{-inix},-iniy=>$args{-iniy});
+		# $CONFIANZA=$this->searchEvaLue(-sort=>$args{-sort},-black=>$args{-black} ,-file=>$args{-file},-inix=>$args{-inix},-iniy=>$args{-iniy});
 	}
+	
 	print STDERR "\txDISTANCE: ".$xDistance.", yDISTANCE: ".$yDistance."\n";
 	for(my $iwellx=1;$iwellx<=$this->{WELLX};$iwellx++)
 	{
 
 		my $x0=sprintf("%.14f",$pos[$iwellx-1]->{x});
 		my $y0=sprintf("%.14f",$pos[$iwellx-1]->{y});
+
+		my $x_sin_trans_coordernadas_por_rotacion=sprintf("%.14f",$pos[$iwellx-1]->{xo});
+		my $y_sin_trans_coordernadas_por_rotacion=sprintf("%.14f",$pos[$iwellx-1]->{yo});
+		my $dir=$pos[$iwellx-1]->{dir};
+		
 		my $h=sprintf("%.14f",$pos[$iwellx-1]->{h});
 		my $w=sprintf("%.14f",$pos[$iwellx-1]->{w});
 		
-		$x0=$x0+$args{-inix}-$this->{CONVERSION}->microns2meters(-microns=>$args{-parcentricity_x});
-		$y0=$y0+$args{-iniy}-$this->{CONVERSION}->microns2meters(-microns=>$args{-parcentricity_y});
-					
-		my ($newX,$newY)=($x0,$y0);
+		my $tx0=$x0+$args{-inix}-$this->{CONVERSION}->microns2meters(-microns=>$args{-parcentricity_x});
+		my $ty0=$y0+$args{-iniy}-$this->{CONVERSION}->microns2meters(-microns=>$args{-parcentricity_y});
+		
+			
+		my ($tnewX,$tnewY)=($tx0,$ty0);
 		if($iwellx == 1)
 		{	
 			$this->setStartPosition(-x=>$this->{CONVERSION}->meters2microns(-meters=>$args{-inix}), -y=>$this->{CONVERSION}->meters2microns(-meters=>$args{-iniy}));	
@@ -1582,51 +1703,94 @@ sub createTemplateFromFile
 				for(my $ifieldy=1;$ifieldy<=$this->{TOTALFIELDY};$ifieldy++)
 				{
 					
-					$newX=sprintf("%.14f",$x0+(($ifieldx-1)*$xDistance));
-					$newY=sprintf("%.14f",$y0+(($ifieldy-1)*$yDistance));
+					$tnewX=sprintf("%.14f",$tx0+(($ifieldx-1)*$xDistance));
+					$tnewY=sprintf("%.14f",$ty0+(($ifieldy-1)*$yDistance));
 
-					print STDERR "WELL X $iwellx WELL Y $iwelly FIELD X $ifieldx FIELD Y $ifieldy X: $newX Y: $newY\n";
+					print STDERR "WELL X $iwellx WELL Y $iwelly FIELD X $ifieldx FIELD Y $ifieldy X: $tnewX Y: $tnewY\n";
 					
 					if($ifieldx==1 && $ifieldy==1)
 					{
-						$this->newScanWellData(-first_node=>$first,-wx=>$iwellx,-wy=>$iwelly,-zoom=>$this->{ZOOM},-startImageX=>$newX,-startImageY=>$newY,-endImageX=>($newX+$xDistance),-endImageY=>($newY+$yDistance));
+						$this->newScanWellData(-first_node=>$first,
+												-wx=>$iwellx,-wy=>$iwelly,-zoom=>$this->{ZOOM},
+												-startImageX=>$tnewX,-startImageY=>$tnewY,
+												-endImageX=>($tnewX+$xDistance),-endImageY=>($tnewY+$yDistance));
 					}
 					# print $ifieldx."\t".$this->{LABELX}->[$ifieldx]."\t$ifieldy\t".$this->{LABELY}->[$ifieldy]."\n";
 					my $enabled="true";
 					$graph_black{$iwellx}{$ifieldy}{$ifieldx}="O";
+					
+					my $newX=sprintf("%.14f",$x0+(($ifieldx-1)*$xDistance));
+					my $newY=sprintf("%.14f",$y0+(($ifieldy-1)*$yDistance));
+					
+####################################################################################################################					
+# Pitamos sobre la imagen lo que hemos detectado
+# con un cuadrado negro esta aplicado la correcion en el caso de que se lo hayamos puesto
+					my $xbox=$this->meters2pixel(-meters=>$newX);
+					my $ybox=$this->meters2pixel(-meters=>$newY);
+					my $wbox=$this->meters2pixel(-meters=>$xDistance);
+					my $hbox=$this->meters2pixel(-meters=>$yDistance);
+					my $box=$xbox.",".$ybox." ".($xbox+$wbox).",".($ybox+$hbox);
+					if($this->meters2pixel(-meters=>$h)==1 && $this->meters2pixel(-meters=>$w)==1)
+					{
+						$box=($xbox-($wbox/2)).",".($ybox-($hbox/2))." ".($xbox+($wbox/2)).",".($ybox+($hbox/2));
+					}
+					$imageUtils->empty_box(-box=>$box,-stroke=>'green');
+####################################################################################################################					
+#pintamos un cuadrado rojo lo que hemos detectado sin correcion en caso de haberla hecho			
+					if($x_sin_trans_coordernadas_por_rotacion!=0 && $y_sin_trans_coordernadas_por_rotacion!=0)
+					{
+						my $newX=sprintf("%.14f",$x_sin_trans_coordernadas_por_rotacion+(($ifieldx-1)*$xDistance));
+						my $newY=sprintf("%.14f",$y_sin_trans_coordernadas_por_rotacion+(($ifieldy-1)*$yDistance));
+					
+						my $xbox=$this->meters2pixel(-meters=>$newX);
+						my $ybox=$this->meters2pixel(-meters=>$newY);
+						my $wbox=$this->meters2pixel(-meters=>$xDistance);
+						my $hbox=$this->meters2pixel(-meters=>$yDistance);
+						my $box=$xbox.",".$ybox." ".($xbox+$wbox).",".($ybox+$hbox);
+						if($this->meters2pixel(-meters=>$h)==1 && $this->meters2pixel(-meters=>$w)==1)
+						{
+							$box=($xbox-($wbox/2)).",".($ybox-($hbox/2))." ".($xbox+($wbox/2)).",".($ybox+($hbox/2));
+						}
+						$imageUtils->empty_box(-box=>$box,-stroke=>'red');
+					}
+####################################################################################################################					
 					if($#black>0)
 					{
-						for(my $i=0;$i<=$#black;$i++)
+						
+						$enabled=$this->is_black(-list_blacks=>\@black,
+													-current=>{'x'=>$newX,'y'=>$newY,'tx'=>$tnewX,'ty'=>$tnewY,'h'=>$yDistance,'w'=>$xDistance},
+													-image=>$imageUtils);
+						if($enabled eq 'false')
 						{
-							#if($black[$i]->{x} >= $newX && $black[$i]->{y} >= $newY)
-							#{
-								my $blackX=$black[$i]->{x};
-								my $blackY=$black[$i]->{y};
-								$blackX=($blackX-$newX)**2;
-								$blackY=($blackY-$newY)**2;
-							
-								my $module=sqrt($blackX+$blackY);
-								# print STDERR "CONFIANZA: ".$module."<=".$CONFIANZA."\n";
-								#print "(".$ifieldx.",".$ifieldy.")".$module."\t(".$iwellx.",".$iwelly.")".($this->pixel2meters(-pixel=>$black[$i]->{x})+$args{-inix}).",".($this->pixel2meters(-pixel=>$black[$i]->{y})+$args{-iniy})."\t".$newX.",".$newY;
-								if($module<=$CONFIANZA)
-								{
-										$enabled="false";
-										$graph_black{$iwellx}{$ifieldy}{$ifieldx}="*";
-										#$Encontrados_black[$i].="\t(".$ifieldx.",".$ifieldy.")\t(".$iwellx.",".$iwelly.")".($this->pixel2meters(-pixel=>$black[$i]->{x})+$args{-inix}).",".($this->pixel2meters(-pixel=>$black[$i]->{y})+$args{-iniy})."\t".$newX.",".$newY;
-										#print "\t black \n";
-										last;
-								}
-								#print "\n";
-						#	}
+							$graph_black{$iwellx}{$ifieldy}{$ifieldx}="*";
 						}
+
 					}
-					#print "$enabled\t".$newX."\t".$newY."\n";
 					$node=$ScanFieldData->item(0)->cloneNode(1);
-					if(($newX > ($x0+$w)) || ($newY > ($y0+$h)))
+					if(($tnewX > ($tx0+$w)) || ($tnewY > ($ty0+$h)))
 					{
 						$enabled="false";
+						$graph_black{$iwellx}{$ifieldy}{$ifieldx}="X";
+						my $xbox=$this->meters2pixel(-meters=>$newX);
+						my $ybox=$this->meters2pixel(-meters=>$newY);
+						my $wbox=$this->meters2pixel(-meters=>$xDistance);
+						my $hbox=$this->meters2pixel(-meters=>$yDistance);
+	
+						my $box=$xbox.",".$ybox." ".($xbox+$wbox).",".($ybox+$hbox);
+	
+						$imageUtils->fillbox(-box=>$box,-color=>"yellow");
+						
 					}
-					$this->newScanFieldData(-ScanFieldArray=>$ScanFieldArray,-node=>$node,-enabled=>$enabled,-first_node=>$first,-jobID=>$jobs{JOB}->{ID} ,-name=>$jobs{JOB}->{NAME},-wx=>$iwellx,-wy=>$iwelly,-fx=>$ifieldx,-fy=>$ifieldy,-x=>$newX,-y=>$newY,-labelx=>$this->{LABELX}->[$iwellx],-labely=>$this->{LABELY}->[$iwelly]);
+					$this->newScanFieldData(-ScanFieldArray=>$ScanFieldArray,
+											-node=>$node,
+											-enabled=>$enabled,
+											-first_node=>$first,
+											-jobID=>$jobs{JOB}->{ID} ,
+											-name=>$jobs{JOB}->{NAME},
+											-wx=>$iwellx,-wy=>$iwelly,
+											-fx=>$ifieldx,-fy=>$ifieldy,
+											-x=>$tnewX,-y=>$tnewY,
+											-labelx=>$this->{LABELX}->[$iwellx],-labely=>$this->{LABELY}->[$iwelly]);
 					$first=1;
 				}
 			}
@@ -1659,8 +1823,104 @@ sub createTemplateFromFile
 	$this->{NAME_TEMPLATE}=$file;
 	# $this->write(-nameTemplate=>$name[0],-dir=>$args{-path_ouput_dir});
 	$this->write(-file=>$args{-output_template});
+	$imageUtils->write(-file=>$args{-control_image});
+	
 	return ($this->{TOTALFIELDX},$this->{TOTALFIELDY});
 }
+# =head2 new
+# 
+#   Example    : template->createTemplateFromFile();
+#   Description: crea en el templete un nuevo well en la seccion ScanWellArray
+#   Returntype : String
+#   Exceptions : none
+#   Caller     : web drawing code
+#   Status     : Stable
+# 
+# =cut
+
+sub is_black
+{
+	my ($this,%args)=@_;
+	my @black=@{$args{-list_blacks}};
+	my $current_point=$args{-current};
+	# my @black_finded;
+	
+	my $xbox=$this->meters2pixel(-meters=>$current_point->{x});
+	my $ybox=$this->meters2pixel(-meters=>$current_point->{y});
+	my $wbox=$this->meters2pixel(-meters=>$current_point->{w});
+	my $hbox=$this->meters2pixel(-meters=>$current_point->{h});
+	
+	my $box=$xbox.",".$ybox." ".($xbox+$wbox).",".($ybox+$hbox);
+	
+	$args{-image}->box(-box=>$box,-label=>"");
+	
+	print STDERR "==================================================================\n";
+	for(my $i=0;$i<=$#black;$i++)
+	{
+		my $blackX=$black[$i]->{tx};
+		my $blackY=$black[$i]->{ty};
+		my $blackW=$this->pixel2meters(-pixel=>$black[$i]->{w});
+		my $blackH=$this->pixel2meters(-pixel=>$black[$i]->{h});
+		 
+		# print STDERR "***Black X,Y:".$blackX.",".$blackY."\tW,H:".$blackW."=".($blackX+$blackW).",".$blackH."=".($blackY+$blackH)."\n";
+		# print STDERR "Curre X,Y:".$current_point->{tx}.",".$current_point->{ty}."\n";
+		my $difX=sprintf("%.8f",($current_point->{tx}-$blackX));
+		my $difY=sprintf("%.8f",($current_point->{ty}-$blackY));
+
+
+		# print STDERR "=====".$difX."\t".$difY."\n";
+		if($current_point->{tx}>=($blackX)&&$current_point->{tx}<=($blackX+$blackW) || $difX==0)
+		{
+			if($current_point->{ty}>=($blackY)&&$current_point->{ty}<=($blackY+$blackH)|| $difY==0)
+			{
+				print STDERR "Black X,Y:".$blackX.",".$blackY."\tW,H:".$blackW."=".($blackX+$blackW).",".$blackH."=".($blackY+$blackH)."\n";
+				print STDERR "Curre X,Y:".$current_point->{tx}.",".$current_point->{ty}."\n";
+				my $areaBlack=sprintf("%.8f",$blackW*$blackH);
+				
+				my $dx_aux=$blackW-($current_point->{tx}-$blackX);
+				my $dy_aux=$blackH-($current_point->{ty}-$blackY);
+				
+				
+				my $areaRealBlack=sprintf("%.8f",($dx_aux*$dy_aux));
+				my $d_area=sprintf("%.8f",($areaBlack-$areaRealBlack));
+				print STDERR "Area Black     :".$areaBlack."\n";
+				print STDERR "Area Real BLack:".$dx_aux."*".$dy_aux."==".$areaRealBlack."\n";
+				print STDERR "Area Dif       :".$d_area."\n";
+				if($d_area ==0 || $areaRealBlack ==0)
+				{
+					my $box=$black[$i]->{x}.",".$black[$i]->{y}." ".($black[$i]->{x}+$black[$i]->{w}).",".($black[$i]->{y}+$black[$i]->{h});
+					$args{-image}->fillbox(-box=>$box,-color=>'green');
+					if($black[$i]->{E}==0)
+					{
+						$black[$i]->{E}=1;
+						return 'false';
+					}
+				}
+				else
+				{
+					my $box=$black[$i]->{x}.",".$black[$i]->{y}." ".($black[$i]->{x}+$black[$i]->{w}).",".($black[$i]->{y}+$black[$i]->{h});
+					$args{-image}->fillbox(-box=>$box,-color=>'red');
+				}
+			}
+			# else
+			# {
+			# 	$args{-image}->fillbox(-box=>$box,-color=>'yellow');
+			# 	
+			# }
+		}
+		# else
+		# {
+		# 	if($current_point->{ty}>=($blackY)&&$current_point->{ty}<=($blackY+$blackH))
+		# 	{
+		# 		$args{-image}->fillbox(-box=>$box,-color=>'yellow');
+		# 	}
+		# }
+	}
+	print STDERR "==================================================================\n";
+	
+	return 'true';
+}
+
 # =head2 new
 # 
 #   Example    : template->createTemplateFromFile();

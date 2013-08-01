@@ -2,10 +2,11 @@
 use Image::utils;
 
 
-my $tmp='/tmp/rotate_tmp.tif';
-my $p=Image::utils->new(-file=>$ARGV[0]);
-$p->rotate();
-$p->write(-file=>$tmp);
+# my $tmp='/Users/acarro/Sites/Confocal/tmp/prueba_rot.tif';
+# my $p=Image::utils->new(-file=>$tmp);
+# $p->rotate();
+# $p->rotate();
+# $p->write(-file=>$tmp);
 
 # 
 my $p=Image::utils->new(-file=>$tmp);
