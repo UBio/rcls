@@ -98,22 +98,22 @@ micro.prototype.create_window=function(micros)
 	// Select Microscope:<select id="micro" name="micro"></select>
 	var label=document.createElement('label');
 	label.innerHTML="Select Microscope:";
-	var select=document.createElement('select');
-	select.setAttribute('id','micro');
-	select.setAttribute('name','micro');
+	this.selectMicro=document.createElement('select');
+	this.selectMicro.setAttribute('id','micro');
+	this.selectMicro.setAttribute('name','micro');
 	
 	for(var imicro=0;imicro<micros.length;imicro++)
 	{
 		var option=document.createElement("option");
 		option.setAttribute('value',micros[imicro]);
 		option.innerHTML=micros[imicro];
-		select.appendChild(option);
+		this.selectMicro.appendChild(option);
 	}
 	
 	this.SelectMicro.getHead().appendChild(label);
-	this.SelectMicro.getHead().appendChild(select);
+	this.SelectMicro.getHead().appendChild(this.selectMicro);
 	
-	YAHOO.util.Event.addListener(select,"change",this.check,this);
+	YAHOO.util.Event.addListener(this.selectMicro,"change",this.check,this);
 	
 	// <p>Low Resolution Images Folder:
 	// 	<div id="CalendarImages"></div>
@@ -183,14 +183,14 @@ micro.prototype.setSelectExperiment=function(CurrentExperiment)
 	this.calendarMicro.selectDayExperiment(CurrentExperiment);
 	return this.calendarMicro.setSelectExperiment(CurrentExperiment);
 }
-micro.prototype.getParams=function()
-{
-	var params={'micro':'','experimentDir':''};
-	params.micro=this.currentMicro;
-	params.experimentDir=this.getSelectExperiment();
-	
-	return params;
-}
+// micro.prototype.getParams=function()
+// {
+// 	var params={'micro':'','experimentDir':''};
+// 	params.micro=this.currentMicro;
+// 	params.experimentDir=this.getSelectExperiment();
+// 	
+// 	return params;
+// }
 micro.prototype.show=function()
 {
 	if(this.conf.error()==0)
@@ -225,6 +225,28 @@ micro.prototype.getCurrentMicro=function()
 {
 	return this.currentMicro;
 }
+
+micro.prototype.setCurrentMicro=function(nameMicro)
+{
+	var options=this.selectMicro.getElementsByTagName('option');
+	for(var i=0;i<options.length;i++)
+	{
+		if(options[i].getAttribute('value') == nameMicro)
+		{
+			options[i].setAttribute('selected',true);
+			this.currentMicro=nameMicro;
+			
+			this.check('setCurrentMicro',this);
+			
+			return true;
+		}
+		else
+		{
+			options[i].setAttribute('selected',false);		
+		}
+	}
+	return false;
+}
 micro.prototype.check=function(event,me)
 {
 	var url='cgi-bin/checkRun.cgi?conf='+document.getElementById("micro").value;
@@ -246,6 +268,10 @@ micro.prototype.check=function(event,me)
 	}
 	else
 	{
+		if(event == 'setCurrentMicro')
+		{
+			me.cloud();
+		}
 		return;
 	}
 	var MyObj=me;

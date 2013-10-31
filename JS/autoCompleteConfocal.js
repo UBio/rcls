@@ -1,6 +1,7 @@
 autoCompleteConfocal=function(data,input,container)
 {
 	var oDS = new YAHOO.util.LocalDataSource(data);
+	this.data=data;
     oDS.responseSchema = {fields : ["templates"]};
     // Instantiate the AutoComplete
     this.oAC = new YAHOO.widget.AutoComplete(input, container, oDS);
@@ -24,4 +25,19 @@ autoCompleteConfocal.prototype.destroy=function()
 autoCompleteConfocal.prototype.getValue=function()
 {
 	return this.currentValue;
+}
+
+autoCompleteConfocal.prototype.setValue=function(value)
+{
+	
+	for(var i=0;i<this.data.length;i++)
+	{
+		if(value==this.data[i])
+		{
+			this.oAC.getInputEl().value=value;
+			this.currentValue=value;
+			return true;
+		}
+	}
+	return false;
 }

@@ -13,18 +13,11 @@ my $tmp=$cfg_confocal->val( 'FILES', 'tmp' );
 
 print "Content-type: text/text \n\n";
 
-#if(-e "../CONF/".$conf.".ini")
-#{
-	if(-e $tmp."/".$conf.".lock")
-	{
-	  print "true";
-	}
-	else
-	{
-	  print "false";
-	}
-#}
-#else
-#{
-#	print "false";
-#}
+if(-e $tmp."/".$conf.".lock")
+{
+	print "true";
+}
+else
+{
+	print "false";
+}

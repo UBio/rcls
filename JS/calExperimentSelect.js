@@ -121,8 +121,10 @@ calExperimentSelect.prototype.setSelectExperiment=function(currentExperiment)
 		if(nodelistCheck[i].type=='radio' &&  nodelistCheck[i].value==currentExperiment)
 		{
 			nodelistCheck[i].checked=true;
+			return true;
 		}	
 	}	
+	return false;
 }
 
 calExperimentSelect.prototype.selectDays=function(dirimages)

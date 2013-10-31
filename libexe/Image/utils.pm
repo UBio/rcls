@@ -8,13 +8,13 @@
 
 package Image::utils;
 $VERSION='1.0';
-
 use strict;
 use Config::IniFiles;
 use File::Basename;
 use Image::Magick;
 use Math::Trig ':pi';
 use Math::Trig;
+use FindBin qw($Bin);
 sub new
 {
 	my ($class,%args)=@_;
@@ -111,7 +111,7 @@ sub box
 		$x0=$1;
 		$y0=$2;
 	}
-	$this->{image}->Annotate(font=>"Arial.tff",pointsize=>25,text=>$args{-label},fill=>"rgb(255, 255, 255)",x=>$x0+5,y=>$y0+25,antialias=>"true");
+	$this->{image}->Annotate(font=>"Arial.ttf",pointsize=>25,text=>$args{-label},fill=>"rgb(255, 255, 255)",x=>$x0+5,y=>$y0+25,antialias=>"true");
 	$this->{image}->Draw(fill=>"rgba(255, 255, 255, 0.0)",primitive=>"Rectangle",points=>$args{-box},stroke=>"white");
 }
 
@@ -131,7 +131,7 @@ sub empty_box
 		{
 			$color=$args{-color_label};
 		}
-		$this->{image}->Annotate(font=>"Arial.tff",pointsize=>25,text=>$args{-label},fill=>"rgb(255, 255, 255)",x=>$x0+5,y=>$y0+25,antialias=>"true");
+		$this->{image}->Annotate(font=>"Arial.ttf",pointsize=>25,text=>$args{-label},fill=>"rgb(255, 255, 255)",x=>$x0+5,y=>$y0+25,antialias=>"true");
 	}
 	$this->{image}->Draw(fill=>"rgba(255, 255, 255, 0.0)",primitive=>"Rectangle",points=>$args{-box},stroke=>$args{-stroke});
 }
@@ -261,6 +261,29 @@ sub get_angles
 	my $angleY=$this->auto_get_angle90();
 	return ($angleX,$angleY);
 }
+sub auto_rotate
+{
+	my ($this,%args)=@_;
+	my($filename, $directories, $suffix) = fileparse($this->{file});
+	my $tmp="/tmp/".$$."_unrotate.tmp.tif";
+	
+	my $rotate_command=$Bin."/Image/unrotate ".$this->{file}." ".$tmp;
+	# print STDERR "$rotate_command\n";
+	
+	my $angle=`$rotate_command`;
+	
+	system("cp ".$this->{file}." ".$directories."/original_".$filename);
+	system("mv ".$tmp." ".$this->{file});
+}
+sub get_angle2
+{
+	my ($this,%args)=@_;
+	my($filename, $directories, $suffix) = fileparse($this->{file});
+	my $rotate_command=$Bin."/Image/unrotate ".$this->{file};
+	my $angle=`$rotate_command`;
+	print STDERR "El Angulo de rotacion es: $angle\n";
+	return $angle;
+}
 sub auto_get_angle90
 {
 	my ($this,%args)=@_;
@@ -274,7 +297,10 @@ sub auto_get_angle90
 sub auto_get_angle
 {
 	my ($this,%args)=@_;
+	my $width=$this->getWidth();
+	my $height=$this->getHeight();
 	my $coors="0,0";
+	# my $coors=($width/2).",".($height/2);
 
 	# my $cmd=$this->{convert}.' -rotate "90.0<"  '.$this->{file}.' '.$this->{tmp}->{rotate};
 	# print $cmd."\n";
@@ -287,8 +313,7 @@ sub auto_get_angle
 	# print $cmd."\n";
 	# start with image already cropped to outside bounds of rotated image
 	
-	my $width=$this->getWidth();
-	my $height=$this->getHeight();
+
 	my $widthmp=$width-2;
 	my $heightmp=$height-2;
 	
@@ -372,7 +397,7 @@ sub write
 		$format="svg";
 		$ext="svg";
 	}
-	print "\n\n\n".$args{-file}."\n\n\n";
+	# print "\n\n\n".$args{-file}."\n\n\n";
 	my ($file,$dir,$extaux) = fileparse($args{-file}, qr/\.[^.]*/);
 	my $x=$this->{image}->write($format.":".$dir."/".$file.'.'.$ext);
 	if($x ne '')

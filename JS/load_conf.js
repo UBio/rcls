@@ -21,7 +21,7 @@ load_conf.prototype.error=function()
 load_conf.prototype.load=function()
 {
 	var http_request = new XMLHttpRequest();
-	var sURL = "cgi-bin/load.cgi";
+	var sURL = "cgi-bin/INITIALIZE/load.cgi";
     http_request.open("GET", sURL, false);
     http_request.send(null);
 
@@ -32,7 +32,8 @@ load_conf.prototype.load=function()
 		this.responseMicros=response[0].micros;
 		this.responseMacros=response[0].macros;
 		this.insertMacrosToSelectObject();
-		var result=this.handleSuccess(this.responseMicros);
+		
+		var result=this.handleSuccess(this.responseMicros);		
 	}
 	else
 	{
@@ -144,14 +145,14 @@ load_conf.prototype.handleSuccess = function(response)
 
 	for(var i=0;i<response.length;i++)
 	{
-		if(response[i].templates.length >0 && response[i].dirimages.length>0)
+		
+		if(response[i].templates && response[i].templates.length >0 && response[i].dirimages && response[i].dirimages.length>0)
 		{
 			this.micros[indexMicro]=response[i].name;
 			indexMicro++;
 						
 			if(response[0].name == response[i].name)
 			{
-				
 				this.templates=response[i].templates;
 				
 				for(var iStepName=0;iStepName<response[i].dirimages.length;iStepName++)
@@ -159,6 +160,11 @@ load_conf.prototype.handleSuccess = function(response)
 					this.dirImages[iStepName]=response[i].dirimages[iStepName];
 				}
 			}
+		}
+		else
+		{
+			new dialog_alert("Notice: "+ response[i].name,response[i].warnnings,"notice");
+			
 		}
 	}
 	if(!entro)

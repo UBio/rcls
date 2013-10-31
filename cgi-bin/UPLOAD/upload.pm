@@ -32,7 +32,6 @@ sub upload
 	}
 	
 	
-	print STDERR "Hola:".$input."\n";
 	if ( !$input )
 	{
 		print $cgi->header();

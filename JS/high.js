@@ -30,6 +30,16 @@ high=function(step,container,manager,micro)
 	
 	
 }
+high.prototype.getScanAllTempates=function()
+{
+	return this.scanAllTemplates;
+}
+
+high.prototype.setScanAllTempates=function(value)
+{
+	this.scanAllTemplates=value;
+	this.inputcheckbox.checked=value;
+}
 high.prototype.create_window=function()
 {
 	
@@ -38,16 +48,17 @@ high.prototype.create_window=function()
 	this.high.getHead().appendChild(label);
 	
 	var p=document.createElement('p');
-	var input=document.createElement('input');
-	input.setAttribute('type','checkbox');
-	input.setAttribute('id','chkalltemplatestep2');
-	input.setAttribute('checked',true);
+	this.inputcheckbox=document.createElement('input');
+	this.inputcheckbox.setAttribute('type','checkbox');
+	this.inputcheckbox.setAttribute('id','chkalltemplatestep2');
+	this.inputcheckbox.setAttribute('checked',true);
 	var label=document.createElement('label');
 	label.innerHTML="Scan All Templates:&nbsp;";
-	YAHOO.util.Event.addListener(input,"change",function(event,args,me){me.scanAllTemplates=this.checked;},this);
+	
+	YAHOO.util.Event.addListener(this.inputcheckbox,"change",function(event,me){me.scanAllTemplates=this.checked;},this);
 	
 	p.appendChild(label);
-	p.appendChild(input);
+	p.appendChild(this.inputcheckbox);
 	
 	this.high.getBody().appendChild(p);
 

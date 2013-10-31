@@ -1512,6 +1512,18 @@ sub setZWide()
 # 	print STDERR "Despues: ".$this->{POS}->[0]->{x}.",".$this->{POS}->[0]->{y}."\n";
 # 	print STDERR "******END CORRECTION POINTS******************************************************************\n";
 # }
+# /Users/acarro/Sites/Confocal/libexe/LeicaWorkFlow.pl  --conf /Users/acarro/Sites/Confocal/CONF/localhost.white.ini -template_step1 leica10x5 -name_micro white -macro_detection detect/CellDet-CM-MANUAL.ijm -macro_black blacks/TMASearchBlackRectangules.ijm -template_step2 leica5Z  -thresholdMin 0 -thresholdMax 100 -size 100 -maxsize Infinity -circularity 0.0  --create --imagej --dir experiment--2013_08_30_17_27-10x5  --coor
+# 
+# 
+# El de baja es leica10x5
+# El de alta es leica5Z
+# El dir es
+# experiment--2013_08_30_17_27-10x5
+#  
+# la macro es CellDet-CM-manual
+#  
+# Threshold a-100
+# Tamaño 100-infinito
 sub coor
 {
 	my ($this,%args)=@_;
@@ -1522,12 +1534,13 @@ sub coor
 	
 		my $width=$this->pixel2meters(-pixel=>$args{-width});
 		my $height=$this->pixel2meters(-pixel=>$args{-height});
+		
 		my $alfa=($args{-angles}->[1]+$args{-angles}->[0])/2;
-	
+		$alfa=$args{-angles}->[1];
 	print STDERR "width: ". $width."\tHeght: ".$height."\n";
-	
 	print STDERR "El Angulo alpa es: ".$alfa."\n";
-	
+	print STDERR "Angulo de rotacion real:0.4 grados son 0.00698131700798  radianes\n";
+
 	my @pos=@{$this->{POS}};
 	
 	
@@ -1539,29 +1552,35 @@ sub coor
 		$pos[$i]->{xo}=$pos[$i]->{x};
 		$pos[$i]->{yo}=$pos[$i]->{y};
 
-		$pos[$i]->{x}=$pos[$i]->{x}+$width/2;
-		$pos[$i]->{y}=$pos[$i]->{y}+$height/2;
+		# $pos[$i]->{x}=$pos[$i]->{x}+$width/2;
+		# $pos[$i]->{y}=$pos[$i]->{y}+$height/2;
 
 		
 		# my $coorX=$pos[$i]->{x}*cos($alfa)-$pos[$i]->{y}*sin($alfa);
 		# my $coorY=$pos[$i]->{x}*sin($alfa)+$pos[$i]->{y}*cos($alfa);
 		
-		my $coorX=$pos[$i]->{x}*cos($alfa)+$pos[$i]->{y}*sin($alfa);
-		my $coorY=-1*$pos[$i]->{x}*sin($alfa)+$pos[$i]->{y}*cos($alfa);
+		my $coorX=$pos[$i]->{x}*cos($alfa)-$pos[$i]->{y}*sin($alfa);
+		my $coorY=$pos[$i]->{x}*sin($alfa)+$pos[$i]->{y}*cos($alfa);
 
 
 		
-		$pos[$i]->{x}=$pos[$i]->{x}-abs($pos[$i]->{x}-$coorX);
-		$pos[$i]->{y}=$pos[$i]->{y}+abs($pos[$i]->{y}-$coorY);
+		# $pos[$i]->{x}=$pos[$i]->{x}-abs($pos[$i]->{x}-$coorX);
+		# $pos[$i]->{y}=$pos[$i]->{y}+abs($pos[$i]->{y}-$coorY);
+
 		
-		# $pos[$i]->{x}=$coorX;
-		# $pos[$i]->{y}=$coorY;
+		$pos[$i]->{x}=$coorX;
+		$pos[$i]->{y}=$coorY;
 
-		$pos[$i]->{x}=$pos[$i]->{x}-$width/2;
-		$pos[$i]->{y}=$pos[$i]->{y}-$height/2;
+		# $pos[$i]->{x}=$pos[$i]->{x}-$width/2;
+		# $pos[$i]->{y}=$pos[$i]->{y}-$height/2;
+		
 
-		print  "original: ".$this->meters2pixel(-meters=>$pos[$i]->{xo})."\t".$this->meters2pixel(-meters=>$pos[$i]->{yo})."\n";
-		print  "calculado: ".$this->meters2pixel(-meters=>$pos[$i]->{x})."\t".$this->meters2pixel(-meters=>$pos[$i]->{y})."\n";
+
+		print  STDERR "-------------------------------------------------------------------------------------\n";
+		print  STDERR "original: x: ".$this->meters2pixel(-meters=>$pos[$i]->{xo})."\ty: ".$this->meters2pixel(-meters=>$pos[$i]->{yo})."\n";
+		print  STDERR "correcion: x: ".$this->meters2pixel(-meters=>$coorX)."\ty: ".$this->meters2pixel(-meters=>$coorY)."\n";
+		print  STDERR "calculado: x:".$this->meters2pixel(-meters=>$pos[$i]->{x})."\ty: ".$this->meters2pixel(-meters=>$pos[$i]->{y})."\n";
+		print  STDERR "-------------------------------------------------------------------------------------\n";
 	}
 	$this->{POS}=\@pos;
 	print STDERR "******END CORRECTION POINTS******************************************************************\n";

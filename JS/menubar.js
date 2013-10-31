@@ -13,7 +13,16 @@ menubar=function(manager)
 	                    {
 	                        id: "connect", 
 	                        itemdata: [
-                            { text: "Insert Microscope",url:"#insert_micro"},
+							{ 
+								text: "Micro", 
+                                    submenu: { 
+                                        id: "microscope", 
+                                        itemdata: [
+                                            {text:"Insert",url:"#insert_micro"}, 
+          									{text:"Delete",url:"#delete_parcentricity"} 
+                                        ] 
+                                    }
+							},
 							{ 
 								text: "Parcentricity", 
                                     submenu: { 
@@ -29,11 +38,35 @@ menubar=function(manager)
 	                        ]    
 	                    },
 	                    {
+	                        id: "experiments", 
+	                        itemdata: [ 
+	                            { text: "Save ...",url:"#save_experiment"},
+	                            { text: "Load ...", url:"#load_experiment"}
+	                        ]
+	                    },
+	                    {
 	                        id: "utils", 
 	                        itemdata: [
                             { text: "Join Templates",url:"#show_join_templates"},
 							{ text: "Stitching",url:"#show_stitching",checked:false}
 	                        ] 
+	                    },
+	                    {
+	                        id: "admin", 
+	                        itemdata: [
+							{ 
+								text: "Application", 
+                                    submenu: { 
+                                        id: "application", 
+                                        itemdata: [
+          									{text:"Reset",url:"#reset_app"} 
+                                        ] 
+                                    }
+							}
+
+							
+                            // { text: "Insert Objetive", url:"#insert_objetive"}
+	                        ]    
 	                    },
 	                    // {
 	                    //     id: "experiment",

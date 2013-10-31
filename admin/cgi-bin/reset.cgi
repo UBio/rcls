@@ -11,7 +11,6 @@ my $cgi=new CGI;
 my $cfg_confocal = Config::IniFiles->new( -file => $ENV{CONFOCAL_INI});
 my @micros=$cfg_confocal->Parameters ('INI');
 
-print "Content-type: text/html \n\n";
 
 for(my $i=0;$i<=$#micros;$i++)
 {
@@ -25,6 +24,5 @@ for(my $i=0;$i<=$#micros;$i++)
 
 $cfg_confocal->RewriteConfig();
 
-print '<meta http-equiv="refresh" content="0; url=../../">';
 
-
+print "Content-type: text/html \n\n";

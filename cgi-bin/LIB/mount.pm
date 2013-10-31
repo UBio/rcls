@@ -19,7 +19,7 @@ sub mountall
 		{
 			if(check_mount(-name=>$1) ne 'OK')
 			{
-				my $mounts=$dirmounts.$filename;
+				my $mounts=$dirmounts.'/'.$filename;
 				my $CMDmount="ssh -t -o StrictHostKeyChecking=no confocal\@localhost 'sudo $mounts'";
 				print STDERR $CMDmount;
 				my $ERROR=`$CMDmount`;

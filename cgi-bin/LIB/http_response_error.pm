@@ -29,7 +29,14 @@ $VERSION='1.0';
 			$HTTP_ERROR_432
 			$HTTP_ERROR_433
 			$HTTP_ERROR_434
-			$HTTP_ERROR_435);
+			$HTTP_ERROR_435
+			$HTTP_ERROR_436
+			$HTTP_ERROR_437
+			$HTTP_ERROR_438
+			$HTTP_ERROR_439
+			$HTTP_ERROR_440
+			$HTTP_ERROR_441
+			$HTTP_ERROR_442);
 use strict;
 use HTTP::Status qw(is_success status_message);
 
@@ -61,6 +68,13 @@ our $HTTP_ERROR_432="Template Local Directory exists";
 our $HTTP_ERROR_433="Parcentricity exists, please remove before to insert";
 our $HTTP_ERROR_434="Format error: id,magnification,x,y (ej:11506511,10,73375,41556)";
 our $HTTP_ERROR_435="Parcentricity not exists";
+our $HTTP_ERROR_436="Check config file: Section MACRO, dir macro not exists";
+our $HTTP_ERROR_437="Check config file: Section MACRO, directory macros is empty";
+our $HTTP_ERROR_438="Check config file: Section MACRO, not found macros";
+our $HTTP_ERROR_439="Check config file: Section template, dir template not exists";
+our $HTTP_ERROR_440="Check config file: Section template, dir template enpty";
+our $HTTP_ERROR_441="Check config file: Section template, dir images not exists";
+our $HTTP_ERROR_442="Check config file: Section template, dir images empty";
 
 sub print_http_response($;$)
 {

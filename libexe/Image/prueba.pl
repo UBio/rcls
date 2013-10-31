@@ -2,7 +2,7 @@
 use Image::utils;
 
 
-# my $tmp='/Users/acarro/Sites/Confocal/tmp/prueba_rot.tif';
+my $tmp='./prueba.tif';
 # my $p=Image::utils->new(-file=>$tmp);
 # $p->rotate();
 # $p->rotate();

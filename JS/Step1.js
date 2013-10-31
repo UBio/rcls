@@ -87,7 +87,6 @@ step1=function(step,container,manager,MyMicro)
 																me.oAC=new autoCompleteConfocal(me.MyMicro.conf.getTemplates(),"step1","myContainerACStep1");
 																},this);
 												
-	this.getParams();
 }
 
 step1.prototype.create_window=function()
@@ -240,20 +239,16 @@ step1.prototype.ViewScanStep1=function(event,me)
 	}
 }
 
-step1.prototype.getParams=function()
+step1.prototype.getTemplate=function()
 {
-	// <low>
-	// 	<template file="Cytoolow10X" />
-	// 	<blacks removed="false" macro="" /> 
-	// </low>
-	var params={'template':''};
-	params.template=document.getElementById('step1').value;
-	
-
-	
-	
-	return params;
+	return document.getElementById('step1').value;
 }
+
+step1.prototype.setTemplate=function(template)
+{
+	return this.oAC.setValue(template);
+}
+
 
 step1.prototype.visible=function(value)
 {

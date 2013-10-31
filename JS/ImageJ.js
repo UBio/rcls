@@ -103,6 +103,88 @@ imagej.prototype.RefreshList=function()
 	this.RefreshListMacroBlack(this.MyMicro.conf.getMacros('Blacks'));
 }
 
+imagej.prototype.getRoutine=function()
+{
+	return this.ListMacrosDetect.getValue();
+}
+imagej.prototype.setRoutine=function(routine)
+{
+	return this.ListMacrosDetect.setValue(routine);
+}
+
+
+imagej.prototype.getTemplate=function()
+{
+	return this.oAC.getValue();
+}
+imagej.prototype.setTemplate=function(template)
+{
+	return this.oAC.setValue(template);
+}
+imagej.prototype.getCorrection=function()
+{
+	return this.chkCoordinateCorrection.get('checked');
+}
+
+imagej.prototype.setCorrection=function(value)
+{
+	this.chkCoordinateCorrection.set('checked',value);
+}
+imagej.prototype.getRemoveBlacksParams=function()
+{
+	var param={'value':this.chkremoveblacks.get('checked'),
+			'template':this.ListMacrosBlack.getValue()
+			};
+	return param;
+}
+imagej.prototype.setRemoveBlacksParams=function(value,template)
+{
+	this.chkremoveblacks.set('checked',true)
+	return this.ListMacrosBlack.setValue(template);;
+}
+
+
+imagej.prototype.getParametersDefaultImage=function()
+{
+	var param={'thresholdmin':0,'thresholdmax':100,'size':1000,'maxsize':'Infinity','circularity':'0.0'};
+	return param;
+}
+
+imagej.prototype.getAdvanceOptions=function()
+{
+	
+	if(!document.getElementById("thresholdmin"))
+	{
+		return this.getParametersDefaultImage();
+	}
+	return {'thresholdmin':document.getElementById("thresholdmin").value
+			,'thresholdmax':document.getElementById("thresholdmax").value
+			,'size':document.getElementById("size").value
+			,'maxsize':document.getElementById("maxsize").value
+			,'circularity':document.getElementById("circularity").value};
+
+}
+
+imagej.prototype.setAdvanceOptions=function(thresholdmin,thresholdmax,size,maxsize,circularity)
+{
+	
+	var slide=0;
+	var chamber=0;
+	
+	this.currentOptionsImagen[slide][chamber]={'thresholdmin':thresholdmin,
+											 'thresholdmax':thresholdmax,
+											 'size':size,
+											 'maxsize':maxsize,
+											 'circularity':circularity
+											};
+											
+
+
+
+}
+
+
+
 imagej.prototype.create_window=function(macrosDetect,templates)
 {
 	var label=document.createElement('label');
@@ -168,6 +250,16 @@ imagej.prototype.create_window=function(macrosDetect,templates)
 
 	var input=document.createElement('input');
 	input.setAttribute('type','button');
+	input.setAttribute('id','AdvanceOptions');
+	input.setAttribute('name','AdvanceOptions');
+	input.setAttribute('value','Advanced Options');
+	this.imagej.getFooter().appendChild(input);
+	this.AdvanceOptionsbtn=new YAHOO.widget.Button("AdvanceOptions");
+	YAHOO.util.Event.addListener(document.getElementById("AdvanceOptions"),"click",this.showPanelOptions,this);
+
+
+	var input=document.createElement('input');
+	input.setAttribute('type','button');
 	input.setAttribute('id','searchcreate');
 	input.setAttribute('name','searchcreate');
 	input.setAttribute('value','Analize Images');
@@ -175,15 +267,6 @@ imagej.prototype.create_window=function(macrosDetect,templates)
 
 	this.searchcreatebtn=new YAHOO.widget.Button("searchcreate");
 	YAHOO.util.Event.addListener(document.getElementById('searchcreate'),"click",this.run,this);
-
-	var input=document.createElement('input');
-	input.setAttribute('type','button');
-	input.setAttribute('id','AdvanceOptions');
-	input.setAttribute('name','AdvanceOptions');
-	input.setAttribute('value','Advanced Options');
-	this.imagej.getFooter().appendChild(input);
-	this.AdvanceOptionsbtn=new YAHOO.widget.Button("AdvanceOptions");
-	YAHOO.util.Event.addListener(document.getElementById("AdvanceOptions"),"click",this.showPanelOptions,this);
 
 	var input=document.createElement('input');
 	input.setAttribute('type','button');
@@ -224,11 +307,7 @@ imagej.prototype.onRemoveBlacks=function(event,me)
 	}
 }
 
-imagej.prototype.getParametersDefaultImage=function()
-{
-	var param={'thresholdmin':0,'thresholdmax':100,'size':1000,'maxsize':'Infinity','circularity':'0.0'};
-	return param;
-}
+
 imagej.prototype.updateParamatersOptionsImage=function(slide,chamber)
 {
 	if( typeof(document.getElementById("maxsize").value)=='string' && isNaN(document.getElementById("maxsize").value))
@@ -269,6 +348,7 @@ imagej.prototype.setParamatersOptionsImage=function(slide,chamber)
 	{
 		chamber=0;
 	}
+	
 	var bodyOptionsImage="<div><p>ThresHold: <input type ='text' size=3 id='thresholdmin' name='thresholdmin' value='"+this.currentOptionsImagen[slide][chamber].thresholdmin+"'> - ";
 	bodyOptionsImage+="<input  type ='text' size=3 id='thresholdmax' name='thresholdmax' value='"+this.currentOptionsImagen[slide][chamber].thresholdmax+"'></p><br>";
 	bodyOptionsImage+="<p>Size: <input type ='text' size=6  id='size' name='size' value='"+this.currentOptionsImagen[slide][chamber].size+"'>-";

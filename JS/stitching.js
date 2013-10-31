@@ -70,6 +70,23 @@ stitching.prototype.RefreshList=function()
 {
 	this.RefreshListMacroStitching(this.MyMicro.conf.getMacros('Stitching'));
 }
+stitching.prototype.getRoutine=function()
+{
+	return this.MacroStitching.getValue();
+}
+stitching.prototype.setRoutine=function(routine)
+{
+	return this.MacroStitching.setValue(routine);
+}
+
+stitching.prototype.getCodeColor=function()
+{
+	return this.codeColor.getValue();
+}
+stitching.prototype.setCodeColor=function(codecolor)
+{
+	return this.codeColor.setValue(codecolor);
+}
 
 stitching.prototype.create_window=function(macrosStitching)
 {

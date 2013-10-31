@@ -48,6 +48,23 @@ combo.prototype.getValue=function()
 	return this.oSplitButton.get('value');
 }
 
+combo.prototype.setValue=function(routine)
+{
+	var menu_ref=this.oSplitButton.getMenu();
+	var items=menu_ref.getItems();
+	for(var i=0;i<items.length;i++)
+	{
+		if(items[i].value == routine)
+		{
+			this.oSplitButton.set('value',routine);
+			this.oSplitButton.set('label',routine);	
+			return true;
+		}
+	}
+	return false;
+}
+
+
 combo.prototype.erase=function()
 {
 	var menu_ref=this.oSplitButton.getMenu();

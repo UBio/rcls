@@ -80,6 +80,11 @@
 	<!-- Source file -->
 	<script src="JS/yui/build/logger/logger-min.js"></script>
 	
+	<script type="text/javascript" src="JS/Admin/DialogApp.js"></script>
+	<script type="text/javascript" src="JS/Admin/ManageDialogApp.js"></script>
+	<script type="text/javascript" src="JS/Admin/ResetApp.js"></script>
+
+	
 	<script type="text/javascript" src="JS/ManageMacros/DialogMacro.js"></script>
 	<script type="text/javascript" src="JS/ManageMacros/ManageDialogMacro.js"></script>
 	<script type="text/javascript" src="JS/ManageMacros/UploadMacro.js"></script>
@@ -89,10 +94,16 @@
 
 	<script type="text/javascript" src="JS/ManageMicrosCopy/DialogMicrosCopy.js"></script>
 	<script type="text/javascript" src="JS/ManageMicrosCopy/ManageDialogMicrosCopy.js"></script>
-	
 	<script type="text/javascript" src="JS/ManageMicrosCopy/AddMicrosCopy.js"></script>
 	<script type="text/javascript" src="JS/ManageMicrosCopy/AddParcentricity.js"></script>
 	<script type="text/javascript" src="JS/ManageMicrosCopy/DeleteParcentricity.js"></script>
+
+	<script type="text/javascript" src="JS/Experiment/DialogExperiment.js"></script>
+	<script type="text/javascript" src="JS/Experiment/ManageDialogExperiment.js"></script>
+	<script type="text/javascript" src="JS/Experiment/SaveExperiment.js"></script>
+	<script type="text/javascript" src="JS/Experiment/LoadExperiment.js"></script>
+
+
 	
 </head>
 
@@ -120,9 +131,10 @@
 					<div class="bd">
 						<ul class="first-of-type">
 							<li class="yuimenubaritem"><a class="yuimenubaritemlabel">Routines Options</a></li>
-							<li class="yuimenubaritem"><a class="yuimenubaritemlabel">Connect new Microscope</a></li>
-							<li class="yuimenubaritem"><a class="yuimenubaritemlabel">Utils</a></li>
-							<!-- <li class="yuimenubaritem"><a class="yuimenubaritemlabel">Experiment</a></li> -->
+							<li class="yuimenubaritem"><a class="yuimenubaritemlabel">Microscope</a></li>
+							<li class="yuimenubaritem"><a class="yuimenubaritemlabel">Experiment</a></li>
+							<li class="yuimenubaritem"><a class="yuimenubaritemlabel">Tools</a></li>
+							<li class="yuimenubaritem"><a class="yuimenubaritemlabel">Admin</a></li>
 							<li class="yuimenubaritem"><a class="yuimenubaritemlabel">Log</a></li>
 						</ul>
 						<div id="control_process"></div>
@@ -170,10 +182,14 @@ YAHOO.util.Event.onDOMReady(function () {
 	var MyMicro=new micro("SelectMicro",document.getElementById('pSelectMicro'),manager);
 	MyMicro.show();
 	
+	
+	var dialogResetApp=new ResetApp(manager);
+	
 	var dialogUploadMacro=new UploadMacro(manager,MyMicro);
 	var dialogViewMacro=new ViewMacro(manager,MyMicro);
 	var dialogDeleteMacro=new DeleteMacro(manager,MyMicro);
 	var dialogMoveMacro=new MoveMacro(manager,MyMicro);
+	
 	
 	
 		
@@ -269,6 +285,10 @@ YAHOO.util.Event.onDOMReady(function () {
 												me.refresh();
 											},myjoin);
 		
+		var dialogSaveExperiment=new SaveExperiment(manager,MyMicro,step,imagejObj,highobj,stitching);
+		var dialogLoadExperiment=new LoadExperiment(manager,MyMicro,step,imagejObj,highobj,stitching);
+		
+		
 		var menu=new menubar(manager);
 		
 		menu.onClickMenu.subscribe(function(event,args){
@@ -335,6 +355,18 @@ YAHOO.util.Event.onDOMReady(function () {
 						// imagejObj.show();
 						highobj.show();
 					}
+				}
+				if(itemMenuSelect=='#reset_app')
+				{
+					dialogResetApp.show();
+				}
+				if(itemMenuSelect=='#save_experiment')
+				{
+					dialogSaveExperiment.show();
+				}
+				if(itemMenuSelect=='#load_experiment')
+				{
+					dialogLoadExperiment.show();
 				}
 	
 		});

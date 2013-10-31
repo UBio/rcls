@@ -672,25 +672,12 @@ foreach $NameImageFileStep1 (@all_slide_and_chamber)
 		{
 			 eval
 			 {
-				# my $tmp='/tmp/rotate_tmp.tif';
-				# print STDERR "FICHERO: ".$NameImageFileStep1."\n";
-				
-				# my $p=Image::utils->new(-file=>$NameImageFileStep1);
-		# 		$p->rotate();
-		# 		$p->write(-file=>$tmp);
 
-				# 
 				my $p=Image::utils->new(-file=>$NameImageFileStep1);
 				my @angles=$p->get_angles();
-
 				$template->coor(-angles=>\@angles,-height=>$utils->getHeight(),-width=>$utils->getWidth());
+				# $p->auto_rotate();
 
-				# unlink $tmp;
-				# $template->coor(-width_with_stitching=>$sizes_images{WIDTH_WITH_STITCHING},
-				# 			-height_with_stitching=>$sizes_images{HEIGHT_WITH_STITCHING},
-				# 			-width_without_stitching=>$templateStep1->getMosaicImageWidth(),
-				# 			-height_without_stitching=>$templateStep1->getMosaicImageHeight(),
-				# 			-inix=>$iniPosition[0],-iniy=>$iniPosition[1],-angles=>\@angles);
 			 }or do
 			 {
 				my $e;
