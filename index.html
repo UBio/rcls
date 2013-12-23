@@ -26,6 +26,7 @@
 	<link rel="stylesheet" type="text/css" href="CSS/calExperimentSelect.css" />
 	<link rel="stylesheet" type="text/css" href="CSS/autoCompleteConfocal.css" />
 	<link rel="stylesheet" type="text/css" href="CSS/index.css" />
+	<link rel="stylesheet" type="text/css" href="CSS/status.css" />
 	
 	<link rel="stylesheet" type="text/css" href="JS/jQCloud/jqcloud/jqcloud.css" />
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js"></script>
@@ -46,6 +47,7 @@
 	<script type="text/javascript" src="JS/micro.js"></script>
 	
 	<script type="text/javascript" src="JS/stitching.js"></script>
+	<script type="text/javascript" src="JS/status.js"></script>
 	
 
 
@@ -172,12 +174,16 @@ YAHOO.util.Event.onDOMReady(function () {
 
 
 	// 
+
+	
 	myLogReader = new YAHOO.widget.LogReader('myLogger', {footerEnabled:false,verboseOutput:false});
 	myLogWriter = new YAHOO.widget.LogWriter("MyClass"); 
 	myLogReader.hide(); 
 	
 	
 	var manager=new YAHOO.widget.OverlayManager();
+	
+
 	
 	var MyMicro=new micro("SelectMicro",document.getElementById('pSelectMicro'),manager);
 	MyMicro.show();

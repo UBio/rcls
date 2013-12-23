@@ -136,40 +136,35 @@ if($ACTION eq "insertmicro")
 	
 	if(!$cfg_confocal->exists('INI',$name))
 	{
-		if(-e $shared_images || -e $shared_templates)
+		
+		my $error=new_mount(-dir_shared_images=>$shared_images,
+							-dir_shared_templates=>$shared_templates,
+							-dir_bin_mounts=>$mounts,
+							-name_micro=>$name,
+							-ip=>$cgi->param("ip"),
+							-user=>$cgi->param("user"),
+							-password=>$cgi->param("passwd"),
+							-win_shared_images=>$cgi->param("sharingimagesdir"),
+							-win_shared_templates=>$cgi->param("sharingtemplatesdir"));
+
+		if($error==-1)
 		{
-			if(-e  $shared_images)
-			{
-				print_http_response(431,$HTTP_ERROR_431);
-                        	exit -1;
-			}
-			if(-e $shared_templates)
-			{
+			print_http_response(431,$HTTP_ERROR_431);
+			exit -1;
+		}
+		else
+		{
+			if($error==-2)
+			{	
 				print_http_response(431,$HTTP_ERROR_432);
 				exit -2;
 			}
 		}
 
-		system("mkdir -p $shared_images");
-		system("mkdir -p $shared_templates");
+		# 
+
 		
-		open(MNT,">".$mounts."/mount\.".$name);
-		print MNT "#!/bin/bash\n";
-		# print MNT "echo 'Mounting Images: $name'\n";
-		print MNT 'mount -t cifs //'.$cgi->param("ip").'/'.$cgi->param("sharingimagesdir").' '. $shared_images.' -o user='.$cgi->param("user").',uid=33,password='.$cgi->param("passwd").' -rw'."\n";
-		# print MNT "echo 'Mounting Templates: $name'\n";
-		print MNT 'mount -t cifs //'.$cgi->param("ip").'/'.$cgi->param("sharingtemplatesdir").' '. $shared_templates.' -o user='.$cgi->param("user").',uid=33,password='.$cgi->param("passwd").' -rw'."\n";
-		close MNT;
-		
-		open(MNT,">".$mounts."/umount\.".$name);
-		print MNT "#!/bin/bash\n";
-		# print MNT "echo 'uMounting Images: $name'\n";
-		print MNT "umount ". $shared_images."\n";
-		# print MNT "echo 'uMounting Templates: $name'\n";
-		print MNT "umount ".$shared_templates."\n";
-		close MNT;
-		
-		system("chmod +x $mounts/*");
+	
 		mount(-name=>$name);
 		my $error_mount=check_mount(-name=>$name);
 		if($error_mount eq 'NOT_MOUNT')
@@ -194,16 +189,6 @@ if($ACTION eq "insertmicro")
 			$cfg->WriteConfig ($fileInstance);
 		}
 
-		# var url='admin/cgi-bin/micro.cgi?ACTION=insertmicro';
-		# url+="&name="+me.divInsertMicro.getElementsByTagName('INPUT')[0].value;
-		# url+="&ip="+me.divInsertMicro.getElementsByTagName('INPUT')[1].value;
-		# url+="&sharingimagesdir="+me.divInsertMicro.getElementsByTagName('INPUT')[2].value;
-		# url+="&imagesdir="+me.divInsertMicro.getElementsByTagName('INPUT')[3].value;
-		# url+="&sharingtemplatesdir="+me.divInsertMicro.getElementsByTagName('INPUT')[4].value;
-		# url+="&templatesdir="+me.divInsertMicro.getElementsByTagName('INPUT')[5].value;
-		# url+="&user="+me.divInsertMicro.getElementsByTagName('INPUT')[6].value;
-		# url+="&passwd="+me.divInsertMicro.getElementsByTagName('INPUT')[7].value;
-		
 		
 			
 	}

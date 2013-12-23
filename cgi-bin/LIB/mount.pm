@@ -2,7 +2,7 @@ package LIB::mount;
 $VERSION='1.0';
 
 @ISA=qw(Exporter);
-@EXPORT=qw(mountall mount check_mount);
+@EXPORT=qw(mountall mount check_mount new_mount);
 use strict;
 use HTTP::Status qw(is_success status_message);
 use File::Basename;
@@ -17,7 +17,7 @@ sub mountall
 	{
 		if($filename =~ /^mount\.(.*)/)
 		{
-			if(check_mount(-name=>$1) ne 'OK')
+			if(check_mount(-name=>$1) eq 'OK')
 			{
 				my $mounts=$dirmounts.'/'.$filename;
 				my $CMDmount="ssh -t -o StrictHostKeyChecking=no confocal\@localhost 'sudo $mounts'";
@@ -33,6 +33,57 @@ sub mountall
 	}
 	close DIR;
 	return 'OK';
+}
+sub new_mount
+{
+	my (%args) = @_;
+	my $ip=$args{-ip};
+	my $shared_images=$args{-dir_shared_images};
+	my $shared_templates=$args{-dir_shared_templates};
+	my $user=$args{-user};
+	my $passwors=$args{-password};
+	my $name_micro=$args{-name_micro};
+	my $dir_bin_mounts=>$args{-dir_bin_mounts};
+	my $win_shared_images=$args{-win_shared_images};
+	my $win_shared_templates=$args{-win_shared_templates};
+
+						
+	if(-e $shared_images || -e $shared_templates)
+	{
+		if(-e  $shared_images)
+		{
+			# print_http_response(431,$HTTP_ERROR_431);
+            exit -1;
+		}
+		if(-e $shared_templates)
+		{
+			# print_http_response(431,$HTTP_ERROR_432);
+			exit -2;
+		}
+	}
+
+	system("mkdir -p $shared_images");
+	system("mkdir -p $shared_templates");
+	
+	open(MNT,">".$dir_bin_mounts."/mount\.".$name_micro);
+	print MNT "#!/bin/bash\n";
+	# print MNT "echo 'Mounting Images: $name'\n";
+	print MNT 'mount -t cifs //'.$ip.'/'.$win_shared_images.' '. $shared_images.' -o user='.$user.",uid=33,password='".$passwors."' -rw\n";
+	# print MNT "echo 'Mounting Templates: $name'\n";
+	print MNT 'mount -t cifs //'.$ip.'/'.$win_shared_templates.' '. $shared_templates.' -o user='.$user.",uid=33,password='".$passwors."' -rw\n";
+	close MNT;
+	
+	open(MNT,">".$dir_bin_mounts."/umount\.".$name_micro);
+	print MNT "#!/bin/bash\n";
+	# print MNT "echo 'uMounting Images: $name'\n";
+	print MNT "umount ". $shared_images."\n";
+	# print MNT "echo 'uMounting Templates: $name'\n";
+	print MNT "umount ".$shared_templates."\n";
+	close MNT;
+	
+	system("chmod +x $dir_bin_mounts/*");
+	
+	return 0;
 }
 
 sub mount

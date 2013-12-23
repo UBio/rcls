@@ -13,6 +13,7 @@ imagej=function(imagej,container,manager,MyMicro)
 	this.panelChangeImage=null;
 	this.panelOptiones=null;
 	this.PanelViewImageJ=null;
+	this.manager=manager;
 
 	this.rotate=0;
 
@@ -137,10 +138,15 @@ imagej.prototype.getRemoveBlacksParams=function()
 			};
 	return param;
 }
+
 imagej.prototype.setRemoveBlacksParams=function(value,template)
 {
-	this.chkremoveblacks.set('checked',true)
-	return this.ListMacrosBlack.setValue(template);;
+	var value=eval(value);
+	if(value)
+	{
+		this.chkremoveblacks.set('checked',true)
+		return this.ListMacrosBlack.setValue(template);;
+	}
 }
 
 
@@ -170,7 +176,6 @@ imagej.prototype.setAdvanceOptions=function(thresholdmin,thresholdmax,size,maxsi
 	
 	var slide=0;
 	var chamber=0;
-	
 	this.currentOptionsImagen[slide][chamber]={'thresholdmin':thresholdmin,
 											 'thresholdmax':thresholdmax,
 											 'size':size,
@@ -262,7 +267,7 @@ imagej.prototype.create_window=function(macrosDetect,templates)
 	input.setAttribute('type','button');
 	input.setAttribute('id','searchcreate');
 	input.setAttribute('name','searchcreate');
-	input.setAttribute('value','Analize Images');
+	input.setAttribute('value','Analyze Images');
 	this.imagej.getFooter().appendChild(input);
 
 	this.searchcreatebtn=new YAHOO.widget.Button("searchcreate");
@@ -563,14 +568,15 @@ imagej.prototype.check_url=function()
 imagej.prototype.run=function(event,me)
 {
 	var url=me.check_url()
+	var MicroStatusObj=null;
 	if(url!=-1)
 	{
 
 		var callback = {
 		  success: function(o) {
 									myLogWriter.log(o.responseText, "info");
-									me.MyMicro.conf.progressbar.hide();
-
+									// me.MyMicro.conf.progressbar.hide();
+									MicroStatusObj.hide();
 									if(event == "refresh")
 									{
 										me.ViewDetectImageJ('refresh',me);
@@ -593,13 +599,10 @@ imagej.prototype.run=function(event,me)
 												me.rotate=response[i].rotate;
 												me.currentOptionsImagen[parseInt(response[i].slide)][parseInt(response[i].chamber)]=me.getParametersDefaultImage();
 												var option=document.createElement("option");
-												var root="--Z00--C00.ome.tif";
-												if(!response[i].Z)
-												{
-													root="--C00.ome.tif";
-												}
-												option.innerHTML="image--L0000--S"+response[i].slide+"--U"+response[i].chamber+"--V00--J00--X00--Y00--T0000"+root;
-												option.setAttribute('value',"Slide--S"+response[i].slide+"/Chamber--U"+response[i].chamber+"--V00/image--L0000--S"+response[i].slide+"--U"+response[i].chamber+"--V00--J00--X00--Y00--T0000"+root);
+												
+												var basename=response[i].img.split('/');
+												option.innerHTML=basename[basename.length-1];
+												option.setAttribute('value',response[i].img);
 												me.SelectChangeImage.appendChild(option);
 												schemas+="<li>"+response[i].MSG+"</li>";
 												templates[itemplates]=response[i].MSG;
@@ -637,16 +640,19 @@ imagej.prototype.run=function(event,me)
 									myLogWriter.log(o.status+":"+o.statusText+":"+o.responseText, "info");
 									me.lockEvent.fire();
 									me.disabledAllButtons();
-									me.MyMicro.conf.progressbar.hide();
+									MicroStatusObj.hide();
+									// me.MyMicro.conf.progressbar.hide();
 									new dialog_alert("Notice",o.responseText,'notice');
 								}
 		};
 
 
 		var cObj = YAHOO.util.Connect.asyncRequest('GET', url, callback);
+		
 		if(event != 'RUNAllProcess')
 		{
-			me.MyMicro.conf.progressbar.show();
+			MicroStatusObj=new MicroStatus(cObj,me.MyMicro.getCurrentMicro(),me.manager);
+			// me.MyMicro.conf.progressbar.show();
 		}
 	}
 }

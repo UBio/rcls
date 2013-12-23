@@ -16,6 +16,8 @@ use LASAF::UTILS::conversion;
 use LASAF::UTILS::distances;
 use Math::Round;
 use Math::Trig;
+use LOGS::simple;
+use CORE::status qw(status_del_file  status_ini status_current);
 
 use Exception::Class(
 			'LASAF::TEMPLATE::template::CoorSQRTnegative' => {
@@ -51,6 +53,7 @@ sub new
 	$this->{OVERLAPY}=0.1;
 	$this->{ZOOM}=1;
 	$this->{WELLY}=1;
+	$this->{NAME_MICRO}=$args{-name_micro};
 	if(exists($args{-zoom}))
 	{
 		$this->{ZOOM}=$args{-zoom};
@@ -63,7 +66,7 @@ sub new
 	#son los tamaños de las fotos sin quitarle el overlap
 	
 
-	
+	my $log_rcls=LOGS::simple->new();
 	
 	$this->{DIMENSION}=$args{-dimension};
 	if(exists($args{-step1}))
@@ -84,7 +87,8 @@ sub new
 
 		my $xml=new XML::DOM::Parser;
 		$this->{xml} = $xml->parsefile($this->{TEMPLATE});
-		print STDERR "\tFILE READ: ".$this->{TEMPLATE}."\n";
+		# print STDERR "\tFILE READ: ".$this->{TEMPLATE}."\n";
+		$log_rcls->print(-msg=>"FILE READ: ".$this->{TEMPLATE});
 		$this->{root} = $this->{xml}->[0]->[0];
 		my $xml=new XML::DOM::Parser;
 		#print $dir."/\{ScanningTemplate\}".$this->{NAME_TEMPLATE}.".lrp"."\n";
@@ -94,7 +98,8 @@ sub new
 	}
 	else
 	{
-		print STDERR "ERROR: No existe el template: ".$args{-template}."\n";
+		# print STDERR "ERROR: No existe el template: ".$args{-template}."\n";
+		$log_rcls->print(-msg=>"ERROR: No existe el template: ".$args{-template});
 		exit -1;
 
 	}
@@ -122,10 +127,12 @@ sub new
 	
 		if($this->isEnableCam() eq "false")
 		{
-			print STDERR "CAM is DISABLED: ".$this->{NAME_TEMPLATE}."\n";
+			# print STDERR "CAM is DISABLED: ".$this->{NAME_TEMPLATE}."\n";
+			$log_rcls->print(-msg=>"CAM is DISABLED: ".$this->{NAME_TEMPLATE});
 			# exit;
 		}
 	}
+	$log_rcls->close();
 	return $this;
 }
 
@@ -260,7 +267,11 @@ sub readObjetives
 	my $h=$ScanWellData->getAttribute("MosaicSingleImageHeight")*$this->getZoom();
 	$w=$this->{CONVERSION}->meters2microns(-meters=>$w);
 	$h=$this->{CONVERSION}->meters2microns(-meters=>$h);
-	print STDERR "\treadObjetives\tZOOM: ".$this->getZoom()." \tSIZE READ: ".$this->getMagnification()."\t".$w."\t".$h."\n";
+	
+	my $log_rcls=LOGS::simple->new();
+	# print STDERR "\treadObjetives\tZOOM: ".$this->getZoom()." \tSIZE READ: ".$this->getMagnification()."\t".$w."\t".$h."\n";
+	$log_rcls->print(-msg=>"readObjetives\tZOOM: ".$this->getZoom()." \tSIZE READ: ".$this->getMagnification()."\t".$w."\t".$h);
+	$log_rcls->close();
 	
 	$objetives->{$this->getMagnification()}->{w}=$w;
 	$objetives->{$this->getMagnification()}->{h}=$h;
@@ -374,6 +385,21 @@ sub getMosaicImageWidth
 	my ($this,%args)=@_;
 	return $this->{root}->getElementsByTagName("ScanWellData")->item($args{-item})->getAttribute('MosaicImageWidth');
 }
+
+
+sub getYCountOfFields
+{
+	my ($this,%args)=@_;
+	return $this->{root}->getElementsByTagName("ScanWellData")->item($args{-item})->getAttribute('YCountOfFields');
+}
+
+sub getXCountOfFields
+{
+	my ($this,%args)=@_;
+	return $this->{root}->getElementsByTagName("ScanWellData")->item($args{-item})->getAttribute('XCountOfFields');
+}
+
+
 =head2 new
 
   Example    : template->new();
@@ -420,7 +446,24 @@ sub getRows()
 sub getFieldDistanceX()
 {
 	my ($this)=@_;
-	return $this->{CONVERSION}->microns2meters(-microns=>$this->{root}->getElementsByTagName("Properties")->item(0)->getElementsByTagName("ScanFieldStageDistanceX")->item(0)->getFirstChild->getNodeValue);
+	my $ScanFieldStageDistanceX=$this->{root}->getElementsByTagName("Properties")->item(0)->getElementsByTagName("ScanFieldStageDistanceX")->item(0)->getFirstChild->getNodeValue;
+	if($ScanFieldStageDistanceX!=0)
+	{
+		return $this->{CONVERSION}->microns2meters(-microns=>$ScanFieldStageDistanceX);
+	}
+	else
+	{
+		my $log_rcls=LOGS::simple->new();
+		$log_rcls->print(-msg=>"WARNING:Recalculating value ScanFieldStageDistanceX");
+		$log_rcls->close();
+		# print STDERR "WARNING:Recalculating value ScanFieldStageDistanceX\n";
+		
+		my $MosaicImageWidth=$this->getMosaicImageWidth();
+		my $XCountOfFields=$this->getXCountOfFields();
+		
+		return $MosaicImageWidth/($XCountOfFields-1)
+	}
+	 
 }
 =head2 new
 
@@ -436,8 +479,26 @@ sub getFieldDistanceX()
 sub getFieldDistanceY()
 {
 	my ($this)=@_;
-	return $this->{CONVERSION}->microns2meters(-microns=>$this->{root}->getElementsByTagName("Properties")->item(0)->getElementsByTagName("ScanFieldStageDistanceY")->item(0)->getFirstChild->getNodeValue);
-}
+
+	my $ScanFieldStageDistanceY=$this->{root}->getElementsByTagName("Properties")->item(0)->getElementsByTagName("ScanFieldStageDistanceY")->item(0)->getFirstChild->getNodeValue;
+	if($ScanFieldStageDistanceY!=0)
+	{
+		return $this->{CONVERSION}->microns2meters(-microns=>$ScanFieldStageDistanceY);
+	}
+	else
+	{
+		my $log_rcls=LOGS::simple->new();
+		$log_rcls->print(-msg=>"WARNING:Recalculating value ScanFieldStageDistanceY");
+		$log_rcls->close();
+		# print STDERR "WARNING:Recalculating value ScanFieldStageDistanceY\n";
+		my $MosaicImageHeight=$this->getMosaicImageHeight();
+		my $YCountOfFields=$this->getYCountOfFields();
+		
+		return $MosaicImageHeight/($YCountOfFields-1)
+	}
+	 
+
+} 
 =head2 new
 
   Example    : template->new();
@@ -808,7 +869,7 @@ sub readFile
 		
 		
 		
-		$pos[$index-1]={index=>$index,x=>$x,y=>$y,h=>$height,w=>$width};
+		$pos[$index-1]={index=>$index,x=>$x,y=>$y,h=>$height,w=>$width,xo=>0,yo=>0};
 		
 		if($height>$this->{hWellMax})
 		{
@@ -820,7 +881,11 @@ sub readFile
 		}
 		
 	}
-	print STDERR "\thWellMax: ".$this->{hWellMax}."\twWellMax: ".$this->{wWellMax}."\n";
+	# print STDERR "\thWellMax: ".$this->{hWellMax}."\twWellMax: ".$this->{wWellMax}."\n";
+	my $log_rcls=LOGS::simple->new();
+	$log_rcls->print(-msg=>"hWellMax: ".$this->{hWellMax}."\twWellMax: ".$this->{wWellMax});
+	$log_rcls->close();
+	
 	# $this->{hWellMax}=$this->pixel2meters(-pixel=>$this->{hWellMax});
 	# $this->{wWellMax}=$this->pixel2meters(-pixel=>$this->{wWellMax});
 	close DAT;
@@ -1515,31 +1580,30 @@ sub setZWide()
 # /Users/acarro/Sites/Confocal/libexe/LeicaWorkFlow.pl  --conf /Users/acarro/Sites/Confocal/CONF/localhost.white.ini -template_step1 leica10x5 -name_micro white -macro_detection detect/CellDet-CM-MANUAL.ijm -macro_black blacks/TMASearchBlackRectangules.ijm -template_step2 leica5Z  -thresholdMin 0 -thresholdMax 100 -size 100 -maxsize Infinity -circularity 0.0  --create --imagej --dir experiment--2013_08_30_17_27-10x5  --coor
 # 
 # 
-# El de baja es leica10x5
-# El de alta es leica5Z
-# El dir es
-# experiment--2013_08_30_17_27-10x5
-#  
-# la macro es CellDet-CM-manual
-#  
-# Threshold a-100
-# Tamaño 100-infinito
+
 sub coor
 {
 	my ($this,%args)=@_;
+	my $log_rcls=LOGS::simple->new();
 	
-	print STDERR "******START CORRECTION POINTS****************************************************************\n";	
-	print STDERR "\nANGLES: x=".$args{-angles}->[0]." r y=".$args{-angles}->[1]." r\n\n";
-	print STDERR "Pixels width: ". $args{-width}."\tHeght: ".$args{-height}."\n";
+	
+	# print STDERR "******START CORRECTION POINTS****************************************************************\n";
+	$log_rcls->print(-msg=>"******START CORRECTION POINTS****************************************************************");
+	
+	# print STDERR "\nANGLES: x=".$args{-angles}->[0]." r y=".$args{-angles}->[1]." r\n\n";
+	$log_rcls->print(-msg=>"ANGLES: x=".$args{-angles}->[0]." r y=".$args{-angles}->[1]);
+	$log_rcls->print(-msg=>"Pixels width: ". $args{-width}."\tHeght: ".$args{-height});
+	# print STDERR "Pixels width: ". $args{-width}."\tHeght: ".$args{-height}."\n";
 	
 		my $width=$this->pixel2meters(-pixel=>$args{-width});
 		my $height=$this->pixel2meters(-pixel=>$args{-height});
 		
 		my $alfa=($args{-angles}->[1]+$args{-angles}->[0])/2;
 		$alfa=$args{-angles}->[1];
-	print STDERR "width: ". $width."\tHeght: ".$height."\n";
-	print STDERR "El Angulo alpa es: ".$alfa."\n";
-	print STDERR "Angulo de rotacion real:0.4 grados son 0.00698131700798  radianes\n";
+	$log_rcls->print(-msg=>"width: ". $width."\tHeght: ".$height);
+	$log_rcls->print(-msg=>"El Angulo alpa es: ".$alfa);
+	# print STDERR "width: ". $width."\tHeght: ".$height."\n";
+	# print STDERR "El Angulo alpa es: ".$alfa."\n";
 
 	my @pos=@{$this->{POS}};
 	
@@ -1574,16 +1638,22 @@ sub coor
 		# $pos[$i]->{x}=$pos[$i]->{x}-$width/2;
 		# $pos[$i]->{y}=$pos[$i]->{y}-$height/2;
 		
+		$log_rcls->print(-msg=>"-------------------------------------------------------------------------------------");
+		$log_rcls->print(-msg=>"original: x: ".$this->meters2pixel(-meters=>$pos[$i]->{xo})."\ty: ".$this->meters2pixel(-meters=>$pos[$i]->{yo}));
+		$log_rcls->print(-msg=>"correcion: x: ".$this->meters2pixel(-meters=>$coorX)."\ty: ".$this->meters2pixel(-meters=>$coorY));
+		$log_rcls->print(-msg=>"calculado: x:".$this->meters2pixel(-meters=>$pos[$i]->{x})."\ty: ".$this->meters2pixel(-meters=>$pos[$i]->{y}));
+		$log_rcls->print(-msg=>"-------------------------------------------------------------------------------------");
 
-
-		print  STDERR "-------------------------------------------------------------------------------------\n";
-		print  STDERR "original: x: ".$this->meters2pixel(-meters=>$pos[$i]->{xo})."\ty: ".$this->meters2pixel(-meters=>$pos[$i]->{yo})."\n";
-		print  STDERR "correcion: x: ".$this->meters2pixel(-meters=>$coorX)."\ty: ".$this->meters2pixel(-meters=>$coorY)."\n";
-		print  STDERR "calculado: x:".$this->meters2pixel(-meters=>$pos[$i]->{x})."\ty: ".$this->meters2pixel(-meters=>$pos[$i]->{y})."\n";
-		print  STDERR "-------------------------------------------------------------------------------------\n";
+		# print  STDERR "-------------------------------------------------------------------------------------\n";
+		# print  STDERR "original: x: ".$this->meters2pixel(-meters=>$pos[$i]->{xo})."\ty: ".$this->meters2pixel(-meters=>$pos[$i]->{yo})."\n";
+		# print  STDERR "correcion: x: ".$this->meters2pixel(-meters=>$coorX)."\ty: ".$this->meters2pixel(-meters=>$coorY)."\n";
+		# print  STDERR "calculado: x:".$this->meters2pixel(-meters=>$pos[$i]->{x})."\ty: ".$this->meters2pixel(-meters=>$pos[$i]->{y})."\n";
+		# print  STDERR "-------------------------------------------------------------------------------------\n";
 	}
 	$this->{POS}=\@pos;
-	print STDERR "******END CORRECTION POINTS******************************************************************\n";
+	$log_rcls->print(-msg=>"******END CORRECTION POINTS******************************************************************");
+	# print STDERR "******END CORRECTION POINTS******************************************************************\n";
+	$log_rcls->close();
 }
 =head2 new
 
@@ -1595,13 +1665,18 @@ sub coor
   Status     : Stable
 
 =cut
-sub createTemplateFromFile
+sub  createTemplateFromFile
 {
 	my ($this,%args)=@_;
 	
 	my $CONFIANZA;
+	
+	my $log_rcls=LOGS::simple->new();
+	
 	my @black=@{$args{-black}};
-
+	
+	
+	
 	# my @pos=$this->readFile(-file=>$args{-file},-sort=>$args{-sort});
 	my @pos=@{$this->{POS}};
 	my $TotalWells=scalar(@pos);
@@ -1655,7 +1730,12 @@ sub createTemplateFromFile
 	
 	
 	my $TotalFields=$this->{TOTALFIELDX}*$this->{TOTALFIELDY};
-	print STDERR "\tTotalWells: $TotalWells\n";
+	# print STDERR "\tTotalWells: $TotalWells\n";
+	$log_rcls->print(-msg=>"TotalWells: $TotalWells");
+	
+
+	status_ini(-name_micro=>$this->{NAME_MICRO},-totalwells=>$TotalWells,-totalfields=>$this->{TOTALFIELDX}*$this->{TOTALFIELDY});
+	
 	# <Properties Version="Version: 1.0.3.153 -- Build 13.01.2011" TotalCountOfFields="16" TotalCountOfWells="4" TotalAssignedJobs="16" UniqueJobCounter="1">
 
 
@@ -1689,7 +1769,10 @@ sub createTemplateFromFile
 		# $CONFIANZA=$this->searchEvaLue(-sort=>$args{-sort},-black=>$args{-black} ,-file=>$args{-file},-inix=>$args{-inix},-iniy=>$args{-iniy});
 	}
 	
-	print STDERR "\txDISTANCE: ".$xDistance.", yDISTANCE: ".$yDistance."\n";
+	# print STDERR "\txDISTANCE: ".$xDistance.", yDISTANCE: ".$yDistance."\n";
+	$log_rcls->print(-msg=>"xDISTANCE: ".$xDistance.", yDISTANCE: ".$yDistance);
+	my $nfield=0;
+	
 	for(my $iwellx=1;$iwellx<=$this->{WELLX};$iwellx++)
 	{
 
@@ -1715,17 +1798,22 @@ sub createTemplateFromFile
 		for(my $iwelly=1;$iwelly<=$this->{WELLY};$iwelly++)
 		{
 			# $this->newScanWellData(-first_node=>$first,-wx=>$iwellx,-wy=>$iwelly,-zoom=>$args{-zoom},-startImage=>\@startPosition);
-			print STDERR "\tWELL: ".$iwellx."\t".$iwelly."\t FIELDS: ".$this->{TOTALFIELDX}."x".$this->{TOTALFIELDY}."\n";
-			
+			# print STDERR "\tWELL: ".$iwellx."\t".$iwelly."\t FIELDS: ".$this->{TOTALFIELDX}."x".$this->{TOTALFIELDY}."\n";
+			$log_rcls->print(-msg=>"WELL: ".$iwellx."\t".$iwelly."\t FIELDS: ".$this->{TOTALFIELDX}."x".$this->{TOTALFIELDY});
+			# print STAT "WELL:$iwellx,$iwelly\n"; 
 			for(my $ifieldx=1;$ifieldx<=$this->{TOTALFIELDX};$ifieldx++)
 			{
 				for(my $ifieldy=1;$ifieldy<=$this->{TOTALFIELDY};$ifieldy++)
 				{
-					
+					$nfield++;
 					$tnewX=sprintf("%.14f",$tx0+(($ifieldx-1)*$xDistance));
 					$tnewY=sprintf("%.14f",$ty0+(($ifieldy-1)*$yDistance));
 
-					print STDERR "WELL X $iwellx WELL Y $iwelly FIELD X $ifieldx FIELD Y $ifieldy X: $tnewX Y: $tnewY\n";
+					# $log_rcls->print(-msg=>"WELL X $iwellx WELL Y $iwelly FIELD X $ifieldx FIELD Y $ifieldy X: $tnewX Y: $tnewY");
+
+					status_current(-name_micro=>$this->{NAME_MICRO},-stat=>($iwellx*$iwelly).",".$nfield);
+					# sleep 2;
+					# print STDERR ($iwellx*$iwelly).",".(($ifieldx*$ifieldy)+(($iwellx*$iwelly)-1))."\n";
 					
 					if($ifieldx==1 && $ifieldy==1)
 					{
@@ -1796,9 +1884,10 @@ sub createTemplateFromFile
 						my $hbox=$this->meters2pixel(-meters=>$yDistance);
 	
 						my $box=$xbox.",".$ybox." ".($xbox+$wbox).",".($ybox+$hbox);
-	
+##########################################################################################################################################	
+# Pitamos el cuadrado amarillo cuando se debilitan los campos porque no hay nada ya que tiene que tener todos el mismo numero de campos
 						$imageUtils->fillbox(-box=>$box,-color=>"yellow");
-						
+##########################################################################################################################################						
 					}
 					$this->newScanFieldData(-ScanFieldArray=>$ScanFieldArray,
 											-node=>$node,
@@ -1816,26 +1905,27 @@ sub createTemplateFromFile
 		}
 	}
 	
-	if($#black>0)
-	{
-		my $linea="";
-		foreach my $well (sort {$a<=>$b} keys %graph_black)
-		{
-			print "--------------------------------------------------------\n";
-			print "GRAPH:".$well."\n";
-			print "--------------------------------------------------------\n";
-			foreach my $ifieldy (sort {$a<=>$b} keys %{$graph_black{$well}})
-			{
-				foreach my $ifieldx (sort {$a<=>$b} keys %{$graph_black{$well}{$ifieldy}})
-				{
-					$linea.=$graph_black{$well}{$ifieldy}{$ifieldx};
-				}
-				print $linea."\n";
-				$linea="";
-			}
-		
-		}
-	}
+	# if($#black>0)
+	# {
+	# 	my $linea="";
+	# 	foreach my $well (sort {$a<=>$b} keys %graph_black)
+	# 	{
+	# 		print "--------------------------------------------------------\n";
+	# 		print "GRAPH:".$well."\n";
+	# 		print "--------------------------------------------------------\n";
+	# 		foreach my $ifieldy (sort {$a<=>$b} keys %{$graph_black{$well}})
+	# 		{
+	# 			foreach my $ifieldx (sort {$a<=>$b} keys %{$graph_black{$well}{$ifieldy}})
+	# 			{
+	# 				$linea.=$graph_black{$well}{$ifieldy}{$ifieldx};
+	# 			}
+	# 			print $linea."\n";
+	# 			$linea="";
+	# 		}
+	# 	
+	# 	}
+	# }
+	
 	my $file = basename($args{-output_template});
 	# my $dir = dirname($args{-file});
 	# my @name=split(/\./,$file);
@@ -1843,7 +1933,10 @@ sub createTemplateFromFile
 	# $this->write(-nameTemplate=>$name[0],-dir=>$args{-path_ouput_dir});
 	$this->write(-file=>$args{-output_template});
 	$imageUtils->write(-file=>$args{-control_image});
+
+	status_del_file(-name_micro=>$this->{NAME_MICRO});
 	
+	$log_rcls->close();
 	return ($this->{TOTALFIELDX},$this->{TOTALFIELDY});
 }
 # =head2 new
@@ -1872,28 +1965,27 @@ sub is_black
 	my $box=$xbox.",".$ybox." ".($xbox+$wbox).",".($ybox+$hbox);
 	
 	$args{-image}->box(-box=>$box,-label=>"");
-	
-	print STDERR "==================================================================\n";
+	my $log_rcls=LOGS::simple->new();
+	$log_rcls->print(-msg=>"==================================================================");
+	# print STDERR "==================================================================\n";
 	for(my $i=0;$i<=$#black;$i++)
 	{
 		my $blackX=$black[$i]->{tx};
 		my $blackY=$black[$i]->{ty};
-		my $blackW=$this->pixel2meters(-pixel=>$black[$i]->{w});
-		my $blackH=$this->pixel2meters(-pixel=>$black[$i]->{h});
+		
+		my $blackW=$black[$i]->{w};
+		my $blackH=$black[$i]->{h};
 		 
-		# print STDERR "***Black X,Y:".$blackX.",".$blackY."\tW,H:".$blackW."=".($blackX+$blackW).",".$blackH."=".($blackY+$blackH)."\n";
-		# print STDERR "Curre X,Y:".$current_point->{tx}.",".$current_point->{ty}."\n";
 		my $difX=sprintf("%.8f",($current_point->{tx}-$blackX));
 		my $difY=sprintf("%.8f",($current_point->{ty}-$blackY));
-
-
-		# print STDERR "=====".$difX."\t".$difY."\n";
+		# 
 		if($current_point->{tx}>=($blackX)&&$current_point->{tx}<=($blackX+$blackW) || $difX==0)
 		{
 			if($current_point->{ty}>=($blackY)&&$current_point->{ty}<=($blackY+$blackH)|| $difY==0)
 			{
-				print STDERR "Black X,Y:".$blackX.",".$blackY."\tW,H:".$blackW."=".($blackX+$blackW).",".$blackH."=".($blackY+$blackH)."\n";
-				print STDERR "Curre X,Y:".$current_point->{tx}.",".$current_point->{ty}."\n";
+				$log_rcls->print(-msg=>"Black X,Y:".$blackX.",".$blackY."\tW,H:".$blackW."=".($blackX+$blackW).",".$blackH."=".($blackY+$blackH));
+				$log_rcls->print(-msg=>"Curre X,Y:".$current_point->{tx}.",".$current_point->{ty});
+		
 				my $areaBlack=sprintf("%.8f",$blackW*$blackH);
 				
 				my $dx_aux=$blackW-($current_point->{tx}-$blackX);
@@ -1902,9 +1994,11 @@ sub is_black
 				
 				my $areaRealBlack=sprintf("%.8f",($dx_aux*$dy_aux));
 				my $d_area=sprintf("%.8f",($areaBlack-$areaRealBlack));
-				print STDERR "Area Black     :".$areaBlack."\n";
-				print STDERR "Area Real BLack:".$dx_aux."*".$dy_aux."==".$areaRealBlack."\n";
-				print STDERR "Area Dif       :".$d_area."\n";
+				
+				$log_rcls->print(-msg=>"Area Black     :".$areaBlack);
+				$log_rcls->print(-msg=>"Area Real BLack:".$dx_aux."*".$dy_aux."==".$areaRealBlack);
+				$log_rcls->print(-msg=>"Area Dif       :".$d_area);
+				
 				if($d_area ==0 || $areaRealBlack ==0)
 				{
 					my $box=$black[$i]->{x}.",".$black[$i]->{y}." ".($black[$i]->{x}+$black[$i]->{w}).",".($black[$i]->{y}+$black[$i]->{h});
@@ -1921,22 +2015,10 @@ sub is_black
 					$args{-image}->fillbox(-box=>$box,-color=>'red');
 				}
 			}
-			# else
-			# {
-			# 	$args{-image}->fillbox(-box=>$box,-color=>'yellow');
-			# 	
-			# }
 		}
-		# else
-		# {
-		# 	if($current_point->{ty}>=($blackY)&&$current_point->{ty}<=($blackY+$blackH))
-		# 	{
-		# 		$args{-image}->fillbox(-box=>$box,-color=>'yellow');
-		# 	}
-		# }
 	}
-	print STDERR "==================================================================\n";
-	
+	# print STDERR "==================================================================\n";
+	$log_rcls->print(-msg=>"==================================================================");
 	return 'true';
 }
 

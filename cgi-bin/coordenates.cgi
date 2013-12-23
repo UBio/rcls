@@ -32,54 +32,28 @@ if($dir eq "")
 	($permisos,$id,$user,$group,$sizem,$day,$mounth,$year,$dir)=split(/\s+/,$dir[$#dir]);
 }
 
-
-my $image=$dirImages."/".$dir."/".$file;
-my $coordenates=$cfg_confocal->val( 'FILES', 'tmp')."/coordenates_$name";
-
-if($file =~ /(.*)image--L0000--S(\d+)--U(\d+)--V00--J00--X00--Y00--T0000--Z00--C00.ome.tif/)
-{
-	$coordenates=$coordenates."--S".$2."--U".$3."\.txt";
-}
-
-open(COOR,"$coordenates") || die "no puedo abrir el fichero coordenates: $coordenates\n";
-
-print STDERR $coordenates."\n";
-my $head=<COOR>;
-# $head=~s/^\s+//;
-# my ($h1,$h2,$h3,$h4)=split(/\s+/,$head);
-my $result="";
-print STDERR $image;
-my $imageUtils=Image::utils->new(-file=>$image);
-
-if($rotate!=0)
-{
-	$imageUtils->rotate;
-}
-
-# if($h1 eq "BX" && $h2 eq "BY" && $h3 eq "Width" && $h4 eq "Height")
-# {
-	while(<COOR>)
-	{
-		chomp;
-		my ($index,$x,$y,$w,$h)=split(/\s+/,$_);
-		my $box=$x.",".$y." ".($x+$w).",".($y+$h);
-		$imageUtils->box(-box=>$box,-label=>$index);
-	}
-	close COOR;
-# }
-$imageUtils->binary();
-$imageUtils->resize(-width=>600);
-
+my $image;
+my $imgpng;
 my $format='png';
+if($file=~/(.*)\.tif/)
+{
+	$image=$dirImages."/".$dir."/".$1."_control.tif";
+	$imgpng=$dirImages."/".$dir."/".$1."_control.png";
+}
+if(!-e $imgpng)
+{
+	my $result="";
+	print STDERR $image;
+	my $imageUtils=Image::utils->new(-file=>$image);
+	$imageUtils->resize(-width=>600);
 
-$imageUtils->write(-format=>$format,-file=>$image);
-
-
-$image =~s/tif/$format/;
+	$imageUtils->write(-format=>$format,-file=>$image);
+	# $image =~s/tif/$format/;
+}
 
 my $nameFileOutput = "lowResolutionImageJ".int(1+rand(100000000000)).'.'.$format;
-
-system("cp $image $tmp/$nameFileOutput");
+system("ln -s $imgpng $tmp/$nameFileOutput");
+# system("cp $image $tmp/$nameFileOutput");
 # if(-e $image)
 # {
 # 	unlink  $image;

@@ -31,6 +31,10 @@ itemWindow.prototype.hide=function()
 {
 	this.windowPanel.hide();
 }
+itemWindow.prototype.destroy=function()
+{
+	this.windowPanel.destroy();
+}
 
 itemWindow.prototype.expanded=function(event,me)
 {

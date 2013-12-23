@@ -34,11 +34,13 @@ calExperimentSelect.prototype.create=function(container,dirimages,ulListExperime
 }
 calExperimentSelect.prototype.selectDayExperiment=function(CurrentExperiment)
 {
+	if(CurrentExperiment!='undefined' && CurrentExperiment!='')
+	{
+		var experiment=CurrentExperiment.split("--");
+		var date_experiment=experiment[1].split("_");
 	
-	var experiment=CurrentExperiment.split("--");
-	var date_experiment=experiment[1].split("_");
-	
-	this.findExperiemnt(date_experiment,this.dirimages,this.ulListExperiments);
+		this.findExperiemnt(date_experiment,this.dirimages,this.ulListExperiments);
+	}
 }
 calExperimentSelect.prototype.findExperiemnt=function(dateSelected,dirimages,ulListExperiments)
 {

@@ -6,7 +6,6 @@ use LIB::http_response_error;
 use JSON qw( decode_json );
 use CGI ;
 
-
 my $cgi=new CGI;
 
 ##################################################################################################################
@@ -189,68 +188,76 @@ if($step eq 'merge')
 
 if($step ne 'step1' && $step ne 'high' & $step ne 'merge')
 {
-	my @resume=split(/\n/,$error);
+	my @response=split(/\n/,$error);
 	my $JSON="";
-
-	for(my $i=0;$i<=$#resume;$i++)
+	for(my $i=0;$i<=$#response;$i++)
 	{
-		if($resume[$i] =~ /ERROR: (-?.*) MSG: (.*) Rotate:(.*) Slide: (\d*) Chamber: (\d*) Z:(.*)/)
-		{
-			my $z=$6;
-			my $rotate=$3;
-			my $coordenates=$cfg_confocal->val( 'FILES', 'tmp' );
-			my $coor_File=$coordenates."/coordenates_$name--S".$4."--U".$5."\.txt";
+		$response[$i]=~s/^\{|\}$|\"//gi;
 		
-			my $num_error=$1;
-			my $msg=$2;
-			if($num_error<0)
+		my %response_hash = split /[,:]/, $response[$i];
+		
+		
+		my $coordenates=$cfg_confocal->val( 'FILES', 'tmp' );
+		
+		my $num_error=$response_hash{code};
+		my $msg=$response_hash{msg};
+		my $rotate=$response_hash{rotate};
+		my $slide=$response_hash{slide};
+		my $chamber=$response_hash{chamber};
+		my $img=$response_hash{img};
+		my $coor_File=$coordenates."/coordenates_$name--S".$slide."--U".$chamber."\.txt";
+		my $z=$response_hash{z};
+		
+		
+		if($num_error<0)
+		{
+			my $error_imagej=$2;
+			if($error_imagej ne "")
 			{
-				my $error_imagej=$2;
-				if($error_imagej ne "")
+				system("rm $tmp/".$name.".lock");
+				if($error_imagej =~/DISPLAY/g)
 				{
-					system("rm $tmp/".$name.".lock");
-					if($error_imagej =~/DISPLAY/g)
-					{
-						$error_imagej="java.lang.InternalError: Can't connect to X11 window server";
-					}
-					$JSON.=",{'ERROR':$num_error,'MSG':'$error_imagej'}";
-					
-					# print_http_response(412,"ERROR: ".$error.": ".$error_imagej);
+					$error_imagej="java.lang.InternalError: Can't connect to X11 window server";
 				}
-				if(-s $coor_File<=0)
-				{
-					$JSON.=",{'ERROR':$num_error,'MSG':'$HTTP_ERROR_411'}";
-				}
-				if($error==2)
-				{
-					$JSON.=",{'ERROR':$num_error,'MSG':'$HTTP_ERROR_415'}";
+				$JSON.=",{'ERROR':$num_error,'MSG':'$error_imagej'}";
 				
-				}	
-				if($error==3)
-				{
-					$JSON.=",{'ERROR':$num_error,'MSG':'$HTTP_ERROR_416'}";
-				
-				}
-				if($error==4)
-				{
-					$JSON.=",{'ERROR':$num_error,'MSG':'$HTTP_ERROR_420'}";
-				
-				}
+				# print_http_response(412,"ERROR: ".$error.": ".$error_imagej);
 			}
-			else
+			if(-s $coor_File<=0)
 			{
-				if($msg =~ /(.*)-U(\d+)/)
-				{
-					$JSON.=",{'ERROR':0,'MSG':'$msg',slide:'00',chamber:'$2',Z:$z,'rotate':'$rotate'}";
-				}
+				$JSON.=",{'ERROR':$num_error,'MSG':'$HTTP_ERROR_411'}";
+			}
+			if($error==2)
+			{
+				$JSON.=",{'ERROR':$num_error,'MSG':'$HTTP_ERROR_415'}";
+			
+			}	
+			if($error==3)
+			{
+				$JSON.=",{'ERROR':$num_error,'MSG':'$HTTP_ERROR_416'}";
 			
 			}
+			if($error==4)
+			{
+				$JSON.=",{'ERROR':$num_error,'MSG':'$HTTP_ERROR_420'}";
+			
+			}
+		}
+		else
+		{	
+
+			if($msg =~ /(.*)-U(\d+)/)
+			{
+				$JSON.=",{'ERROR':0,'MSG':'$msg',slide:'$slide',chamber:'$chamber',Z:$z,'rotate':'$rotate',img:'$img'}";
+			}
+		
 		}
 	}
 	$JSON=~s/^,//;
 	$JSON="[$JSON]";
 	print "Content-type: text/txt \n\n";
 	print $JSON;
+	print STDERR $JSON."\n";
 	if($step eq "black")
 	{
 		my $coor_File=$cfg_confocal->val( 'FILES', 'tmp')."/black_list_coordentes";

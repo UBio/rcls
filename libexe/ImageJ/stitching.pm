@@ -59,8 +59,8 @@ sub new
 
 	
 	# system("mkdir -p ".$this->{TMP});
-	$this->{preScript}=$cfg_confocal->val( 'JAVAVM', 'preScript' );
-	$this->{postScript}=$cfg_confocal->val( 'JAVAVM', 'postScript' );
+	# $this->{preScript}=$cfg_confocal->val( 'JAVAVM', 'preScript' );
+	# $this->{postScript}=$cfg_confocal->val( 'JAVAVM', 'postScript' );
 	
 	my $java=$cfg_confocal->val( 'JAVAVM', 'java' );
 	my $jar=$cfg_confocal->val( 'JAVAVM', 'jar' );
@@ -188,8 +188,16 @@ sub runStiching
 	close MAC;
 	close MACTMP;
 	
-	my $CMD=$this->{preScript}.";".$this->{CMD}." ".$macroTmp.">".$this->{TMP}."/../stitching.log;".$this->{postScript};
+	my $display=vdisplay::vdisplay->start();
+	
+	my $idDisplay=$display->getDisplay();
+	
+	# my $CMD=$this->{preScript}.";".$this->{CMD}." ".$macroTmp.">".$this->{TMP}."/../stitching.log;".$this->{postScript};
+	my $CMD='export DISPLAY=:'.$idDisplay.";".$this->{CMD}." ".$macroTmp.">".$this->{TMP}."/../stitching.log;";
+
 	my $error=system($CMD);
+	$display->stop();
+	
 	$this->getError(-logfile=>$this->{TMP}."/../stitching.log");
 	print STDERR $CMD."\n";
  	print STDERR "\tStitchin Error: ".$error."\n";

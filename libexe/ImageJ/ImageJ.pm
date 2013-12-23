@@ -11,6 +11,9 @@ $VERSION='1.0';
 
 use strict;
 use Config::IniFiles;
+use vdisplay::vdisplay;
+use LOGS::simple;
+
 =head2 new
 
   Example    : ImageJ->new();
@@ -46,15 +49,15 @@ sub new
 	{
 		die "usage: new(-macro=>macro,-image=>IMAGE,-output=>OUTPUT])\n";
 	}
-	$this->{preScript}=$cfg_confocal->val( 'JAVAVM', 'preScript' );
-	$this->{postScript}=$cfg_confocal->val( 'JAVAVM', 'postScript' );
+	# $this->{preScript}=$cfg_confocal->val( 'JAVAVM', 'preScript' );
+	# $this->{postScript}=$cfg_confocal->val( 'JAVAVM', 'postScript' );
 	$this->{MACRO}=$args{-macro};
 	$this->{IMAGE}=$args{-image};
 	$this->{OUTPUT}=$args{-output};
 	$this->{ROTATE}=0;
 	$this->{CMD}="$java $opt $jar -batch ";
-	print STDERR "post:".$this->{preScript}."\n";
-	print  STDERR "pre:".$this->{postScript}."\n";
+	# print STDERR "post:".$this->{preScript}."\n";
+	# print  STDERR "pre:".$this->{postScript}."\n";
 	if(-e $this->{OUTPUT})
 	{
 		unlink $this->{OUTPUT};
@@ -79,10 +82,17 @@ sub new
 sub run
 {
 	my ($this)=@_;
+	my $display=vdisplay::vdisplay->start();
 	
-	my $CMD=$this->{preScript}.";".$this->{CMD}.$this->{MACRO}."  ".$this->{IMAGE}.">".$this->{OUTPUT}.";".$this->{postScript};
-	print STDERR "1:".$CMD."\n";
+	# my $CMD=$this->{preScript}.";".$this->{CMD}.$this->{MACRO}."  ".$this->{IMAGE}.">".$this->{OUTPUT}.";".$this->{postScript};
+	my $idDisplay=$display->getDisplay();
+	my $CMD='export DISPLAY=:'.$idDisplay.";".$this->{CMD}.$this->{MACRO}."  ".$this->{IMAGE}.">".$this->{OUTPUT};
+	my $log_rcls=LOGS::simple->new();
+	$log_rcls->print(-msg=>"run:".$CMD);
+	$log_rcls->close();
+	# print STDERR "1:".$CMD."\n";
 	system($CMD);
+	$display->stop();
 }
 
 
@@ -125,15 +135,31 @@ sub runPipe
 	}
 	close MAC;
 	close MACRO;
-	my $CMD= $this->{preScript}.";".$this->{CMD}. $MACROTMP.$args{-type}.$this->{OUTPUT}.";".$this->{postScript};
-	print STDERR "2:".$CMD."\n";
+	# my $CMD= $this->{preScript}.";".$this->{CMD}. $MACROTMP.$args{-type}.$this->{OUTPUT}.";".$this->{postScript};
+	
+	my $display=vdisplay::vdisplay->start();
+	
+	my $idDisplay=$display->getDisplay();
+	my $CMD= 'export DISPLAY=:'.$idDisplay.";".$this->{CMD}. $MACROTMP.$args{-type}.$this->{OUTPUT};
+	
+	
+	# print STDERR "2:".$CMD."\n";
+	my $log_rcls=LOGS::simple->new();
+	$log_rcls->print(-msg=>"runPipe:".$CMD);
+	$log_rcls->close();
+	
 	system($CMD);
+	$display->stop();
 	
 	my %error=$this->error();
 	if($error{'code'}==0)
 	{
 		# unlink $MACROTMP;
-		print STDERR "Rotate:".$Rotate."\n";
+		my $log_rcls=LOGS::simple->new();
+		$log_rcls->print(-msg=>"Rotate:".$Rotate);
+		$log_rcls->close();
+		
+		# print STDERR "Rotate:".$Rotate."\n";
 		$this->{ROTATE}=$Rotate;
 		return  %error;
 	}
@@ -151,48 +177,56 @@ sub error
 	$error_Struct{'msg'}="CORRECT";
 	my $nlines=0;
 	my ($trash,$bx,$by,$w,$h)=split(/\s+/,$head);
-	if($head eq "")
+	if(-s $this->{OUTPUT}<=0)
 	{
-		$error_Struct{'code'}=-3;
-		my $aux="cat ".$this->{OUTPUT};
-		$error_Struct{'msg'}=`$aux`;
-		if($error_Struct{'msg'} =~ /DISPLAY/g)
-		{
-			$error_Struct{'msg'}="java.lang.InternalError: Can't connect to X11 window server";
-		}
-		
+		$error_Struct{'code'}=-4;
+		$error_Struct{'msg'}="no results, please check the parameters of the macro";
 	}
 	else
 	{
-		if(($bx eq "XM" && $by eq "YM") || ($bx eq "BX" && $by eq "BY" && $w eq "Width" &&  $h eq "Height") || ($trash =~ /\d+/) && ($bx =~ /\d+/) )
+		if($head eq "")
 		{
-			my ($index,$bx,$by,$w,$h);
-		
-			while(<OUT>)
-			{
-				$nlines++;
-			}
-			if($nlines>0)
-			{
-				return %error_Struct;
-			}
-			else
-			{
-				$error_Struct{'code'}=-1;
-				$error_Struct{'msg'}="Not found nothing";
-			}
-		}
-		else
-		{
-			
-			$error_Struct{'code'}=-2;
-			my $CMD="cat ".$this->{OUTPUT}; 
-			$error_Struct{'msg'}=`$CMD`;
+			$error_Struct{'code'}=-3;
+			my $aux="cat ".$this->{OUTPUT};
+			$error_Struct{'msg'}=`$aux`;
 			if($error_Struct{'msg'} =~ /DISPLAY/g)
 			{
 				$error_Struct{'msg'}="java.lang.InternalError: Can't connect to X11 window server";
 			}
+		
+		}
+		else
+		{
+			if(($bx eq "XM" && $by eq "YM") || ($bx eq "BX" && $by eq "BY" && $w eq "Width" &&  $h eq "Height") || ($trash =~ /\d+/) && ($bx =~ /\d+/) )
+			{
+				my ($index,$bx,$by,$w,$h);
+		
+				while(<OUT>)
+				{
+					$nlines++;
+				}
+				if($nlines>0)
+				{
+					return %error_Struct;
+				}
+				else
+				{
+					$error_Struct{'code'}=-1;
+					$error_Struct{'msg'}="Not found nothing";
+				}
+			}
+			else
+			{
+			
+				$error_Struct{'code'}=-2;
+				my $CMD="cat ".$this->{OUTPUT}; 
+				$error_Struct{'msg'}=`$CMD`;
+				if($error_Struct{'msg'} =~ /DISPLAY/g)
+				{
+					$error_Struct{'msg'}="java.lang.InternalError: Can't connect to X11 window server";
+				}
 
+			}
 		}
 	}
 	close OUT;

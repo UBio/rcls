@@ -2,7 +2,7 @@ package CORE::core;
 $VERSION='1.0';
 require Exporter;
 @ISA=qw(Exporter);
-@EXPORT=qw(get_all_images);
+@EXPORT=qw(get_all_images getInfoFromNameFileImage response);
 use strict;
 
 # dirImagenes:				Directorio del cual queremos extraer las Imagenes, es un parametro opcional, si no se le pasa coge el ultimo.
@@ -95,5 +95,76 @@ sub get_all_tiff_from_directory
 	close TIFF;
 	return @imagenes;
 }
+
+
+sub getInfoFromNameFileImage
+{
+	my %args=@_;
+	my $name=$args{-file};
+	my %image;
+	$image{ERROR}=0;
+	my @file=split(/\/+/,$name);
+	$image{FILE}=$file[$#file];
+	$image{CHAMBER}=$file[$#file-1];
+	$image{SLIDE}=$file[$#file-2];
+	
+	if($name =~ /image--L(\d+)--S(\d+)--U(\d+)--V(\d+)--J(\d\d)--X(\d+)--Y(\d+)--T(\d+)(--Z(\d+))?--C(\d+).ome.tif/)
+	{
+		$image{L}=$1;
+		$image{S}=$2;
+		$image{U}=$3;
+		$image{V}=$4;
+		$image{J}=$5;
+		$image{X}=$6;
+		$image{Y}=$7;
+		$image{T}=$8;
+		if($10)
+		{
+			$image{Z}=$9;
+			$image{C}=$10;
+		}
+		else
+		{
+			$image{C}=$9;
+		}
+		return %image;
+	}
+	$image{ERROR}=-1;
+	return %image;
+}
+sub response
+{
+	my (%args)=@_;
+
+	my $json;
+	$json='{';
+	$json.='"code":'.$args{-code};
+	$json.=',"msg":"'.$args{-msg}.'"';
+	$json.=',"slide":"'.$args{-slide}.'"';
+	$json.=',"chamber":"'.$args{-chamber}.'"';
+	$json.=',"z":"'.$args{-z}.'"';
+	$json.=',"rotate":"'.$args{-rotate}.'"';
+	$json.=',"img":"'.$args{-img}.'"';
+	$json.='}';
+	
+	print STDERR $json."\n";
+	return $json;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
