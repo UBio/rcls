@@ -68,11 +68,8 @@ else
 	{
 		if($last_line=~ /^next/)
 		{
-			print STDERR (-e $file_status)."\n";
 			if(-e $file_status)
-			{
-				print STDERR "Entramos por aqui\n";
-				
+			{				
 				print 'next';
 			}
 			else
