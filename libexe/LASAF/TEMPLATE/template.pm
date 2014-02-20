@@ -1760,8 +1760,8 @@ sub  createTemplateFromFile
 		
 		for(my $i=0;$i<=$#black;$i++)
 		{
-			my $box=$black[$i]->{x}.",".$black[$i]->{y}." ".($black[$i]->{x}+$black[$i]->{w}).",".($black[$i]->{y}+$black[$i]->{h});
-			$imageUtils->blackbox(-box=>$box);
+			# my $box=$black[$i]->{x}.",".$black[$i]->{y}." ".($black[$i]->{x}+$black[$i]->{w}).",".($black[$i]->{y}+$black[$i]->{h});
+			# $imageUtils->blackbox(-box=>$box);
 			$black[$i]->{E}=0;
 			$black[$i]->{tx}=$this->pixel2meters(-pixel=>$black[$i]->{x})+$args{-inix}-$this->{CONVERSION}->microns2meters(-microns=>$args{-parcentricity_x});
 			$black[$i]->{ty}=$this->pixel2meters(-pixel=>$black[$i]->{y})+$args{-iniy}-$this->{CONVERSION}->microns2meters(-microns=>$args{-parcentricity_y});
@@ -1964,7 +1964,7 @@ sub is_black
 	
 	my $box=$xbox.",".$ybox." ".($xbox+$wbox).",".($ybox+$hbox);
 	
-	$args{-image}->box(-box=>$box,-label=>"");
+	# $args{-image}->box(-box=>$box,-label=>"");
 	my $log_rcls=LOGS::simple->new();
 	$log_rcls->print(-msg=>"==================================================================");
 	# print STDERR "==================================================================\n";
@@ -1983,7 +1983,8 @@ sub is_black
 		{
 			if($current_point->{ty}>=($blackY)&&$current_point->{ty}<=($blackY+$blackH)|| $difY==0)
 			{
-				$log_rcls->print(-msg=>"Black X,Y:".$blackX.",".$blackY."\tW,H:".$blackW."=".($blackX+$blackW).",".$blackH."=".($blackY+$blackH));
+				
+				$log_rcls->print(-msg=>"Black X,Y:".$blackX.",".$blackY."\tW,H:".($blackW)."=".($blackX+$blackW).",".($blackH)."=".($blackY+$blackH));
 				$log_rcls->print(-msg=>"Curre X,Y:".$current_point->{tx}.",".$current_point->{ty});
 		
 				my $areaBlack=sprintf("%.8f",$blackW*$blackH);
@@ -2001,7 +2002,9 @@ sub is_black
 				
 				if($d_area ==0 || $areaRealBlack ==0)
 				{
-					my $box=$black[$i]->{x}.",".$black[$i]->{y}." ".($black[$i]->{x}+$black[$i]->{w}).",".($black[$i]->{y}+$black[$i]->{h});
+					my $box=$black[$i]->{x}.",".$black[$i]->{y}." ".($black[$i]->{x}+$black[$i]->{tw}).",".($black[$i]->{y}+$black[$i]->{th});
+					# $args{-image}->empty_box(-box=>$box,-stroke=>'red');
+					
 					$args{-image}->fillbox(-box=>$box,-color=>'green');
 					if($black[$i]->{E}==0)
 					{
@@ -2012,7 +2015,7 @@ sub is_black
 				else
 				{
 					my $box=$black[$i]->{x}.",".$black[$i]->{y}." ".($black[$i]->{x}+$black[$i]->{w}).",".($black[$i]->{y}+$black[$i]->{h});
-					$args{-image}->fillbox(-box=>$box,-color=>'red');
+					# $args{-image}->fillbox(-box=>$box,-color=>'red');
 				}
 			}
 		}

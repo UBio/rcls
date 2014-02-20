@@ -18,6 +18,8 @@ my $file_status=$tmp.'/status_'.$micro;
 
 if($init==1)
 {
+  unlink $file_status;
+  
   while(!-e $file_status)
   {  
   }
@@ -51,12 +53,13 @@ else
   if(-e $file_status)
   {
     # my $last_line=`tail -1 $file_status`;
-    open(DAT,$file_status);
-    my $last_line=<DAT>;
+	#     open(DAT,$file_status);
+	#     my $last_line=<DAT>;
+	my $last_line=`tail -1 $file_status`;
 	chomp $last_line;
 	
 	# print STDERR "READ:".$last_line."\n";
-    if($last_line =~ /STAT:(\d+),(\d+)/)
+    if($last_line =~ /(\d+),(\d+)/)
     {
 		# print STDERR "Line: ".$last_line."\n";
         print "[{'well':$1,'field':$2}]";
@@ -65,7 +68,17 @@ else
 	{
 		if($last_line=~ /^next/)
 		{
-			print 'next';
+			print STDERR (-e $file_status)."\n";
+			if(-e $file_status)
+			{
+				print STDERR "Entramos por aqui\n";
+				
+				print 'next';
+			}
+			else
+			{
+				print 'end'; #Puede ocurrir que se borre el fichero de status despues de leer un falso end
+			}
 		}
 		else
 		{

@@ -626,8 +626,16 @@ foreach $NameImageFileStep1 (@all_slide_and_chamber)
 		while(<BLACK>)
 		{
 			chomp;
-			my @linea=split(/\s+/,$_);
-			my $pointBlack={'x'=>$linea[0],'y'=>$linea[1],'w'=>$templateStep2->getFieldDistanceX(),'h'=>$templateStep2->getFieldDistanceY()};
+			my @linea=split(/\s+/,$_);			
+			my $pointBlack={
+							'x'=>$linea[0],
+							'y'=>$linea[1],
+							'w'=>$templateStep2->getFieldDistanceX(),
+							'h'=>$templateStep2->getFieldDistanceY(),
+							'tw'=>$templateStep2->meters2pixel(-meters=>$templateStep2->getFieldDistanceX()),
+							'th'=>$templateStep2->meters2pixel(-meters=>$templateStep2->getFieldDistanceY())
+						};
+			# print "==".$linea[0]."\t".$linea[1]."\t".$templateStep2->meters2pixel(-meters=>$templateStep2->getFieldDistanceX())."\t".$templateStep2->meters2pixel(-meters=>$templateStep2->getFieldDistanceY())."\n";
 			push @blackPoints,$pointBlack;
 		}
 		close BLACK;
@@ -850,6 +858,7 @@ foreach $NameImageFileStep1 (@all_slide_and_chamber)
 		status_next(-name_micro=>$param_name_micro);
 	}#Si es el paso de create
 }
+status_end(-name_micro=>$param_name_micro);
 status_del_file(-name_micro=>$param_name_micro);
 
 ####################################################################################################

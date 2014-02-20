@@ -188,10 +188,13 @@ if($step eq 'merge')
 
 if($step ne 'step1' && $step ne 'high' & $step ne 'merge')
 {
-	my @response=split(/\n/,$error);
+	print STDERR "RESULT: ".$error."\n";
+	my @response=split(/\}\{/,$error);
 	my $JSON="";
 	for(my $i=0;$i<=$#response;$i++)
 	{
+		# $response[$i]=$response[$i];
+		print STDERR 'RESULTADO: '.$i.' ====>'.$response[$i]."\n";
 		$response[$i]=~s/^\{|\}$|\"//gi;
 		
 		my %response_hash = split /[,:]/, $response[$i];

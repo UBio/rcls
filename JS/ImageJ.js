@@ -144,8 +144,12 @@ imagej.prototype.setRemoveBlacksParams=function(value,template)
 	var value=eval(value);
 	if(value)
 	{
-		this.chkremoveblacks.set('checked',true)
-		return this.ListMacrosBlack.setValue(template);;
+		var existe=this.ListMacrosBlack.setValue(template);
+		if(existe)
+		{
+			this.chkremoveblacks.set('checked',true);
+		}
+		return existe;
 	}
 }
 

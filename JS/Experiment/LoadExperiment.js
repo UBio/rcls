@@ -179,6 +179,10 @@ LoadExperiment.prototype.setExperiment=function(xmlDocument)
 														eval(xmlDocument.getElementsByTagName('remove_blacks')[0].getAttribute("value")),
 														xmlDocument.getElementsByTagName('remove_blacks')[0].getAttribute("template")
 														);
+						if(!existsTemplateRemoveBlacks)
+						{
+							alert('the routine remove black not exists');
+						}
 						// if(existsTemplateRemoveBlacks)
 						// {
 							this.detectionObj.setCorrection(eval(xmlDocument.getElementsByTagName('detection')[0].getAttribute("correction")));
