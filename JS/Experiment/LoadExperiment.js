@@ -164,7 +164,7 @@ LoadExperiment.prototype.setExperiment=function(xmlDocument)
 	if(existsMicro)
 	{
 		var existsExperiment=this.MyMicro.setSelectExperiment(xmlDocument.getElementsByTagName('microscope')[0].getAttribute("experiment"));
-		if(existsExperiment)
+		if(existsExperiment || !existsExperiment)
 		{
 			var existsTemplateLow=this.lowObj.setTemplate(xmlDocument.getElementsByTagName('low')[0].getAttribute("template"));
 			if(existsTemplateLow)

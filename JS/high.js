@@ -10,6 +10,7 @@ high=function(step,container,manager,micro)
 	this.step=step;
 	this.error=0;
 	this.scanAllTemplates=true;
+	this.currentTempleteScan=1;
 	var optionWindow={
 						expand:false,
 						width:"750px",
@@ -66,6 +67,19 @@ high.prototype.create_window=function()
 	this.select=document.createElement('select');
 	this.select.setAttribute('name','select_template_high');
 	
+	// var o=document.createElement('option');
+	// o.innerHTML='Prueba1';
+	// o.setAttribute('value','p1');
+	// this.select.appendChild(o);
+	// var o=document.createElement('option');
+	// o.innerHTML='Prueba2';
+	// o.setAttribute('value','p2');
+	// this.select.appendChild(o);
+	// var o=document.createElement('option');
+	// o.innerHTML='Prueba3';
+	// o.setAttribute('value','p3');
+	// this.select.appendChild(o);
+	// 
 	var label=document.createElement('label');
 	label.innerHTML="Select Template:";	
 	p.appendChild(label);
@@ -80,7 +94,7 @@ high.prototype.create_window=function()
 	input.setAttribute('value',"Run High Scanning");
 	this.high.getFooter().appendChild(input);
 
-	this.PlayStep2Btn=new YAHOO.widget.Button("PlayStep2",{disabled:true}); 
+	this.PlayStep2Btn=new YAHOO.widget.Button("PlayStep2",{disabled:false}); 
 	YAHOO.util.Event.addListener(document.getElementById("PlayStep2"),"click",this.run,this);
 	
 }
@@ -117,13 +131,24 @@ high.prototype.run=function(event,me)
 								var response=eval(o.responseText);
 								myLogWriter.log(o.responseText, "info");
 								me.MyMicro.conf.progressbar.hide();
-								
-								me.onFinishedOneEvent.fire();
-								me.onFinishedEvent.fire();
-								
-								if(event != 'RUNAllProcess')
+
+								if(me.currentTempleteScan<me.select.getElementsByTagName('option').length)
 								{
-									new dialog_alert("Finish",me.name,"info");									
+									me.onFinishedOneEvent.fire();
+									me.currentTempleteScan++;
+									me.run('nextTemplate',me);
+								}
+								else
+								{
+								if(!me.scanAllTemplates || me.currentTempleteScan>=me.select.getElementsByTagName('option').length)
+								{
+									me.onFinishedEvent.fire();
+									me.currentTempleteScan=1;
+									if(event != 'RUNAllProcess')
+									{
+										new dialog_alert("Finish",me.name,"info");									
+									}
+								}
 								}
 							},
 	  failure: function(o) {
@@ -149,7 +174,8 @@ high.prototype.run=function(event,me)
 }
 high.prototype.check=function()
 {
-	var url='cgi-bin/LeicaConfocal.cgi?step=high&template_high='+this.select.value
+	//Necesitamos el template 2 para precargarlo
+	var url='cgi-bin/LeicaConfocal.cgi?step=high&template_high='+this.select.getElementsByTagName('option')[this.currentTempleteScan-1].value;
 	url+="&name="+document.getElementById("micro").value+"&template_step2="+this.template_step2;
 	if(this.select.value=='')
 	{
@@ -158,7 +184,7 @@ high.prototype.check=function()
 		this.onErrorEvent.fire("ERROR: missing template high");
 		return -1;
 	}
-	if(this.template_step2=='')
+	if(this.template_step2=='' || this.template_step2==undefined)
 	{
 		new dialog_alert("Error",'missing template 2',"error");									
 		this.onErrorEvent.fire("ERROR: missing template");

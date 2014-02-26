@@ -651,13 +651,13 @@ imagej.prototype.run=function(event,me)
 		};
 
 
+		MicroStatusObj=new MicroStatus(cObj,me.MyMicro.getCurrentMicro(),me.manager);
 		var cObj = YAHOO.util.Connect.asyncRequest('GET', url, callback);
 		
-		if(event != 'RUNAllProcess')
-		{
-			MicroStatusObj=new MicroStatus(cObj,me.MyMicro.getCurrentMicro(),me.manager);
+		// if(event != 'RUNAllProcess')
+		// {
 			// me.MyMicro.conf.progressbar.show();
-		}
+		// }
 	}
 }
 

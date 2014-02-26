@@ -399,6 +399,8 @@ if($high)
 	
 	$leica=LASAF::CAM::leicaCAM->new(-host=>$host);
 	$leica->load_template(-template=>$param_template_high);
+	$leica->autofocus();
+	$leica->start();
 	$leica->close();
 	undef $leica;
 }
