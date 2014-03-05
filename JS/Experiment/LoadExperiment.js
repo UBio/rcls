@@ -108,7 +108,8 @@ LoadExperiment.prototype.load=function(event,me)
 {
 	if(me.inputFile.value == '')
 	{
-		new dialog_alert("Notice","Missing Experiment File",'notice');				
+		// new dialog_alert("Notice","Missing Experiment File",'notice');	
+		new dialog_alert("Notice",'','warning','LOAD_EXP_MISS');			
 		return;
 	}
 	
@@ -121,7 +122,6 @@ LoadExperiment.prototype.load=function(event,me)
 									me.hide();
 									me.setExperiment(o.responseXML);
 									
-									new dialog_alert("Notice",'Finished','notice');
 								},
 		  success:function(o){
 									me.MyMicro.conf.progressbar.hide();
@@ -129,7 +129,7 @@ LoadExperiment.prototype.load=function(event,me)
 		  failure: function(o) {
 									myLogWriter.log(o.status+":"+o.statusText+":"+o.responseText, "info");
 									me.MyMicro.conf.progressbar.hide();
-									new dialog_alert("Notice",o.responseText,'notice');								
+									new dialog_alert("Notice",o.responseText,'notice');						
 								}
 		};
 	
@@ -159,82 +159,98 @@ LoadExperiment.prototype.load=function(event,me)
 
 LoadExperiment.prototype.setExperiment=function(xmlDocument)
 {
+
+	var existsExperiment=this.MyMicro.setSelectExperiment(xmlDocument.getElementsByTagName('microscope')[0].getAttribute("experiment"));
+		
+		
+		if(existsExperiment)
+		{
+			LOG=this.setExperimentRestParameters(xmlDocument);
+		}
+		else
+		{
+			var dialog_alertExperiment=new dialog_alert("Notice",'','warning','LOAD_EXP_DIR');
+			dialog_alertExperiment.clickYES.subscribe(function(event,args,me){
+				LOG=me.setExperimentRestParameters(xmlDocument);
+			},this);
+			// alert('experiment not exists');
+		}
+
+
+}
+
+
+LoadExperiment.prototype.setExperimentRestParameters=function(xmlDocument)
+{
 	var existsMicro=this.MyMicro.setCurrentMicro(xmlDocument.getElementsByTagName('microscope')[0].getAttribute("name"));
-	
+	var LOG=new Array();
 	if(existsMicro)
 	{
-		var existsExperiment=this.MyMicro.setSelectExperiment(xmlDocument.getElementsByTagName('microscope')[0].getAttribute("experiment"));
-		if(existsExperiment || !existsExperiment)
+		var existsTemplateLow=this.lowObj.setTemplate(xmlDocument.getElementsByTagName('low')[0].getAttribute("template"));
+		if(existsTemplateLow)
 		{
-			var existsTemplateLow=this.lowObj.setTemplate(xmlDocument.getElementsByTagName('low')[0].getAttribute("template"));
-			if(existsTemplateLow)
+			var existsDetectionRoutine=this.detectionObj.setRoutine(xmlDocument.getElementsByTagName('detection')[0].getAttribute("routine_name"));
+			if(existsDetectionRoutine)
 			{
-				var existsDetectionRoutine=this.detectionObj.setRoutine(xmlDocument.getElementsByTagName('detection')[0].getAttribute("routine_name"));
-				if(existsDetectionRoutine)
+				var existsTemplateHight=this.detectionObj.setTemplate(xmlDocument.getElementsByTagName('detection')[0].getAttribute("template"));
+				if(existsTemplateHight)
 				{
-					var existsTemplateHight=this.detectionObj.setTemplate(xmlDocument.getElementsByTagName('detection')[0].getAttribute("template"));
-					if(existsTemplateHight)
+					var existsTemplateRemoveBlacks=this.detectionObj.setRemoveBlacksParams(
+													eval(xmlDocument.getElementsByTagName('remove_blacks')[0].getAttribute("value")),
+													xmlDocument.getElementsByTagName('remove_blacks')[0].getAttribute("template")
+													);
+					if(!existsTemplateRemoveBlacks)
 					{
-						var existsTemplateRemoveBlacks=this.detectionObj.setRemoveBlacksParams(
-														eval(xmlDocument.getElementsByTagName('remove_blacks')[0].getAttribute("value")),
-														xmlDocument.getElementsByTagName('remove_blacks')[0].getAttribute("template")
-														);
-						if(!existsTemplateRemoveBlacks)
+						// alert('the routine remove black not exists');
+						LOG[0]='LOAD_EXP_RM_BLACK';
+					}
+					// if(existsTemplateRemoveBlacks)
+					// {
+						this.detectionObj.setCorrection(eval(xmlDocument.getElementsByTagName('detection')[0].getAttribute("correction")));
+						this.detectionObj.setAdvanceOptions(
+							xmlDocument.getElementsByTagName('threshold')[0].getAttribute("min"),
+							xmlDocument.getElementsByTagName('threshold')[0].getAttribute("max"),
+							xmlDocument.getElementsByTagName('size')[0].getAttribute("min"),
+							xmlDocument.getElementsByTagName('size')[0].getAttribute("max"),
+							xmlDocument.getElementsByTagName('circularity')[0].getAttribute("circularity")					
+						);
+						this.highObj.setScanAllTempates(eval(xmlDocument.getElementsByTagName('high')[0].getAttribute("all")));
+					
+						var existsStitchingRoutine=this.stitchingObj.setRoutine(xmlDocument.getElementsByTagName('stitching')[0].getAttribute("routine_name"));
+						if(existsStitchingRoutine)
 						{
-							alert('the routine remove black not exists');
+							var existsCodeColor=this.stitchingObj.setCodeColor(xmlDocument.getElementsByTagName('stitching')[0].getAttribute("code_color"));
+							if(!existsCodeColor)
+							{
+								LOG[0]='LOAD_EXP_RM_BLACK';
+							}
 						}
-						// if(existsTemplateRemoveBlacks)
-						// {
-							this.detectionObj.setCorrection(eval(xmlDocument.getElementsByTagName('detection')[0].getAttribute("correction")));
-							this.detectionObj.setAdvanceOptions(
-								xmlDocument.getElementsByTagName('threshold')[0].getAttribute("min"),
-								xmlDocument.getElementsByTagName('threshold')[0].getAttribute("max"),
-								xmlDocument.getElementsByTagName('size')[0].getAttribute("min"),
-								xmlDocument.getElementsByTagName('size')[0].getAttribute("max"),
-								xmlDocument.getElementsByTagName('circularity')[0].getAttribute("circularity")					
-							);
-							this.highObj.setScanAllTempates(eval(xmlDocument.getElementsByTagName('high')[0].getAttribute("all")));
-							
-							var existsStitchingRoutine=this.stitchingObj.setRoutine(xmlDocument.getElementsByTagName('stitching')[0].getAttribute("routine_name"));
-							if(existsStitchingRoutine)
-							{
-								var existsCodeColor=this.stitchingObj.setCodeColor(xmlDocument.getElementsByTagName('stitching')[0].getAttribute("code_color"));
-								if(!existsCodeColor)
-								{
-									alert('this code color not exits');
-								}
-							}
-							else
-							{
-								alert('Routine stitching not exits');
-							}
-						// }
-						
-					}
-					else
-					{
-						alert('Remove Blacks template not exits');
-						
-					}
+						else
+						{
+							LOG[1]='LOAD_EXP_STITCH';
+						}
+					// }
+				
 				}
 				else
 				{
-					alert('routine detection not exists');
+					LOG[2]='LOAD_EXP_HIGH';				
 				}
 			}
 			else
 			{
-				alert('low template not exits');
+				LOG[3]='LOAD_EXP_DETECTIOM';			
 			}
 		}
 		else
 		{
-			
-			alert('experiment not exists');
+			LOG[4]='LOAD_EXP_LOW';
 		}
 	}
 	else
 	{
-		alert('micro not exists');
+		LOG.push('LOAD_EXP_MICRO') 
 	}
+	new dialog_alert("Notice",'','notice',LOG);
+	// new dialog_alert("Notice",'Finished','notice');
 }

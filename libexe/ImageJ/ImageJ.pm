@@ -13,7 +13,7 @@ use strict;
 use Config::IniFiles;
 use vdisplay::vdisplay;
 use LOGS::simple;
-
+use File::Basename;
 =head2 new
 
   Example    : ImageJ->new();
@@ -155,6 +155,7 @@ sub runPipe
 	if($error{'code'}==0)
 	{
 		# unlink $MACROTMP;
+		system('cp '.$this->{OUTPUT}.' '.dirname($this->{IMAGE}).'_coordenates.txt');
 		my $log_rcls=LOGS::simple->new();
 		$log_rcls->print(-msg=>"Rotate:".$Rotate);
 		$log_rcls->close();

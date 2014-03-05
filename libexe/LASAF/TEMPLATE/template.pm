@@ -1829,19 +1829,7 @@ sub  createTemplateFromFile
 					my $newX=sprintf("%.14f",$x0+(($ifieldx-1)*$xDistance));
 					my $newY=sprintf("%.14f",$y0+(($ifieldy-1)*$yDistance));
 					
-####################################################################################################################					
-# Pitamos sobre la imagen lo que hemos detectado
-# con un cuadrado negro esta aplicado la correcion en el caso de que se lo hayamos puesto
-					my $xbox=$this->meters2pixel(-meters=>$newX);
-					my $ybox=$this->meters2pixel(-meters=>$newY);
-					my $wbox=$this->meters2pixel(-meters=>$xDistance);
-					my $hbox=$this->meters2pixel(-meters=>$yDistance);
-					my $box=$xbox.",".$ybox." ".($xbox+$wbox).",".($ybox+$hbox);
-					if($this->meters2pixel(-meters=>$h)==1 && $this->meters2pixel(-meters=>$w)==1)
-					{
-						$box=($xbox-($wbox/2)).",".($ybox-($hbox/2))." ".($xbox+($wbox/2)).",".($ybox+($hbox/2));
-					}
-					$imageUtils->empty_box(-box=>$box,-stroke=>'green');
+
 ####################################################################################################################					
 #pintamos un cuadrado rojo lo que hemos detectado sin correcion en caso de haberla hecho			
 					if($x_sin_trans_coordernadas_por_rotacion!=0 && $y_sin_trans_coordernadas_por_rotacion!=0)
@@ -1878,16 +1866,32 @@ sub  createTemplateFromFile
 					{
 						$enabled="false";
 						$graph_black{$iwellx}{$ifieldy}{$ifieldx}="X";
-						my $xbox=$this->meters2pixel(-meters=>$newX);
-						my $ybox=$this->meters2pixel(-meters=>$newY);
-						my $wbox=$this->meters2pixel(-meters=>$xDistance);
-						my $hbox=$this->meters2pixel(-meters=>$yDistance);
-	
-						my $box=$xbox.",".$ybox." ".($xbox+$wbox).",".($ybox+$hbox);
+						# my $xbox=$this->meters2pixel(-meters=>$newX);
+						# my $ybox=$this->meters2pixel(-meters=>$newY);
+						# my $wbox=$this->meters2pixel(-meters=>$xDistance);
+						# my $hbox=$this->meters2pixel(-meters=>$yDistance);
+						# 	
+						# my $box=$xbox.",".$ybox." ".($xbox+$wbox).",".($ybox+$hbox);
 ##########################################################################################################################################	
 # Pitamos el cuadrado amarillo cuando se debilitan los campos porque no hay nada ya que tiene que tener todos el mismo numero de campos
-						$imageUtils->fillbox(-box=>$box,-color=>"yellow");
+						# $imageUtils->fillbox(-box=>$box,-color=>"yellow");
 ##########################################################################################################################################						
+					}
+					else
+					{
+						####################################################################################################################					
+						# Pitamos sobre la imagen lo que hemos detectado
+						# con un cuadrado negro esta aplicado la correcion en el caso de que se lo hayamos puesto
+											my $xbox=$this->meters2pixel(-meters=>$newX);
+											my $ybox=$this->meters2pixel(-meters=>$newY);
+											my $wbox=$this->meters2pixel(-meters=>$xDistance);
+											my $hbox=$this->meters2pixel(-meters=>$yDistance);
+											my $box=$xbox.",".$ybox." ".($xbox+$wbox).",".($ybox+$hbox);
+											if($this->meters2pixel(-meters=>$h)==1 && $this->meters2pixel(-meters=>$w)==1)
+											{
+												$box=($xbox-($wbox/2)).",".($ybox-($hbox/2))." ".($xbox+($wbox/2)).",".($ybox+($hbox/2));
+											}
+											$imageUtils->empty_box(-box=>$box,-stroke=>'green');
 					}
 					$this->newScanFieldData(-ScanFieldArray=>$ScanFieldArray,
 											-node=>$node,
@@ -2003,9 +2007,9 @@ sub is_black
 				if($d_area ==0 || $areaRealBlack ==0)
 				{
 					my $box=$black[$i]->{x}.",".$black[$i]->{y}." ".($black[$i]->{x}+$black[$i]->{tw}).",".($black[$i]->{y}+$black[$i]->{th});
-					# $args{-image}->empty_box(-box=>$box,-stroke=>'red');
+					$args{-image}->empty_box(-box=>$box,-stroke=>'red');
 					
-					$args{-image}->fillbox(-box=>$box,-color=>'green');
+					# $args{-image}->fillbox(-box=>$box,-color=>'green');
 					if($black[$i]->{E}==0)
 					{
 						$black[$i]->{E}=1;
