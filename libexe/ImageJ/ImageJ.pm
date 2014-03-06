@@ -152,10 +152,11 @@ sub runPipe
 	$display->stop();
 	
 	my %error=$this->error();
+
 	if($error{'code'}==0)
 	{
 		# unlink $MACROTMP;
-		system('cp '.$this->{OUTPUT}.' '.dirname($this->{IMAGE}).'_coordenates.txt');
+		system('cp '.$this->{OUTPUT}.' '.dirname($this->{IMAGE}).'/'.basename($this->{OUTPUT}));
 		my $log_rcls=LOGS::simple->new();
 		$log_rcls->print(-msg=>"Rotate:".$Rotate);
 		$log_rcls->close();
