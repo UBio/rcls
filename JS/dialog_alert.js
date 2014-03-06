@@ -93,7 +93,6 @@ dialog_alert=function(head,msg,type,num_error,context,more_info)
 				   icon: YAHOO.widget.SimpleDialog.ICON_WARN,
 				   constraintoviewport: true,
 				 });
-
 		error_win.setHeader("Error");
 		if(type != 'forbidden')
 		{
@@ -133,6 +132,9 @@ dialog_alert=function(head,msg,type,num_error,context,more_info)
 			document.getElementById(id).getElementsByTagName('span')[0].className="ace-icon-info";
 		}
 		error_win.show();
+		
+		document.getElementById(error_win.id).parentNode.style.zIndex=10000;
+		
 	}
 	else
 	{
@@ -148,4 +150,5 @@ dialog_alert=function(head,msg,type,num_error,context,more_info)
 		// myTooltip1.focus();
 		// myTooltip1.show();
 	}
+	
 }
