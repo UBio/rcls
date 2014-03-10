@@ -1,6 +1,8 @@
 progressBar=function(manager)
 {
 	var id="waitMicro"+Math.floor(Math.random()*1000000+1);
+	
+	
 	this.wait = new YAHOO.widget.Panel(id,  
 				{ width:"240px", 
 				  fixedcenter:true, 

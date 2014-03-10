@@ -15,7 +15,7 @@ MicroStatus.prototype.init=function()
 {
 	var me=this;
 	var callback = {
-	  success: function(o) {
+	success: function(o) {
 		  						if(o.responseText!='end')
 								{
 									me.progressbar.hide();
