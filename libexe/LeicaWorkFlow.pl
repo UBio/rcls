@@ -54,6 +54,7 @@ my @param_merge_files="";
 my $param_merge_output="";
 my $param_corregir_coordenadas;
 my $param_paracentricidad="";
+my $autofocus='true';
 GetOptions(
     "help"=>\$help,
 	"conf=s" => \$confFile,
@@ -82,8 +83,8 @@ GetOptions(
 	"merge=s{2,}" => \@param_merge_files,
 	"merge_output=s" => \$param_merge_output,
 	"coor" => \$param_corregir_coordenadas,
-	"parcentricity" => \$param_paracentricidad
-	
+	"parcentricity" => \$param_paracentricidad,
+	"autofocus=s" => \$autofocus
 );
 
 
@@ -353,7 +354,10 @@ if($step1)
 	
 	$leica=LASAF::CAM::leicaCAM->new(-host=>$host);
 	$leica->load_template(-template=>$STEP1NAME);
-	$leica->autofocus();
+	if(lc($autofocus) eq 'true')
+	{
+		$leica->autofocus();
+	}
 	$leica->start();
 	$leica->close();
 	undef $leica;
@@ -399,7 +403,10 @@ if($high)
 	
 	$leica=LASAF::CAM::leicaCAM->new(-host=>$host);
 	$leica->load_template(-template=>$param_template_high);
-	$leica->autofocus();
+	if(lc($autofocus) eq 'true')
+	{
+		$leica->autofocus();
+	}
 	$leica->start();
 	$leica->close();
 	undef $leica;

@@ -92,11 +92,36 @@ high.prototype.create_window=function()
 	input.setAttribute('id','PlayStep2');
 	input.setAttribute('name','PlayStep2');
 	input.setAttribute('value',"Run High Scanning");
+	var divMakeAF=document.createElement('div');
+	divMakeAF.className='MakeAF';
+	
 	this.high.getFooter().appendChild(input);
+	this.high.getFooter().appendChild(divMakeAF);
 
 	this.PlayStep2Btn=new YAHOO.widget.Button("PlayStep2",{disabled:false}); 
 	YAHOO.util.Event.addListener(document.getElementById("PlayStep2"),"click",this.run,this);
 	
+	this.makeAF = new YAHOO.widget.Button({
+	                            type: "checkbox",
+	                            label: "Autofocus: On",
+	                            value: "1",
+	                            container: divMakeAF,
+	                            checked: true });
+
+	this.makeAF.subscribe("checkedChange",this.onMakeAF,this);
+	
+}
+high.prototype.onMakeAF=function(event,me)
+{
+	if(event.newValue)
+	{
+		this.set('label','Autofocus: On');
+	}
+	else
+	{
+		this.set('label','Autofocus: Off');
+
+	}
 }
 high.prototype.newTemplates=function(templates)
 {
@@ -177,6 +202,8 @@ high.prototype.check=function()
 	//Necesitamos el template 2 para precargarlo
 	var url='cgi-bin/LeicaConfocal.cgi?step=high&template_high='+this.select.getElementsByTagName('option')[this.currentTempleteScan-1].value;
 	url+="&name="+document.getElementById("micro").value+"&template_step2="+this.template_step2;
+	url+='&autofocus='+this.makeAF.get('checked');
+	
 	if(this.select.value=='')
 	{
 		new dialog_alert("Error",'missing template high',"error");									

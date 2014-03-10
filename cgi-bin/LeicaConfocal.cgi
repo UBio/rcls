@@ -47,7 +47,7 @@ my $template_step1=$cgi->param("template_step1");
 my $template_step2=$cgi->param("template_step2");
 
 my $template_high=$cgi->param("template_high");
-
+my $autofocus=$cgi->param("autofocus");
 
 
 ##################################################################################################################
@@ -77,7 +77,7 @@ else
 				$args="--coor";
 		
 			}
-			$args.=" --conf $confFile -template_step1 $template_step1 -name_micro $name";
+			$args.=" --conf $confFile -template_step1 $template_step1 -name_micro $name --autofocus $autofocus";
 		}
 		else
 		{
@@ -89,7 +89,7 @@ else
 	}
 	else
 	{
-		$args="--high --template_high $template_high --conf $confFile -name_micro $name -template_step2 $template_step2"
+		$args="--high --template_high $template_high --conf $confFile -name_micro $name -template_step2 $template_step2 --autofocus $autofocu";
 	}
 }
 

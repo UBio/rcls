@@ -73,22 +73,6 @@ micro.prototype.cloud=function()
       {text: "Content", weight: 2},
       {text: "Screening", weight: 2, html: {"class": "vertical"}},
       {text: "Objetive", weight: 2}
-      // {text: "adipiscing", weight: 2, html: {"class": "vertical"}},
-      // {text: "ut ultrices", weight: 2},
-      // {text: "justo", weight: 1},
-      // {text: "dictum", weight: 1, html: {"class": "vertical"}},
-      // {text: "Ut et leo", weight: 1},
-      // {text: "metus", weight: 1},
-      // {text: "at molestie", weight: 1},
-      // {text: "purus", weight: 1, html: {"class": "vertical"}},
-      // {text: "Curabitur", weight: 1},
-      // {text: "diam", weight: 1, html: {"class": "vertical"}},
-      // {text: "dui", weight: 1},
-      // {text: "ullamcorper", weight: 1},
-      // {text: "id vuluptate ut", weight: 1, html: {"class": "vertical"}},
-      // {text: "mattis", weight: 1},
-      // {text: "et nulla", weight: 1},
-      // {text: "Sed", weight: 1}
     ];
 	document.getElementById("currentMicro").innerHTML="";
 	$("#currentMicro").jQCloud(word_list);

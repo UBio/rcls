@@ -37,6 +37,22 @@
 		display:none;
 		left:200px;
 	}
+	#AFPlayStep1
+	{
+		float:left;
+	}
+	.yui-skin-sam .yui-panel .ft {
+	    border-top: 1px solid #808080;
+	    font-size: 12px;
+	    height: 28px;
+	    padding: 5px 10px;
+	}
+
+	.MakeAF
+	{
+		width:105px;
+		float:left;
+	}
 	#ViewScanStep1
 	{
 		float:right;

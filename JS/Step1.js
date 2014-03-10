@@ -140,8 +140,13 @@ step1.prototype.create_window=function()
 	input.setAttribute('name','step1');
 	input.setAttribute('type','button');
 	input.setAttribute('value','Run Autofocus & Play');
+	input.className='bottom_footer';
+	var divMakeAF=document.createElement('div');
+	divMakeAF.className='MakeAF';
+		
 	this.step1.getFooter().appendChild(input);
-
+	this.step1.getFooter().appendChild(divMakeAF);
+	
 	var select=document.createElement('select');
 	select.setAttribute('id','ViewScanStep1_select');
 	select.setAttribute('name','ViewScanStep1_select');
@@ -160,11 +165,30 @@ step1.prototype.create_window=function()
 
 	YAHOO.util.Event.addListener(document.getElementById("ViewScanStep1"),"click",this.ViewScanStep1,this);	
 	YAHOO.util.Event.addListener(document.getElementById("AFPlayStep1"),"click",this.run,this);
+	this.makeAF = new YAHOO.widget.Button({
+	                            type: "checkbox",
+	                            label: "Autofocus: On",
+	                            value: "1",
+	                            container: divMakeAF,
+	                            checked: true });
+
+	this.makeAF.subscribe("checkedChange",this.onMakeAF,this);
 	
 	this.oAC=new autoCompleteConfocal(this.MyMicro.conf.getTemplates(),"step1","myContainerACStep1");
 	
 }
+step1.prototype.onMakeAF=function(event,me)
+{
+	if(event.newValue)
+	{
+		this.set('label','Autofocus: On');
+	}
+	else
+	{
+		this.set('label','Autofocus: Off');
 
+	}
+}
 
 step1.prototype.refresh=function()
 {
@@ -305,11 +329,15 @@ step1.prototype.run=function(event,me)
 								
 							}
 	};
+
+	
 	if(me.check()==0)
 	{
-		var url='cgi-bin/LeicaConfocal.cgi?step=step1&template_step1='+document.getElementById("step1").value+"&name="+document.getElementById("micro").value
-		var cObj = YAHOO.util.Connect.asyncRequest('GET', url, callback);
-	
+		var url='cgi-bin/LeicaConfocal.cgi?step=step1&template_step1='+document.getElementById("step1").value;
+		url+="&name="+document.getElementById("micro").value;
+		url+="&autofocus"+me.makeAF.get('checked');
+		
+		// var cObj = YAHOO.util.Connect.asyncRequest('GET', url, callback);
 		if(event != 'RUNAllProcess')
 		{
 			me.MyMicro.conf.progressbar.show();
