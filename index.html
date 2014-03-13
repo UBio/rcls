@@ -197,6 +197,8 @@ YAHOO.util.Event.onDOMReady(function () {
 	
 		
 	var DialogAddMicrosCopy=new AddMicrosCopy(manager);
+	var DialogDeleteMicrosCopy=new DeleteMicrosCopy(manager);
+	
 	var DialogAddParcentricity=new AddParcentricity(manager,MyMicro.currentMicro);
 	var DialogDeleteParcentricity=new DeleteParcentricity(manager,MyMicro.currentMicro);
 		
@@ -317,6 +319,10 @@ YAHOO.util.Event.onDOMReady(function () {
 				{
 					DialogAddMicrosCopy.show();
 				}
+				if(itemMenuSelect=='#delete_micro')
+				{
+					DialogDeleteMicrosCopy.show();
+				}				
 				if(itemMenuSelect=='#add_parcentricity')
 				{
 					DialogAddParcentricity.show();

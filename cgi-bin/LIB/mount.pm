@@ -43,7 +43,7 @@ sub new_mount
 	my $user=$args{-user};
 	my $passwors=$args{-password};
 	my $name_micro=$args{-name_micro};
-	my $dir_bin_mounts=>$args{-dir_bin_mounts};
+	my $dir_bin_mounts=$args{-dir_bin_mounts};
 	my $win_shared_images=$args{-win_shared_images};
 	my $win_shared_templates=$args{-win_shared_templates};
 
@@ -53,12 +53,12 @@ sub new_mount
 		if(-e  $shared_images)
 		{
 			# print_http_response(431,$HTTP_ERROR_431);
-            exit -1;
+            return -1;
 		}
 		if(-e $shared_templates)
 		{
 			# print_http_response(431,$HTTP_ERROR_432);
-			exit -2;
+			return -2;
 		}
 	}
 

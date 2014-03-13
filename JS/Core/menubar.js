@@ -19,7 +19,7 @@ menubar=function(manager)
                                         id: "microscope", 
                                         itemdata: [
                                             {text:"Insert",url:"#insert_micro"}, 
-          									{text:"Delete",url:"#delete_parcentricity"} 
+          									{text:"Delete",url:"#delete_micro"} 
                                         ] 
                                     }
 							},
