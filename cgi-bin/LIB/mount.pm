@@ -2,7 +2,7 @@ package LIB::mount;
 $VERSION='1.0';
 
 @ISA=qw(Exporter);
-@EXPORT=qw(mountall mount check_mount new_mount);
+@EXPORT=qw(mountall mount check_mount new_mount umount);
 use strict;
 use HTTP::Status qw(is_success status_message);
 use File::Basename;
@@ -105,6 +105,30 @@ sub mount
 	}
 	return 'OK';
 }
+
+
+sub umount
+{
+	my (%args) = @_;
+	my $name=$args{-name};
+	my $cfg_confocal = Config::IniFiles->new( -file => $ENV{CONFOCAL_INI});	
+	my $mounts=$cfg_confocal->val('SHARE','bin');
+	
+	my $mounts=$mounts."/umount\.$name";
+	
+	my $CMDmount="ssh -t  -o StrictHostKeyChecking=no confocal\@localhost 'sudo $mounts'";
+	print STDERR $CMDmount;
+	my $ERROR=`$CMDmount`;
+	$ERROR=~s/Connection to localhost closed//gi;
+	if($ERROR ne '')
+	{
+		return $ERROR;
+	}
+	return 'OK';
+}
+
+
+
 
 sub check_mount
 {
