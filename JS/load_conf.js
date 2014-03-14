@@ -163,8 +163,7 @@ load_conf.prototype.handleSuccess = function(response)
 		}
 		else
 		{
-			new dialog_alert("Notice: "+ response[i].name,response[i].warnnings,"notice");
-			
+			new dialog_alert(response[i].name,response[i].warnnings,"notice");		
 		}
 	}
 	if(!entro)

@@ -113,7 +113,7 @@ dialog_alert=function(head,msg,type,num_error,context,more_info)
 		{
 			this.clickYES=new YAHOO.util.CustomEvent("clickYES",null);
 			var clickYES=this.clickYES;
-			error_win.setHeader("Info");
+			error_win.setHeader("Info:"+head);
 			error_win.cfg.queueProperty("buttons", [ { text:"Ok", handler:function(){clickYES.fire();this.hide();this.destroy();}}
 													]);
 		}
@@ -133,7 +133,7 @@ dialog_alert=function(head,msg,type,num_error,context,more_info)
 		}
 		error_win.show();
 		
-		document.getElementById(error_win.id).parentNode.style.zIndex=10000;
+		document.getElementById(error_win.id).parentNode.style.zIndex=document.getElementById(error_win.id).parentNode.style.zIndex+10000;
 		
 	}
 	else
