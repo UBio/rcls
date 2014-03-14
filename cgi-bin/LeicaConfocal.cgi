@@ -89,7 +89,7 @@ else
 	}
 	else
 	{
-		$args="--high --template_high $template_high --conf $confFile -name_micro $name -template_step2 $template_step2 --autofocus $autofocu";
+		$args="--high --template_high $template_high --conf $confFile -name_micro $name -template_step2 $template_step2 --autofocus $autofocus";
 	}
 }
 
