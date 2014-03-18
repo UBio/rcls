@@ -14,7 +14,6 @@ my $ACTION=$cgi->param("ACTION");
 
 my $cfg_confocal = Config::IniFiles->new( -file => $ENV{CONFOCAL_INI});
 my $objetivos_files=$cfg_confocal->val('MICRO','objetives');
-
 sub existsObjetive
 {
 	my (%args)=@_;
@@ -186,6 +185,9 @@ if($ACTION eq "insertmicro")
 			$cfg->AddSection("FILES");
 			$cfg->newval ("FILES", "templates", $shared_templates);
 			$cfg->newval ("FILES", "MatrixScreenerImages", $shared_images);
+			$cfg->AddSection("SHAREDIR");
+			$cfg->newval ("SHAREDIR", "templates", $cgi->param("sharingtemplatesdir"));
+			$cfg->newval ("SHAREDIR", "MatrixScreenerImages", $cgi->param("sharingimagesdir"));
 			$cfg->WriteConfig ($fileInstance);
 		}
 
@@ -201,17 +203,25 @@ if($ACTION eq "insertmicro")
 
 if($ACTION eq "deletemicro")
 {
+	print "Content-type: text/text \n\n";
+	
 	my $file_micro=$cfg_confocal->val('INI',$cgi->param("micro"));
 	my $dir_templates=$cfg_confocal->val('FILES','templates');
 	my $dir_Images=$cfg_confocal->val('FILES','MatrixScreenerImages');
-	$cfg_confocal->delval('MICRO',$cgi->param("micro"));
+	$cfg_confocal->delval('INI',$cgi->param("micro"));
 	
-	umount(-name=>$cgi->param("micro"));
-	system('rmdir '.$dir_templates);
-	system('rmidr '.$dir_Images);
+	# umount(-name=>$cgi->param("micro"));
+	if(-e $dir_templates)
+	{
+		system('rmdir '.$dir_templates);
+	}
+	if(-e $dir_Images)
+	{
+		system('rmidr '.$dir_Images);
+	}
 	unlink $file_micro;
 	
-	
+	$cfg_confocal->WriteConfig ($ENV{CONFOCAL_INI});
 	
 	# templates=/Volumes/ScanningTemplates/
 	# MatrixScreenerImages=/Volumes/MatrixScreenerImagesAlternative/

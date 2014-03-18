@@ -205,6 +205,10 @@ micro.prototype.refresh=function(event,me)
 		me.lockEvent.fire();
 	}
 }
+micro.prototype.getAllMicros=function()
+{
+	return this.conf.getAllMicros();
+}
 micro.prototype.getCurrentMicro=function()
 {
 	return this.currentMicro;

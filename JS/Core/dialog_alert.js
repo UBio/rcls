@@ -45,7 +45,7 @@ dialog_alert=function(head,msg,type,num_error,context,more_info)
 	errors['LOAD_EXP_LOW']="low template not exits";
 	errors['LOAD_EXP_MICRO']="micro not exists";
 	errors['LOAD_EXP_MISS']="Missing Experiment File";
-	
+	errors['DELMICRONOSELECT']="Please, select one micro";
 
 	var error_msg="Unknow error";
 	

@@ -76,3 +76,24 @@
 	width:100%;
 	height:150px;
 }
+.deleteMicro label
+{
+	text-align:left;
+}
+.deleteMicro ul
+{
+	width:100px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100px;
+}
+.deleteMicro li
+{
+	text-align:left;
+	padding:5px;
+}
+.deleteMicro li span
+{
+
+	margin-left:5px;
+}

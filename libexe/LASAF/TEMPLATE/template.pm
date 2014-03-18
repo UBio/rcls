@@ -93,8 +93,14 @@ sub new
 		my $xml=new XML::DOM::Parser;
 		#print $dir."/\{ScanningTemplate\}".$this->{NAME_TEMPLATE}.".lrp"."\n";
 		$this->{lrp} = $xml->parsefile($dir."/\{ScanningTemplate\}".$this->{NAME_TEMPLATE}.".lrp");
-		$this->{lrp_root} = $this->{lrp}->[0]->[3];
 		
+		my $iref=0;
+		$this->{lrp_root} = $this->{lrp}->[0]->[$iref];
+		while(ref($this->{lrp_root}) eq 'XML::DOM::Comment')
+		{
+			$iref++;
+			$this->{lrp_root} = $this->{lrp}->[0]->[$iref];
+		}
 	}
 	else
 	{
@@ -758,7 +764,11 @@ sub setStartPosition()
 sub getMagnification
 {
 	my ($this,%args)=@_;
-	if($this->{lrp_root}->getElementsByTagName("ATLConfocalSettingDefinition")->[0])
+	if($this->{MAGNIFICATION}!='')
+	{
+		return $this->{MAGNIFICATION};
+	}
+	if($this->{lrp_root}->getElementsByTagName("ATLConfocalSettingDefinition")->getLength()>0)
 	{
 		return $this->{lrp_root}->getElementsByTagName("ATLConfocalSettingDefinition")->[0]->getAttribute("Magnification");
 	}

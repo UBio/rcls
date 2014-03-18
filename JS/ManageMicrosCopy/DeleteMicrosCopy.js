@@ -1,6 +1,6 @@
-DeleteMicrosCopy=function(manager,microDefault)
+DeleteMicrosCopy=function(manager,micros)
 {
-	this.currentMicro=microDefault;
+	this.allMicros=micros;
 	this.options={
 						expand:false,
 						width:"200px",
@@ -29,10 +29,29 @@ DeleteMicrosCopy=function(manager,microDefault)
 	
 	this.setContentDialogMacro=function()
 	{	
+		var div=document.createElement('div');
+		div.className='deleteMicro';
 		
-		this.labelContent=document.createElement('label')
-		this.labelContent.innerHTML="Do you want delete  this micro "+this.currentMicro+"?";
-		_setContentdialogMacro(this.labelContent);
+		var labelContent=document.createElement('label')
+		labelContent.innerHTML="Select Micro: ";
+		div.appendChild(labelContent);
+		var ul=document.createElement('ul');
+		for(var i=0;i<micros.length;i++)
+		{
+			var li=document.createElement('li');
+			var checkbox=document.createElement('input');
+			checkbox.setAttribute('type','radio');
+			checkbox.setAttribute('name','microdelete');
+			checkbox.setAttribute('value',micros[i]);
+			li.appendChild(checkbox);
+			var span=document.createElement('span');
+			
+			span.innerHTML=micros[i]
+			li.appendChild(span);
+			ul.appendChild(li);
+		}
+		div.appendChild(ul);
+		_setContentdialogMacro(div);
 	}
 	
 	this.setButtonsDialogMacro=function()
@@ -60,6 +79,7 @@ DeleteMicrosCopy.prototype.delete=function(event,me)
 								me.hide_progress_bar();	
 								me.hide();
 								new dialog_alert('Notice','Finished','notice');
+								window.location.reload();
 								
 							},
 	  failure: function(o) {
@@ -68,18 +88,32 @@ DeleteMicrosCopy.prototype.delete=function(event,me)
 								myLogWriter.log(o.status+":"+o.responseText, "info");
 							}
 	};
+	var micro;
+	for(var i=0;i<document.getElementsByName('microdelete').length;i++)
+	{
+		if(document.getElementsByName('microdelete')[i].checked)
+		{
+			micro=document.getElementsByName('microdelete')[i].value;
+		}
+	}
 	
-	var url='admin/cgi-bin/micro.cgi?ACTION=deletemicro';
-	url+="&micro="+me.currentMicro;
-	me.show_progress_bar();
-	var cObj = YAHOO.util.Connect.asyncRequest('GET', url, callback);
+	if(micro)
+	{
+		var url='admin/cgi-bin/micro.cgi?ACTION=deletemicro';
+		url+="&micro="+micro;	
+		me.show_progress_bar();
+		var cObj = YAHOO.util.Connect.asyncRequest('GET', url, callback);
+		
+	}
+	else
+	{
+		new dialog_alert("Error",'','error','DELMICRONOSELECT');																			
+		
+	}
+
 }
 
-DeleteMicrosCopy.prototype.setMicro=function(micro)
-{
-	this.currentMicro=micro;
-	this.labelContent.innerHTML="Do you want delete this micro "+this.currentMicro+"?";
-}
+
 DeleteMicrosCopy.prototype.getButtons=function()
 {
 	var p=document.createElement('p');

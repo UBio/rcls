@@ -3,6 +3,7 @@ load_conf=function()
 	this.num_error=0;
 	this.dirImages=new Array();
 	this.micros=new Array();
+	this.allmicros=new Array();
 	this.templates=new Array();
 	this.macro_blacks=new Array();
 	this.macro_stitching=new Array();
@@ -10,6 +11,7 @@ load_conf=function()
 	this.typesMacros=new Array();
 	this.num_error=this.load();
 	this.progressbar=new progressBar();
+	
 }
 
 
@@ -107,6 +109,10 @@ load_conf.prototype.getMicros=function()
 {
 	return this.micros;
 }
+load_conf.prototype.getAllMicros=function()
+{
+	return this.allmicros;
+}
 load_conf.prototype.getTemplates=function()
 {
 	return this.templates;
@@ -145,6 +151,7 @@ load_conf.prototype.handleSuccess = function(response)
 
 	for(var i=0;i<response.length;i++)
 	{
+		this.allmicros[i]=response[i].name;
 		
 		if(response[i].templates && response[i].templates.length >0 && response[i].dirimages && response[i].dirimages.length>0)
 		{
