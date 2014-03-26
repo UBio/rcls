@@ -30,6 +30,10 @@ sub new
 {
 	my ($class,%args)=@_;
 	my $this={};
+	if(!-e $ENV{CONFOCAL_INI})
+	{
+		return -1;
+	}
 	my $cfg_confocal = Config::IniFiles->new( -file => $ENV{CONFOCAL_INI});
 	# $this->{date}=DateTime->new();
 	my $fh;
