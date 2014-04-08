@@ -43,12 +43,12 @@ my $modulesperl=`./CheckModulesPerl ../.`;
 print $modulesperl."\n";
 
 
-open STDERR, '/dev/null';
-my $license = LICENSE::check->new();
+#open STDERR, '/dev/null';
+my $license = LICENSE::check->new(-install=>1);
 my $mac=$license->get_mac_address();
 $mac=substr($mac,-8);
 my $url="http://ubio.bioinfo.cnio.es/extras/licenses/getlicense.cgi?server=confocal&mac=".$mac;
-close STDERR;
+#close STDERR;
 my $license_number = get $url;
 if($license_number ne '')
 {
@@ -87,7 +87,7 @@ my $GXX=`which g++-4.4`;
 
 my $arch=`uname`;
 $arch=~s/\n//g;
-my $decrypt_dir='cd '.$Bin.'/../cgi-bin/LICENSE/bin/';
+my $decrypt_dir='cd '.$Bin.'/../cgi-bin/INITIALIZE/LICENSE/bin/';
 my $status_msg="Compile decrypt: ";
 print $status_msg." " x (50-length($status_msg));
 
@@ -191,7 +191,10 @@ else
 		close INI;
 		system("chmod 777 ../CONF");
 		system("chmod 777 ../CONF/confocal.ini");
+		system('mkdir -p ../shared/bin');
+		system('mkdir -p ../shared/mnt');
 		system("chmod -R 777 ../shared");
+		system('mkdir -p ../tmp/LOGS');
 		system("chmod -R 777 ../tmp");
 		
 		

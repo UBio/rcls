@@ -25,9 +25,7 @@ sub new
 	my $this={};
 	bless($this);
 	my $cfg_confocal;
-	my $log_rcls=LOGS::simple->new();
-	
-	
+	my $log_rcls=LOGS::simple->new(-install=>$args{-install});
 	if(-e $ENV{CONFOCAL_INI})
 	{
 		$cfg_confocal = Config::IniFiles->new( -file => $ENV{CONFOCAL_INI});

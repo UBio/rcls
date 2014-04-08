@@ -29,8 +29,13 @@ use POSIX qw(strftime);
 sub new
 {
 	my ($class,%args)=@_;
+	my $isInstall=0;
+	if(exists($args{-install}))
+	{
+		$isInstall=1;
+	}
 	my $this={};
-	if(!-e $ENV{CONFOCAL_INI})
+	if(!-e $ENV{CONFOCAL_INI}&&$isInstall==0)
 	{
 		return -1;
 	}
@@ -40,7 +45,7 @@ sub new
 	open $fh, ">>".$cfg_confocal->val( 'FILES', 'tmp' )."/".$cfg_confocal->val( 'DEBUG', 'errorlog' );
 		
 	$this->{log}=$fh;
-	
+	$this->{install}=$isInstall;
 	bless($this);
 	return $this;
 }
@@ -49,7 +54,14 @@ sub print
 	my ($this,%args)=@_;
 	my $fh=$this->{log};
 	my $now_string=strftime("%a %b %e %H:%M:%S %Y", localtime);
-	print $fh $now_string."\t".$args{-msg}."\n";
+	if($this->{install}==0)
+	{
+		print $fh $now_string."\t".$args{-msg}."\n";
+	}
+	else
+	{
+		print STDERR $now_string."\t".$args{-msg}."\n";
+	}
 	
 }
 sub close
