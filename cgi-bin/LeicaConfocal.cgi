@@ -77,7 +77,14 @@ else
 				$args="--coor";
 		
 			}
-			$args.=" --conf $confFile -template_step1 $template_step1 -name_micro $name --autofocus $autofocus";
+			if($step ne 'imagej')
+			{
+				$args.=" --conf $confFile -template_step1 $template_step1 -name_micro $name --autofocus $autofocus";
+			}
+			else
+			{
+				$args.=" --conf $confFile -template_step1 $template_step1 -name_micro $name";
+			}
 		}
 		else
 		{
