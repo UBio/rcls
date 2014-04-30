@@ -36,16 +36,7 @@
 dialog_alert=function(head,msg,type,num_error,context,more_info)
 {
 
-	errors=new Array();
-	errors['LOAD_EXP_DIR']="El experimento no existe, es un esperimento nuevo?";
-	errors['LOAD_EXP_RM_BLACK']="this code color not exits";
-	errors['LOAD_EXP_STITCH']="Routine stitching not exits";
-	errors['LOAD_EXP_HIGH']="high template not exits";
-	errors['LOAD_EXP_DETECTIOM']="routine detection not exists";
-	errors['LOAD_EXP_LOW']="low template not exits";
-	errors['LOAD_EXP_MICRO']="micro not exists";
-	errors['LOAD_EXP_MISS']="Missing Experiment File";
-	errors['DELMICRONOSELECT']="Please, select one micro";
+
 
 	var error_msg="Unknow error";
 	
@@ -89,7 +80,7 @@ dialog_alert=function(head,msg,type,num_error,context,more_info)
 				   draggable: false,
 				   close: false,
 					modal:true,
-				   text: error_msg,
+				   text: error_msg+': '+more_info,
 				   icon: YAHOO.widget.SimpleDialog.ICON_WARN,
 				   constraintoviewport: true,
 				 });
@@ -151,4 +142,8 @@ dialog_alert=function(head,msg,type,num_error,context,more_info)
 		// myTooltip1.show();
 	}
 	
+}
+dialog_alert.prototype.code2text=function(code)
+{
+	return errors[code];
 }

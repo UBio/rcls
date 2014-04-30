@@ -1,0 +1,20 @@
+errors=new Array();
+errors['STEP1_MISS_TEM']="Missing Template in step1";
+
+errors['LOAD_EXP_DIR']="El experimento no existe, es un esperimento nuevo?";
+errors['LOAD_EXP_RM_BLACK']="this code color not exits";
+errors['LOAD_EXP_STITCH']="Routine stitching not exits";
+errors['LOAD_EXP_HIGH']="high template not exits";
+errors['LOAD_EXP_DETECTIOM']="routine detection not exists";
+errors['LOAD_EXP_LOW']="low template not exits";
+errors['LOAD_EXP_MICRO']="micro not exists";
+errors['LOAD_EXP_MISS']="Missing Experiment File";
+errors['DELMICRONOSELECT']="Please, select one micro";
+errors['IMAGEJ_MISS_TEM1']="Missing template 1";
+errors['IMAGEJ_MISS_TEM2']="Missing template 2";
+errors['IMAGEJ_STIT_CHECK']="Check Leica Application, stitching is check";
+errors['IMAGEJ_MISS_DET_MACRO']="Missing Detect Macro";
+errors['IMAGEJ_MISS_BLACK_MACRO']="Missing Black Macro";
+errors['IMAGEJ_CHECK_RUN']="Please click in run button first";
+errors['IMAGEJ_FINISH']="ImageJ Analisys Finished";
+errors['IMAGEJ_UNEXPECTED']="Please, contact with your administrator";

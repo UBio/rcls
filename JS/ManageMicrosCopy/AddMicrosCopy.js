@@ -1,3 +1,18 @@
+// 'addmicrospe':{
+// 			title:'Add microscope',
+// 			label1:'Step 1: Name',
+// 			label2:'Step 2: Directory images and templates',
+// 			label3:'Step 3: Credentials',
+// 			label4:'Microscope´s name',
+// 			label5:'Microscope´s computer IP address:',
+// 			label6:'Microscope´s computer shared images folder:',
+// 			label7:'Microscope´s computer images folder:',
+// 			label8:'Microscope´s computer shared templates folder:',
+// 			label9:'Microscope´s computer templates folder:',
+// 			label10:'Microscope´s computer user´s name:',
+// 			label11:'Microscope´s computer user´s password:'
+// }
+
 AddMicrosCopy=function(manager)
 {
 	
@@ -25,7 +40,7 @@ AddMicrosCopy=function(manager)
 	this.setTitleDialogMacro=function()
 	{
 		var label=document.createElement('label');
-		label.innerHTML="Add MicrosCopy";		
+		label.innerHTML=imrc_labels['addmicrospe']['title'];		
 		_setTitleDialogMacro(label);
 	}
 	
@@ -63,12 +78,12 @@ AddMicrosCopy.prototype.getButtons=function()
 	p.className="buttons";
 	this.cancel_btn=document.createElement('input');
 	this.cancel_btn.setAttribute('type','button');
-	this.cancel_btn.setAttribute('value','Cancel');
+	this.cancel_btn.setAttribute('value',imrc_labels['addmicrospe']['button1']);
 	p.appendChild(this.cancel_btn);
 
 	this.next_btn=document.createElement('input');
 	this.next_btn.setAttribute('type','button');
-	this.next_btn.setAttribute('value','Next');
+	this.next_btn.setAttribute('value',imrc_labels['addmicrospe']['button2']);
 	p.appendChild(this.next_btn);	
 	
 	return p;
@@ -91,11 +106,11 @@ AddMicrosCopy.prototype.getContent=function()
 																me.currentStep=this.getTabIndex(event.newValue);
 																if(me.currentStep!=2)
 																{
-																	me.btnYUIbutton.set('label','Next');
+																	me.btnYUIbutton.set('label',imrc_labels['addmicrospe']['button2']);
 																}
 																else
 																{
-																	me.btnYUIbutton.set('label','Finish and Reload Page');
+																	me.btnYUIbutton.set('label',imrc_labels['addmicrospe']['button3']);
 																	me.currentStep=3;
 																}
 																
@@ -122,7 +137,7 @@ AddMicrosCopy.prototype.nextStep=function(event,args)
 	if(me.currentStep==2)
 	{
 		// alert(me.next_btn.value);
-		me.btnYUIbutton.set('label','Finish and Reload Page');
+		me.btnYUIbutton.set('label',imrc_labels['addmicrospe']['button3']);
 		me.currentStep=3;
 		// me.next_btn.value='Finish and Reload Page';
 	}
@@ -257,17 +272,24 @@ AddMicrosCopy.prototype.create_step1=function()
 	var label=document.createElement('div');
 	label.className='label';
 	
-	label.innerHTML='Name Micro:';
+	label.innerHTML=imrc_labels['addmicrospe']['label4'];
 	p.appendChild(label);	
 	this.nameMicro=document.createElement('input');
 	this.nameMicro.setAttribute('type','text');
 	p.appendChild(this.nameMicro);
 	div.appendChild(p);
 	
+	YAHOO.util.Event.addListener(this.nameMicro,'change',function(event,me)
+																	{
+																		me.LocalDirImages.value=me.SharingDirImages.value+"_"+this.value;
+																		me.LocalDirTemplates.value=me.SharingDirTemplates.value+"_"+this.value;
+																		
+																	},this);
+	
 	var p=document.createElement('p');
 	var label=document.createElement('div');
 	label.className='label';
-	label.innerHTML='IP:';
+	label.innerHTML=imrc_labels['addmicrospe']['label5'];
 	p.appendChild(label);	
 	this.ipmicro=document.createElement('input');
 	this.ipmicro.setAttribute('type','text');
@@ -275,7 +297,7 @@ AddMicrosCopy.prototype.create_step1=function()
 	div.appendChild(p);
 	
 	this.tabViewAddMicrosCopySteps.addTab( new YAHOO.widget.Tab({
-        label: 'Step 1: Name',
+        label: imrc_labels['addmicrospe']['label1'],
         contentEl: div,
     	active: true
 		}));
@@ -300,12 +322,12 @@ AddMicrosCopy.prototype.create_step2=function()
 	divImages.className='marco';
 	var divTitleImages=document.createElement('div');
 	divTitleImages.className="title";
-	divTitleImages.innerHTML="Images (Warning Case Sensitive)";
+	divTitleImages.innerHTML=imrc_labels['addmicrospe']['label13'];
 	divImages.appendChild(divTitleImages);
 	var p=document.createElement('p');
 	var label=document.createElement('div');
 	label.className='label';	
-	label.innerHTML='Sharing Directory:';
+	label.innerHTML=imrc_labels['addmicrospe']['label6'];
 	p.appendChild(label);	
 	
 	this.SharingDirImages=document.createElement('input');
@@ -318,18 +340,18 @@ AddMicrosCopy.prototype.create_step2=function()
 	var p=document.createElement('p');
 	var label=document.createElement('div');
 	label.className='label';
-	label.innerHTML='Images dir:';
+	label.innerHTML=imrc_labels['addmicrospe']['label7'];
 	p.appendChild(label);	
 	this.LocalDirImages=document.createElement('input');
 	this.LocalDirImages.setAttribute('type','text');
-	
+	this.LocalDirImages.setAttribute('disabled',true);
 	p.appendChild(this.LocalDirImages);
 	divImages.appendChild(p);
 	
 	YAHOO.util.Event.addListener(this.SharingDirImages,'change',function(event,me)
 																	{
 																		this.value=me.CheckDir(this.value);
-																		me.LocalDirImages.value=this.value;
+																		me.LocalDirImages.value=this.value+"_"+me.nameMicro.value;
 																		
 																	},this);
 	
@@ -337,13 +359,13 @@ AddMicrosCopy.prototype.create_step2=function()
 	divTemplates.className='marco';
 	var divTitleImages=document.createElement('div');
 	divTitleImages.className="title";
-	divTitleImages.innerHTML="Templates (Warning Case Sensitive)";
+	divTitleImages.innerHTML=imrc_labels['addmicrospe']['label13'];
 	divTemplates.appendChild(divTitleImages);
 	
 	var p=document.createElement('p');
 	var label=document.createElement('div');
 	label.className='label';	
-	label.innerHTML='Sharing Directory:';
+	label.innerHTML=imrc_labels['addmicrospe']['label8'];
 	p.appendChild(label);	
 	
 	this.SharingDirTemplates=document.createElement('input');
@@ -354,10 +376,11 @@ AddMicrosCopy.prototype.create_step2=function()
 	var p=document.createElement('p');
 	var label=document.createElement('div');
 	label.className='label';
-	label.innerHTML='Templates dir:';
+	label.innerHTML=imrc_labels['addmicrospe']['label9'];
 	p.appendChild(label);	
 	this.LocalDirTemplates=document.createElement('input');
 	this.LocalDirTemplates.setAttribute('type','text');
+	this.LocalDirTemplates.setAttribute('disabled',true);
 	
 	p.appendChild(this.LocalDirTemplates);
 	divTemplates.appendChild(p);
@@ -366,7 +389,7 @@ AddMicrosCopy.prototype.create_step2=function()
 	YAHOO.util.Event.addListener(this.SharingDirTemplates,'change',function(event,me)
 																	{
 																		this.value=me.CheckDir(this.value);
-																		me.LocalDirTemplates.value=this.value;
+																		me.LocalDirTemplates.value=this.value+"_"+me.nameMicro.value;
 																		
 																	},this);
 	
@@ -374,7 +397,7 @@ AddMicrosCopy.prototype.create_step2=function()
 	div.appendChild(divTemplates);
 	
 	this.tabViewAddMicrosCopySteps.addTab( new YAHOO.widget.Tab({
-        label: 'Step 2: Directory Images And Templates',
+        label: imrc_labels['addmicrospe']['label2'],
         contentEl: div
 	}));
 }
@@ -389,7 +412,7 @@ AddMicrosCopy.prototype.create_step3=function()
 	var label=document.createElement('div');
 	label.className='label';
 	
-	label.innerHTML='User:';
+	label.innerHTML=imrc_labels['addmicrospe']['label10'];
 	p.appendChild(label);	
 	this.userSamba=document.createElement('input');
 	this.userSamba.setAttribute('type','text');
@@ -399,7 +422,7 @@ AddMicrosCopy.prototype.create_step3=function()
 	var p=document.createElement('p');
 	var label=document.createElement('div');
 	label.className='label';
-	label.innerHTML='Password:';
+	label.innerHTML=imrc_labels['addmicrospe']['label11'];
 	p.appendChild(label);	
 	this.passSamba=document.createElement('input');
 	this.passSamba.setAttribute('type','text');
@@ -407,7 +430,7 @@ AddMicrosCopy.prototype.create_step3=function()
 	div.appendChild(p);
 	
 	this.tabViewAddMicrosCopySteps.addTab( new YAHOO.widget.Tab({
-        label: 'Step 3: Credentials',
+        label: imrc_labels['addmicrospe']['label3'],
         contentEl: div
 	}));
 }

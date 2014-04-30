@@ -1,3 +1,4 @@
+
 micro=function(micro,container,manager)
 {
 	// Instantiate the Dialog
@@ -48,10 +49,10 @@ micro.prototype.cloud=function()
 {
 	var word_list = [
       {text: this.currentMicro, weight: 20},
-      {text: "Microscope", weight: 10.5, html: {"class": "vertical"}},
-      {text: "Confocal", weight: 9.4},
+      {text: "Microscope", weight: 7.5, html: {"class": "vertical"}},
+      {text: "Confocal", weight: 6.4},
       {text: "Lens", weight: 1, html: {"class": "vertical"}},
-      {text: "Optico", weight: 6.2},
+      {text: "Optico", weight: 3.2},
       {text: "Resolution", weight: 5},
       {text: "Scan", weight: 5, html: {"class": "vertical"}},
       {text: "Stitching", weight: 5},
@@ -81,7 +82,7 @@ micro.prototype.create_window=function(micros)
 {
 	// Select Microscope:<select id="micro" name="micro"></select>
 	var label=document.createElement('label');
-	label.innerHTML="Select Microscope:";
+	label.innerHTML=imrc_labels['micro']['title'];
 	this.selectMicro=document.createElement('select');
 	this.selectMicro.setAttribute('id','micro');
 	this.selectMicro.setAttribute('name','micro');
@@ -109,7 +110,7 @@ micro.prototype.create_window=function(micros)
 
 	var p=document.createElement('p');
 	var label=document.createElement('label');
-	label.innerHTML="Low Resolution Images Folder:";
+	label.innerHTML=imrc_labels['micro']['label1'];
 	p.appendChild(label);
 	
 	
@@ -123,7 +124,7 @@ micro.prototype.create_window=function(micros)
 	
 	var div=document.createElement('div');
 	div.className="title";
-	div.innerHTML="Select Experiment:";
+	div.innerHTML=imrc_labels['micro']['label2'];
 	aviablesExperiments.appendChild(div);
 	
 	var div=document.createElement('div');
@@ -146,7 +147,7 @@ micro.prototype.create_window=function(micros)
 	input.setAttribute('type','button');
 	input.setAttribute('id','RefreshdirImages');
 	input.setAttribute('name','RefreshdirImages');
-	input.setAttribute('value','Refresh');
+	input.setAttribute('value',imrc_labels['micro']['button1']);
 
 	this.SelectMicro.getFooter().appendChild(input);
 	new YAHOO.widget.Button("RefreshdirImages");

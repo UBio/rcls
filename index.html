@@ -31,6 +31,9 @@
 	<link rel="stylesheet" type="text/css" href="JS/jQCloud/jqcloud/jqcloud.css" />
     <script type="text/javascript" src="JS/jquery/jquery.js"></script>
     <script type="text/javascript" src="JS/jQCloud/jqcloud/jqcloud-1.0.3.js"></script>
+	
+	<script type="text/javascript" src="JS/Core/errors.js"></script>
+	<script type="text/javascript" src="JS/Core/labels.js"></script>
 
 	<script type="text/javascript" src="JS/Core/combo.js"></script>
 	<script type="text/javascript" src="JS/Core/itemWindow.js"></script>
@@ -108,56 +111,51 @@
 </head>
 
 <body  class="yui-skin-sam">
-	
-	<div id="element_windows">
-	<div id="currentMicro"></div>
-<!-- the id on the containing div determines the page width. -->
-<!-- #doc = 750px; #doc2 = 950px; #doc3 = 100%; #doc4 = 974px -->
-<div id="myLogger"></div>
-
-<div id="doc">					
-	<div id="hd" >
-		<p><a href="http://bioinfo.cnio.es/" target="_blank"><img border=0 src="IMG/logo.png" /></a>
-			<a href="https://intranet.cnio.es/biotecnologia/confocal/confocal_menu.asp" target="_blank"><img border=0 src="IMG/LOGOCONFO.png"></a>
-		</p>
-		<p class="myTitle">Remote Control Leica system</p>
-	</div>
-	
-	
-	<div id="bd">
-		<div id="yui-main">
-			<div class="yui-b">
-				<div id="barmenu" class="yuimenubar yuimenubarnav">
-					<div class="bd">
-						<ul class="first-of-type">
-							<li class="yuimenubaritem"><a class="yuimenubaritemlabel">Routines Options</a></li>
-							<li class="yuimenubaritem"><a class="yuimenubaritemlabel">Microscope</a></li>
-							<li class="yuimenubaritem"><a class="yuimenubaritemlabel">Experiment</a></li>
-							<li class="yuimenubaritem"><a class="yuimenubaritemlabel">Tools</a></li>
-							<li class="yuimenubaritem"><a class="yuimenubaritemlabel">Admin</a></li>
-							<li class="yuimenubaritem"><a class="yuimenubaritemlabel">Log</a></li>
-						</ul>
-						<div id="control_process"></div>
-						
-					</div>
-				</div>
-			</div>
-			
+	<div class="top" >
+		<div class="head">
+			<div class="myTitle">iMSRC</div>
+			<div id="currentMicro"></div>
 		</div>
-		
-		
-		<div class="bloques" id="pSelectMicro"></div>
-		<div class="bloques" id="pStep1"></div>
-		<div class="bloques" id="pImagej"></div>
-		<div class="bloques" id="pstephight"></div>
-		<div class="bloques" id="pStitching"></div>
+		<div id="barmenu" class="yuimenubar yuimenubarnav">
 
-		
-	</div>
-	<div id="ft">
+		</div>
 
 	</div>
-</div>	
+	<div class="content" >
+		<div id="element_windows">	
+			<div id="myLogger"></div>
+			<div id="doc">					
+				<div id="bd">
+					<div id="yui-main">
+						<div class="yui-b">
+						</div>
+			
+					</div>
+		
+		
+					<div class="bloques" id="pSelectMicro"></div>
+					<div class="bloques" id="pStep1"></div>
+					<div class="bloques" id="pImagej"></div>
+					<div class="bloques" id="pstephight"></div>
+					<div class="bloques" id="pStitching"></div>
+				</div>
+
+			</div>	
+		</div>
+	</div>
+	<div class='bottom'>
+		<div class="footer">
+			<div class='left'>
+				<a href="http://bioinfo.cnio.es/" target="_blank"><img border=0 src="IMG/logo.png" /></a>
+			</div>
+			<div class='center'>
+				<img border=0 src="IMG/LOGOCONFO.png">
+			</div>
+			<div class='right'>
+				<img border=0 src="IMG/logo-cnio.png">
+			</div>
+		</div>
+	</div>
 </div>
 </body>
 </html>
@@ -166,29 +164,28 @@
 <script>
 var myLogReader;
 var myLogWriter;
+function fnLoadHandler(oEvent, message) { 
+	            console.log(message); 
+	 
+	        }
 
-
+YAHOO.util.Event.on(window, "load", fnLoadHandler, "The window.onload event fired.  The page and all of its image data, including the large image of Uluru, has completed loading."); 
 YAHOO.util.Event.onDOMReady(function () {
 
-
+console.log('ini'); 
 	// 
 
-	
 	myLogReader = new YAHOO.widget.LogReader('myLogger', {footerEnabled:false,verboseOutput:false});
 	myLogWriter = new YAHOO.widget.LogWriter("MyClass"); 
 	myLogReader.hide(); 
-	
-	
 	var manager=new YAHOO.widget.OverlayManager();
-	
-
 	
 	var MyMicro=new micro("SelectMicro",document.getElementById('pSelectMicro'),manager);
 	MyMicro.show();
 	
 	
 	var dialogResetApp=new ResetApp(manager);
-	
+
 	var dialogUploadMacro=new UploadMacro(manager,MyMicro);
 	var dialogViewMacro=new ViewMacro(manager,MyMicro);
 	var dialogDeleteMacro=new DeleteMacro(manager,MyMicro);
@@ -295,7 +292,7 @@ YAHOO.util.Event.onDOMReady(function () {
 		var dialogLoadExperiment=new LoadExperiment(manager,MyMicro,step,imagejObj,highobj,stitching);
 		
 		
-		var menu=new menubar(manager);
+		var menu=new menubar('barmenu',manager);
 		
 		menu.onClickMenu.subscribe(function(event,args){
 				

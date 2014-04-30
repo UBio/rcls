@@ -35,7 +35,7 @@
 
 .step1 .label
 {
-	width:100px;
+	width:210px;
 	float: left;
 }
 .step2 p
@@ -46,7 +46,7 @@
 
 .step2 .label
 {
-	width:200px;
+	width:280px;
 	float: left;
 }
 .step2 .marco
@@ -71,6 +71,7 @@
 {
 	height:170px;
 }
+
 .parcentricity textarea
 {
 	width:100%;

@@ -1,6 +1,6 @@
 stitching=function(stitching,container,manager,MyMicro)
 {
-	this.name="Stiching";
+	this.name=imrc_labels['stitching']['title'];
 	this.running=false;
 	this.container=container;
 	this.template_step2="";
@@ -97,7 +97,7 @@ stitching.prototype.create_window=function(macrosStitching)
 	
 	var p=document.createElement('p');
 
-	this.MacroStitching=new combo('Select Macro',p,macrosStitching);
+	this.MacroStitching=new combo(imrc_labels['stitching']['label1'],p,macrosStitching);
 	
 
 	this.stitching.getBody().appendChild(p);
@@ -122,7 +122,7 @@ stitching.prototype.create_window=function(macrosStitching)
 		
 	this.stitching.getBody().appendChild(pMenuCodeColor);
 		
-	this.codeColor=new combo('Select Code Color',pMenuCodeColor);
+	this.codeColor=new combo(imrc_labels['stitching']['label2'],pMenuCodeColor);
 	this.codeColor.setMenu(menu);
 	
 	var p=document.createElement('p');
@@ -136,12 +136,12 @@ stitching.prototype.create_window=function(macrosStitching)
 	input.setAttribute('type','button');
 	input.setAttribute('id','btnstitchingimages');
 	input.setAttribute('name','btnstitchingimages');
-	input.setAttribute('value','View');
+	input.setAttribute('value',imrc_labels['stitching']['button1']);
 	// div_select.appendChild(select);
 	// p.appendChild(select);
 	p.appendChild(input);
 	this.stitching.getBody().appendChild(p);
-	this.SelectViewImagesStitching=new combo('Select Images',p);
+	this.SelectViewImagesStitching=new combo(imrc_labels['stitching']['label3'],p);
 	
 
 	
@@ -154,7 +154,7 @@ stitching.prototype.create_window=function(macrosStitching)
 	input.setAttribute('type','button');
 	input.setAttribute('id','stitchingbtn');
 	input.setAttribute('name','stitchingbtn');
-	input.setAttribute('value','Stiching');
+	input.setAttribute('value',imrc_labels['stitching']['button2']);
 	this.stitching.getFooter().appendChild(input);
 	new YAHOO.widget.Button("stitchingbtn"); 
 	YAHOO.util.Event.addListener(document.getElementById("stitchingbtn"),"click",this.run,this);

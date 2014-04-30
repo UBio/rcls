@@ -1,35 +1,48 @@
-menubar=function(manager)
+menubar=function(container,manager)
 {
+	var menuHTML="<div class='bd'>";
+	menuHTML+="<ul class='menu'>";
+	menuHTML+="<li class='yuimenubaritem'><a class='yuimenubaritemlabel'>"+imrc_labels['menu'][0]['title']+"</a></li>";
+	menuHTML+="<li class='yuimenubaritem'><a class='yuimenubaritemlabel'>"+imrc_labels['menu'][1]['title']+"</a></li>";
+	menuHTML+="<li class='yuimenubaritem'><a class='yuimenubaritemlabel'>"+imrc_labels['menu'][2]['title']+"</a></li>";
+	menuHTML+="<li class='yuimenubaritem'><a class='yuimenubaritemlabel'>"+imrc_labels['menu'][3]['title']+"</a></li>";
+	menuHTML+="<li class='yuimenubaritem'><a class='yuimenubaritemlabel'>"+imrc_labels['menu'][4]['title']+"</a></li>";
+	menuHTML+="<li id='control_process'></li>";
+	
+	menuHTML+="</ul>";
+	menuHTML+="</div>";
+	
+	document.getElementById(container).innerHTML=menuHTML;
 	var aSubmenuData = [
 	                    {
 	                        id: "routines", 
 	                        itemdata: [ 
-	                            { text: "Add ...",url:"#add_macro"},
-	                            { text: "Delete ...", url:"#delete_macro"},
-	                            { text: "View ...", url:"#view_macro"},
-	                            { text: "Move ...", url:"#move_macro"}
+	                            { text: imrc_labels['menu'][0]['submenu'][0]['title'],url:"#add_macro"},
+	                            { text: imrc_labels['menu'][0]['submenu'][1]['title'], url:"#delete_macro"},
+	                            { text: imrc_labels['menu'][0]['submenu'][2]['title'], url:"#view_macro"},
+	                            { text: imrc_labels['menu'][0]['submenu'][3]['title'], url:"#move_macro"}
 	                        ]
 	                    },
 	                    {
 	                        id: "connect", 
 	                        itemdata: [
 							{ 
-								text: "Micro", 
+								text: imrc_labels['menu'][1]['submenu'][0]['title'], 
                                     submenu: { 
                                         id: "microscope", 
                                         itemdata: [
-                                            {text:"Insert",url:"#insert_micro"}, 
-          									{text:"Delete",url:"#delete_micro"} 
+                                            {text:imrc_labels['menu'][1]['submenu'][0]['submenu'][0]['title'],url:"#insert_micro"}, 
+          									{text:imrc_labels['menu'][1]['submenu'][0]['submenu'][1]['title'],url:"#delete_micro"} 
                                         ] 
                                     }
 							},
 							{ 
-								text: "Parcentricity", 
+								text: imrc_labels['menu'][1]['submenu'][1]['title'], 
                                     submenu: { 
                                         id: "Parcentricity", 
                                         itemdata: [
-                                            {text:"Insert",url:"#add_parcentricity"}, 
-          									{text:"Delete",url:"#delete_parcentricity"} 
+                                            {text:imrc_labels['menu'][1]['submenu'][1]['submenu'][0]['title'],url:"#add_parcentricity"}, 
+          									{text:imrc_labels['menu'][1]['submenu'][1]['submenu'][1]['title'],url:"#delete_parcentricity"} 
                                         ] 
                                     }
 							}
@@ -40,55 +53,51 @@ menubar=function(manager)
 	                    {
 	                        id: "experiments", 
 	                        itemdata: [ 
-	                            { text: "Save ...",url:"#save_experiment"},
-	                            { text: "Load ...", url:"#load_experiment"}
+	                            { text: imrc_labels['menu'][2]['submenu'][0]['title'],url:"#save_experiment"},
+	                            { text: imrc_labels['menu'][2]['submenu'][1]['title'], url:"#load_experiment"}
 	                        ]
 	                    },
 	                    {
 	                        id: "utils", 
 	                        itemdata: [
-                            { text: "Join Templates",url:"#show_join_templates"},
-							{ text: "Stitching",url:"#show_stitching",checked:false}
+                            { text: imrc_labels['menu'][3]['submenu'][0]['title'],url:"#show_join_templates"},
+							{ text: imrc_labels['menu'][3]['submenu'][1]['title'],url:"#show_stitching",checked:false}
 	                        ] 
 	                    },
 	                    {
 	                        id: "admin", 
 	                        itemdata: [
 							{ 
-								text: "Application", 
+								text: imrc_labels['menu'][4]['submenu'][0]['title'], 
                                     submenu: { 
                                         id: "application", 
                                         itemdata: [
-          									{text:"Reset",url:"#reset_app"} 
+          									{text:imrc_labels['menu'][4]['submenu'][0]['submenu'][0]['title'],url:"#reset_app"} 
                                         ] 
                                     }
+							},
+							{
+								text:imrc_labels['menu'][4]['submenu'][1]['title'],
+								submenu:{
+								    		id: "log",
+											itemdata: [
+												{ text: imrc_labels['menu'][4]['submenu'][1]['submenu'][0]['title'],url:"#show_log"},
+												{ text: imrc_labels['menu'][4]['submenu'][1]['submenu'][1]['title'],url:"#hide_log"}
+												]
+								}
 							}
 
 							
-                            // { text: "Insert Objetive", url:"#insert_objetive"}
 	                        ]    
-	                    },
-	                    // {
-	                    //     id: "experiment",
-	                    //     itemdata: [
-	                    //                             { text: "Load",url:"#load_experiment"},
-	                    //                             { text: "Save",url:"#save_experiment"}
-	                    //     ]
-	                    // },
-	                    {
-	                        id: "log",
-	                        itemdata: [
-                            { text: "Show",url:"#show_log"},
-                            { text: "Hide",url:"#hide_log"},
-	                        ]
-	                    }                    
+	                    }
+                   
 	                ];
 	
 	
 
 	
 	
-	var oMenuBar = new YAHOO.widget.MenuBar("barmenu", { 
+	var oMenuBar = new YAHOO.widget.MenuBar(container, { 
 	                                                       // autosubmenudisplay: true, 
 	                                                       // hidedelay: 750, 
 	                                                       lazyload:true,

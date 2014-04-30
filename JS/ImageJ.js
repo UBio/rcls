@@ -1,6 +1,6 @@
 imagej=function(imagej,container,manager,MyMicro)
 {
-	this.name="Objects Detection and High Resolution Scanning";
+	this.name=imrc_labels['imagej']['title'];
 	this.container=container;
 	this.running=true;
 	this.MyMicro=MyMicro;
@@ -69,7 +69,7 @@ imagej.prototype.hide=function()
 imagej.prototype.CreateListMacroDetect=function(listMacrosDetect)
 {
 	var p=document.createElement(p);
-	this.ListMacrosDetect=new combo('Select Objects detection Routine',p,listMacrosDetect);
+	this.ListMacrosDetect=new combo(imrc_labels['imagej']['label1'],p,listMacrosDetect);
 	return p;
 }
 imagej.prototype.CreateListMacroBlack=function(listMacrosBlacks)
@@ -78,14 +78,14 @@ imagej.prototype.CreateListMacroBlack=function(listMacrosBlacks)
 
 	this.chkremoveblacks = new YAHOO.widget.Button({
 	                            type: "checkbox",
-	                            label: "Remove Blacks: Off",
+	                            label: imrc_labels['imagej']['button1']['off'],
 	                            value: "1",
 	                            container: p,
 	                            checked: false });
 
 	this.chkremoveblacks.subscribe("checkedChange",this.onRemoveBlacks,this);
 
-	this.ListMacrosBlack=new combo('Select Remove Blacks Routine',p,listMacrosBlacks);
+	this.ListMacrosBlack=new combo(imrc_labels['imagej']['label3'],p,listMacrosBlacks);
 	this.ListMacrosBlack.disabled();
 	return p;
 }
@@ -209,7 +209,7 @@ imagej.prototype.create_window=function(macrosDetect,templates)
 	divautocomplete.setAttribute('id','myAutoCompleteStep2');
 
 	var label=document.createElement('label');
-	label.innerHTML="Select Template 2:";
+	label.innerHTML=imrc_labels['imagej']['label2'];
 	divautocomplete.appendChild(label);
 
 	var input=document.createElement('input');
@@ -235,7 +235,7 @@ imagej.prototype.create_window=function(macrosDetect,templates)
 
 	this.chkCoordinateCorrection = new YAHOO.widget.Button({
 	                            type: "checkbox",
-	                            label: "Coordinate correction: Off",
+	                            label: imrc_labels['imagej']['button2']['off'],
 	                            value: "1",
 	                            container: p,
 	                            checked: false });
@@ -244,11 +244,11 @@ imagej.prototype.create_window=function(macrosDetect,templates)
 															{
 																if(event.newValue)
 																{
-																	this.set('label',"Coordinate correction: On");
+																	this.set('label',imrc_labels['imagej']['button2']['on']);
 																}
 																else
 																{
-																	this.set('label',"Coordinate correction: Off");
+																	this.set('label',imrc_labels['imagej']['button2']['off']);
 																}
 
 															});
@@ -261,7 +261,7 @@ imagej.prototype.create_window=function(macrosDetect,templates)
 	input.setAttribute('type','button');
 	input.setAttribute('id','AdvanceOptions');
 	input.setAttribute('name','AdvanceOptions');
-	input.setAttribute('value','Advanced Options');
+	input.setAttribute('value',imrc_labels['imagej']['button3']);
 	this.imagej.getFooter().appendChild(input);
 	this.AdvanceOptionsbtn=new YAHOO.widget.Button("AdvanceOptions");
 	YAHOO.util.Event.addListener(document.getElementById("AdvanceOptions"),"click",this.showPanelOptions,this);
@@ -271,7 +271,7 @@ imagej.prototype.create_window=function(macrosDetect,templates)
 	input.setAttribute('type','button');
 	input.setAttribute('id','searchcreate');
 	input.setAttribute('name','searchcreate');
-	input.setAttribute('value','Analyze Images');
+	input.setAttribute('value',imrc_labels['imagej']['button4']);
 	this.imagej.getFooter().appendChild(input);
 
 	this.searchcreatebtn=new YAHOO.widget.Button("searchcreate");
@@ -281,7 +281,7 @@ imagej.prototype.create_window=function(macrosDetect,templates)
 	input.setAttribute('type','button');
 	input.setAttribute('id','ViewDetectImageJ');
 	input.setAttribute('name','ViewDetectImageJ');
-	input.setAttribute('value','View Detected Image');
+	input.setAttribute('value',imrc_labels['imagej']['button5']);
 	this.imagej.getFooter().appendChild(input);
 	this.ViewDetectImageJBtn=new YAHOO.widget.Button("ViewDetectImageJ");
 	YAHOO.util.Event.addListener(document.getElementById("ViewDetectImageJ"),"click",this.ViewDetectImageJ,this);
@@ -290,7 +290,7 @@ imagej.prototype.create_window=function(macrosDetect,templates)
 	input.setAttribute('type','button');
 	input.setAttribute('id','ChangeImage');
 	input.setAttribute('name','ChangeImage');
-	input.setAttribute('value','Change Sample');
+	input.setAttribute('value',imrc_labels['imagej']['button6']);
 	this.imagej.getFooter().appendChild(input);
 	this.ChangeImagebtn=new YAHOO.widget.Button("ChangeImage");
 	YAHOO.util.Event.addListener(document.getElementById("ChangeImage"),"click",this.showPanelChangeImage,this);
@@ -304,13 +304,13 @@ imagej.prototype.onRemoveBlacks=function(event,me)
 {
 	if(event.newValue)
 	{
-		this.set('label','Remove Blacks: On');
+		this.set('label',imrc_labels['imagej']['button1']['on']);
 		me.ListMacrosBlack.enabled();
 		me.onRemoveBlacksEvent.fire(true);
 	}
 	else
 	{
-		this.set('label','Remove Blacks: Off');
+		this.set('label',imrc_labels['imagej']['button']['off']);
 		me.ListMacrosBlack.disabled();
 		me.onRemoveBlacksEvent.fire(false);
 	}
@@ -342,9 +342,9 @@ imagej.prototype.setParamatersOptionsImage=function(slide,chamber)
 	if(!this.panelOptiones)
 	{
 		this.panelOptiones = new YAHOO.widget.Panel("panelOptiones", { width:"320px", visible:false, zindex:5,modal:true,draggable:true, close:true,fixedcenter:true} );
-		this.panelOptiones.setHeader("Advanced options");
+		this.panelOptiones.setHeader(imrc_labels['imagej']['advanced']['title']);
 		this.setParamatersOptionsImage(0,0);
-		this.panelOptiones.setFooter("<button id='btnPanelOptionesRefresh'>Refresh</button>");
+		this.panelOptiones.setFooter("<button id='btnPanelOptionesRefresh'>"+imrc_labels['imagej']['advanced']['button2']+"</button>");
 		this.panelOptiones.render(document.body);
 		this.btnPanelOptionesRefresh=new YAHOO.widget.Button("btnPanelOptionesRefresh");
 		YAHOO.util.Event.addListener(document.getElementById("btnPanelOptionesRefresh"),"click",this.refresh,this);
@@ -358,11 +358,11 @@ imagej.prototype.setParamatersOptionsImage=function(slide,chamber)
 		chamber=0;
 	}
 	
-	var bodyOptionsImage="<div><p>ThresHold: <input type ='text' size=3 id='thresholdmin' name='thresholdmin' value='"+this.currentOptionsImagen[slide][chamber].thresholdmin+"'> - ";
+	var bodyOptionsImage="<div><p>"+imrc_labels['imagej']['advanced']['label1']+"<input type ='text' size=3 id='thresholdmin' name='thresholdmin' value='"+this.currentOptionsImagen[slide][chamber].thresholdmin+"'> - ";
 	bodyOptionsImage+="<input  type ='text' size=3 id='thresholdmax' name='thresholdmax' value='"+this.currentOptionsImagen[slide][chamber].thresholdmax+"'></p><br>";
-	bodyOptionsImage+="<p>Size: <input type ='text' size=6  id='size' name='size' value='"+this.currentOptionsImagen[slide][chamber].size+"'>-";
+	bodyOptionsImage+="<p>"+imrc_labels['imagej']['advanced']['label2']+"<input type ='text' size=6  id='size' name='size' value='"+this.currentOptionsImagen[slide][chamber].size+"'>-";
 	bodyOptionsImage+="<input type ='text' size=6  id='maxsize' name='maxsize' value='"+this.currentOptionsImagen[slide][chamber].maxsize+"'></p><br>";
-	bodyOptionsImage+="<p>Circularity: <input  type ='text' size=3 id='circularity' name='circularity' value='"+this.currentOptionsImagen[slide][chamber].circularity+"'></p></div>";
+	bodyOptionsImage+="<p>"+imrc_labels['imagej']['advanced']['label3']+"<input  type ='text' size=3 id='circularity' name='circularity' value='"+this.currentOptionsImagen[slide][chamber].circularity+"'></p></div>";
 	this.panelOptiones.setBody(bodyOptionsImage);
 	return bodyOptionsImage;
 }
@@ -407,14 +407,15 @@ imagej.prototype.showPanelChangeImage=function(event,me)
 	}
 	else
 	{
-		new dialog_alert("Notice","Please click in run button first",'notice');
+		new dialog_alert("Notice",'','notice',"IMAGEJ_CHECK_RUN");
+		
 	}
 }
 imagej.prototype.showPanelOptions=function(event,me)
 {
 	me.setParamatersOptionsImage(me.currentSlide,me.currentChamber);
 	me.panelOptiones.show();
-	me.btnPanelOptionesRefresh.set("label","ok");
+	me.btnPanelOptionesRefresh.set("label",imrc_labels['imagej']['advanced']['button1']);
 }
 imagej.prototype.refresh=function(event,me)
 {
@@ -467,7 +468,7 @@ imagej.prototype.ViewImage=function(response)
 	if(response != "")
 	{
 		YAHOO.util.Event.addListener("btnPanelOptiones", "click", this.panelOptiones.show, this.panelOptiones, true);
-		this.btnPanelOptionesRefresh.set("label","Refresh");
+		this.btnPanelOptionesRefresh.set("label",imrc_labels['imagej']['advanced']['button2']);
 	}
 
 	this.PanelViewImageJ.show();
@@ -502,7 +503,8 @@ imagej.prototype.ViewDetectImageJ=function(event,me)
 	}
 	else
 	{
-		new dialog_alert("Notice","Please click in run button first",'notice');
+		new dialog_alert("Notice",'','notice',"IMAGEJ_CHECK_RUN");
+		
 	}
 }
 imagej.prototype.check_url=function()
@@ -517,34 +519,33 @@ imagej.prototype.check_url=function()
 	var template_step2=document.getElementById("step2").value;
 	if(template_step1 =='')
 	{
-		new dialog_alert("Error",'Falta el template 1','error');
-
-		this.onErrorEvent.fire('Error:Missing template 1');
+		var dialog=new dialog_alert("Error",'','error','IMAGEJ_MISS_TEM1');	
+		this.onErrorEvent.fire('Error:'+dialog.code2text('IMAGEJ_MISS_TEM1'));
 		return -1;
 	}
 	if(template_step2 =='')
 	{
-		new dialog_alert("Error",'Falta el template 2','error');
-		this.onErrorEvent.fire('Error:Missing template 2');
+		var dialog=new dialog_alert("Error",'','error','IMAGEJ_MISS_TEM2');	
+		this.onErrorEvent.fire('Error:'+dialog.code2text('IMAGEJ_MISS_TEM2'));
 		return -1;
 	}
 	if(dirImages =='' || dirImages==undefined)
 	{
-		new dialog_alert("Error",'Check Leica Application, stitching is check','error');
-		this.onErrorEvent.fire('Error:Check Leica Application, stitching is check');
+		var dialog=new dialog_alert("Error",'','error','IMAGEJ_STIT_CHECK');
+		this.onErrorEvent.fire('Error:'+dialog.code2text('IMAGEJ_STIT_CHECK'));
 		return -1;
 	}
 	if(this.ListMacrosDetect.getValue() == undefined)
 	{
-		new dialog_alert("Error",'Missing Detect Macro','error');
-		this.onErrorEvent.fire('Error:Missing Detect Macro');
+		var dialog=new dialog_alert("Error",'','error','IMAGEJ_MISS_DET_MACRO');
+		this.onErrorEvent.fire('Error:'+dialog.code2text('IMAGEJ_MISS_DET_MACRO'));
 		return -1;
 	}
 
 	if(this.chkremoveblacks.get('checked') && this.ListMacrosBlack.getValue() == undefined)
 	{
-		new dialog_alert("Error",'Missing Balck Macro','error');
-		this.onErrorEvent.fire('Error:Missing Black Macro');
+		var dialog=new dialog_alert("Error",'','error','IMAGEJ_MISS_BLACK_MACRO');
+		this.onErrorEvent.fire('Error:'+dialog.code2text('IMAGEJ_MISS_BLACK_MACRO'));
 		return -1;
 	}
 
@@ -630,11 +631,12 @@ imagej.prototype.run=function(event,me)
 											{
 												results="<p><b>Load:</b><ul>"+schemas+"</ul></p><p><b>ERROR:</b><ul>"+schemasErr+"</ul></P>";
 											}
-											new dialog_alert("ImageJ Analisys Finished",results,'help');
+											new dialog_alert("Info",'','info','IMAGEJ_FINISH');
+																						
 										}
 										else
 										{
-											new dialog_alert("Unexpected error",'Please, contact with your administrator','error');
+											new dialog_alert("Error",'','error','IMAGEJ_UNEXPECTED');
 										}
 
 										me.onFinishedEvent.fire(templates,document.getElementById("step2").value);
@@ -646,7 +648,7 @@ imagej.prototype.run=function(event,me)
 									me.disabledAllButtons();
 									MicroStatusObj.hide();
 									// me.MyMicro.conf.progressbar.hide();
-									new dialog_alert("Notice",o.responseText,'notice');
+									new dialog_alert("Error",'','error','IMAGEJ_UNEXPECTED',null,o.responseText);
 								}
 		};
 

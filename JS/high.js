@@ -1,6 +1,6 @@
 high=function(step,container,manager,micro)
 {
-	this.name="High Resolution Scanning";
+	this.name=imrc_labels['high']['title'];
 	this.running=true;
 	this.container=container;
 	this.MyMicro=micro;
@@ -54,7 +54,7 @@ high.prototype.create_window=function()
 	this.inputcheckbox.setAttribute('id','chkalltemplatestep2');
 	this.inputcheckbox.setAttribute('checked',true);
 	var label=document.createElement('label');
-	label.innerHTML="Scan All Templates:&nbsp;";
+	label.innerHTML=imrc_labels['high']['label1'];
 	
 	YAHOO.util.Event.addListener(this.inputcheckbox,"change",function(event,me){me.scanAllTemplates=this.checked;},this);
 	
@@ -81,7 +81,7 @@ high.prototype.create_window=function()
 	// this.select.appendChild(o);
 	// 
 	var label=document.createElement('label');
-	label.innerHTML="Select Template:";	
+	label.innerHTML=imrc_labels['high']['label2'];	
 	p.appendChild(label);
 	p.appendChild(this.select);
 	
@@ -91,7 +91,7 @@ high.prototype.create_window=function()
 	input.setAttribute('type','button');
 	input.setAttribute('id','PlayStep2');
 	input.setAttribute('name','PlayStep2');
-	input.setAttribute('value',"Run High Scanning");
+	input.setAttribute('value',imrc_labels['high']['button2']);
 	var divMakeAF=document.createElement('div');
 	divMakeAF.className='MakeAF';
 	
@@ -103,7 +103,7 @@ high.prototype.create_window=function()
 	
 	this.makeAF = new YAHOO.widget.Button({
 	                            type: "checkbox",
-	                            label: "Autofocus: On",
+	                            label: imrc_labels['high']['button1']['on'],
 	                            value: "1",
 	                            container: divMakeAF,
 	                            checked: true });
@@ -115,11 +115,11 @@ high.prototype.onMakeAF=function(event,me)
 {
 	if(event.newValue)
 	{
-		this.set('label','Autofocus: On');
+		this.set('label',imrc_labels['high']['button1']['on']);
 	}
 	else
 	{
-		this.set('label','Autofocus: Off');
+		this.set('label',imrc_labels['high']['button1']['off']);
 
 	}
 }

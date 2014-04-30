@@ -1,3 +1,15 @@
+// 'addmacro':{
+// 			title:'Add macro',
+// 			button1:'Save',
+// 			button2:'Cancel',
+// 			label1: 'Select macro file: ',
+// 			select:{
+// 				title:'Type of macros',
+// 				options:['Objects detection','Remove Non Informative Areas','Mosaic images stitching']
+// 					}
+// 			
+// }
+
 UploadMacro=function(manager,MyMicro)
 {
 	this.ListTypeMacros;
@@ -9,7 +21,7 @@ UploadMacro=function(manager,MyMicro)
 	
 	this.options={
 						expand:false,
-						width:"300px",
+						width:"350px",
 						isExpanded:false,
 						close:true,
 						modal:true,
@@ -27,7 +39,7 @@ UploadMacro=function(manager,MyMicro)
 	this.setTitleDialogMacro=function()
 	{
 		var label=document.createElement('label');
-		label.innerHTML="Add Macro";
+		label.innerHTML=imrc_labels['addmacro']['title'];
 		_setTitleDialogMacro(label);
 	}
 	this.setContentDialogMacro=function()
@@ -58,16 +70,16 @@ UploadMacro.prototype.getContent=function(listTypeMacros)
 	form.setAttribute('enctype','multipart/form-data');
 		
 	var p=document.createElement('p');
+	console.log(imrc_labels['addmacro']['select']['options']);
 	
-
-	this.ListTypeMacros=this.createList('Select Type Macro',p,listTypeMacros);
+	this.ListTypeMacros=this.createList(imrc_labels['addmacro']['select']['title'],p,imrc_labels['addmacro']['select']['options']);
 	
 	form.appendChild(p);
 	
 	
 	var p=document.createElement('p');
 	var label=document.createElement('label');
-	label.innerHTML="Select Macro File:";
+	label.innerHTML=imrc_labels['addmacro']['label1'];
 	this.inputFile=document.createElement('input');
 	this.inputFile.setAttribute('name','AddMacro');
 	this.inputFile.setAttribute('type','file');
@@ -87,12 +99,12 @@ UploadMacro.prototype.getButtons=function()
 	this.upload_btn=document.createElement('input');
 	this.upload_btn.setAttribute('type','button');
 
-	this.upload_btn.setAttribute('value','Save');
+	this.upload_btn.setAttribute('value',imrc_labels['addmacro']['button1']);
 	p.appendChild(this.upload_btn);
 	
 	this.cancel_btn=document.createElement('input');
 	this.cancel_btn.setAttribute('type','button');
-	this.cancel_btn.setAttribute('value','Cancel');
+	this.cancel_btn.setAttribute('value',imrc_labels['addmacro']['button2']);
 	p.appendChild(this.cancel_btn);
 	
 	return p;

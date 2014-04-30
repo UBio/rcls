@@ -86,7 +86,7 @@ iPlay.prototype.create_control=function(container)
 	var label=document.createElement('label');
 	label.className='button';
 	
-	label.innerHTML="Play";
+	label.innerHTML=imrc_labels['menu'][5]['title'];
 	this.playAll.appendChild(label);
 	
 	this.control.appendChild(this.playAll);

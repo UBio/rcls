@@ -1,6 +1,6 @@
 step1=function(step,container,manager,MyMicro)
 {
-	this.name="Low Resolution Scanning";
+	this.name=imrc_labels['step1']['title'];
 	this.running=true;
 	this.container=container;
 	this.step=step;
@@ -112,7 +112,7 @@ step1.prototype.create_window=function()
 	var p=document.createElement('p');
 
 	var label=document.createElement('label');
-	label.innerHTML="Select Low Resolution Scanning Settings:";
+	label.innerHTML=imrc_labels['step1']['label1'];
 
 	var divautocomplete=document.createElement('div');
 	divautocomplete.className="autocomplete";
@@ -139,7 +139,7 @@ step1.prototype.create_window=function()
 	input.setAttribute('id','AFPlayStep1');
 	input.setAttribute('name','step1');
 	input.setAttribute('type','button');
-	input.setAttribute('value','Run Autofocus & Play');
+	input.setAttribute('value',imrc_labels['step1']['button1']);
 	input.className='bottom_footer';
 	var divMakeAF=document.createElement('div');
 	divMakeAF.className='MakeAF';
@@ -156,7 +156,7 @@ step1.prototype.create_window=function()
 	input.setAttribute('id','ViewScanStep1');
 	input.setAttribute('name','ViewScanStep1');
 	input.setAttribute('type','button');
-	input.setAttribute('value','Low Resolution Image');
+	input.setAttribute('value',imrc_labels['step1']['button3']);
 	this.step1.getFooter().appendChild(input);	
 	
 	this.AFPlayStep1Btn=new YAHOO.widget.Button("AFPlayStep1",{disabled:true}); 
@@ -167,7 +167,7 @@ step1.prototype.create_window=function()
 	YAHOO.util.Event.addListener(document.getElementById("AFPlayStep1"),"click",this.run,this);
 	this.makeAF = new YAHOO.widget.Button({
 	                            type: "checkbox",
-	                            label: "Autofocus: On",
+	                            label: imrc_labels['step1']['button2']['on'],
 	                            value: "1",
 	                            container: divMakeAF,
 	                            checked: true });
@@ -181,11 +181,11 @@ step1.prototype.onMakeAF=function(event,me)
 {
 	if(event.newValue)
 	{
-		this.set('label','Autofocus: On');
+		this.set('label', imrc_labels['step1']['button2']['on']);
 	}
 	else
 	{
-		this.set('label','Autofocus: Off');
+		this.set('label',imrc_labels['step1']['button2']['off']);
 
 	}
 }
@@ -361,8 +361,8 @@ step1.prototype.check=function()
 {
 	if(document.getElementById("step1").value == '')
 	{
-		new dialog_alert("Error",'falta template step1',"error");		
-		this.onErrorEvent.fire('ERROR: falta template step1');
+		new dialog_alert("Error",'','Error','STEP1_MISS_TEM');	
+		this.onErrorEvent.fire('STEP1_MISS_TEM');
 		return -1;
 	}
 	return 0;
