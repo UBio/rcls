@@ -13,6 +13,13 @@
     width: 100%;
 	z-index:999;
 }
+.yui-skin-sam .yuimenuitem-checked 
+{
+    background-image: url("../IMG/menuitem_checkbox.png");
+    background-position: left center;
+    background-repeat: no-repeat;
+}
+
 .head
 {
 	width:750px;
@@ -92,7 +99,8 @@
 }
 .yui-skin-sam .yuimenu .bd
 {
-	background-image: url(../IMG/menu-bg.gif);
+/*	background-image: url(../IMG/menu-bg.gif);*/
+	background-color:#202123;
 }
 .yui-skin-sam .yuimenubar ul.menu
 {
@@ -180,12 +188,18 @@ li.yuimenubaritem
 	{
 		float:left;
 	}
-	.yui-skin-sam .yui-panel .ft {
-	    border-top: 1px solid #808080;
-	    font-size: 12px;
-	    height: 28px;
-	    padding: 5px 10px;
-	}
+.yui-skin-sam .yui-panel .ft 
+{
+	border-top: 1px solid #808080;
+	font-size: 12px;
+	height: 28px;
+	padding: 5px 10px;
+}
+.yui-skin-sam .yuimenu .topscrollbar, .yui-skin-sam .yuimenu .bottomscrollbar 
+{
+    height: 16px;
+	padding: 0px 10px;
+}
 
 	.MakeAF
 	{

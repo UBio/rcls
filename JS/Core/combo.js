@@ -36,8 +36,8 @@ combo=function(label,container,MenuItems)
 													menu:this.menu,
 													lazyloadmenu:false
 											});
-											
-	// this.oSplitButton.addListener('valueChange',function(){alert('menu');});
+										
+	// this.oSplitButton.addListener('focus',function(){alert(this.get('name'));});
 }
 combo.prototype.addListener=function(event,fn,args)
 {

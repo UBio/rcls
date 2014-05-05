@@ -348,7 +348,7 @@ step1.prototype.show=function()
 {
 	this.step1.show();
 	this.running=true;
-	this.container.style.display='inline';	
+	this.container.style.display='block';	
 }
 step1.prototype.hide=function()
 {

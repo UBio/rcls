@@ -204,8 +204,10 @@ console.log('ini');
 	if(MyMicro.error >=0)
 	{
 		var step=new step1("Step1",document.getElementById('pStep1'),manager,MyMicro);
-		imagejObj=new imagej("imagej",document.getElementById('pImagej'),manager,MyMicro);
+		var highobj=new high("stephight",document.getElementById('pstephight'),manager,MyMicro);
+		
 		stitching=new stitching("stitching",document.getElementById('pStitching'),manager,MyMicro);
+		imagejObj=new imagej("imagej",document.getElementById('pImagej'),manager,MyMicro);
 		
 		if(step.MicroIsUse)
 		{
@@ -245,7 +247,6 @@ console.log('ini');
 													}
 												},stitching);
 	
-		var highobj=new high("stephight",document.getElementById('pstephight'),manager,MyMicro);
 	
 		imagejObj.onFinishedEvent.subscribe(function(event,args,me)
 		{

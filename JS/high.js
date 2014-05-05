@@ -139,7 +139,7 @@ high.prototype.show=function()
 {
 	this.high.show();
 	this.running=true;
-	this.container.style.display='inline';
+	this.container.style.display='block';
 }
 high.prototype.hide=function()
 {
