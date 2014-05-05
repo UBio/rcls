@@ -36,7 +36,11 @@
     font-size: 91px;
     width: 291px;
 	float:left;
-
+}
+.title label
+{
+    color: #FEF232;
+    font-size: 91px;
 }
 .content
 {
