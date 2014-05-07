@@ -107,7 +107,7 @@ SaveExperiment.prototype.save=function(event,me)
 	url+='&threshold='+me.detectionObj.getAdvanceOptions().thresholdmin+","+me.detectionObj.getAdvanceOptions().thresholdmax;
 	url+='&size='+me.detectionObj.getAdvanceOptions().size+","+me.detectionObj.getAdvanceOptions().maxsize;
 	url+='&circularity='+me.detectionObj.getAdvanceOptions().circularity;	
-	url+='&correction='+me.detectionObj.getCorrection();
+	// url+='&correction='+me.detectionObj.getCorrection();
 	
 	url+='&rm_blacks='+me.detectionObj.getRemoveBlacksParams().value;
 	url+='&rm_blacks_template='+me.detectionObj.getRemoveBlacksParams().template;

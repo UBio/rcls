@@ -206,7 +206,7 @@ LoadExperiment.prototype.setExperimentRestParameters=function(xmlDocument)
 					}
 					// if(existsTemplateRemoveBlacks)
 					// {
-						this.detectionObj.setCorrection(eval(xmlDocument.getElementsByTagName('detection')[0].getAttribute("correction")));
+						// this.detectionObj.setCorrection(eval(xmlDocument.getElementsByTagName('detection')[0].getAttribute("correction")));
 						this.detectionObj.setAdvanceOptions(
 							xmlDocument.getElementsByTagName('threshold')[0].getAttribute("min"),
 							xmlDocument.getElementsByTagName('threshold')[0].getAttribute("max"),

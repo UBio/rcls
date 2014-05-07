@@ -25,8 +25,8 @@ my $det_template=$cgi->param("det_template");
 my @threshold=split(",",$cgi->param("threshold"));
 my @size=split(",",$cgi->param("size"));
 my $circularity=$cgi->param("circularity");
-my $correction=$cgi->param("correction");
-
+# my $correction=$cgi->param("correction");
+my $correction='';
 my $rm_blacks=$cgi->param("rm_blacks");
 my $rm_blacks_template=$cgi->param("rm_blacks_template");
 

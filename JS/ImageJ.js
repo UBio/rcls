@@ -122,15 +122,15 @@ imagej.prototype.setTemplate=function(template)
 {
 	return this.oAC.setValue(template);
 }
-imagej.prototype.getCorrection=function()
-{
-	return this.chkCoordinateCorrection.get('checked');
-}
+// imagej.prototype.getCorrection=function()
+// {
+// 	return this.chkCoordinateCorrection.get('checked');
+// }
 
-imagej.prototype.setCorrection=function(value)
-{
-	this.chkCoordinateCorrection.set('checked',value);
-}
+// imagej.prototype.setCorrection=function(value)
+// {
+// 	this.chkCoordinateCorrection.set('checked',value);
+// }
 imagej.prototype.getRemoveBlacksParams=function()
 {
 	var param={'value':this.chkremoveblacks.get('checked'),
@@ -233,28 +233,28 @@ imagej.prototype.create_window=function(macrosDetect,templates)
 	var p=document.createElement('p');
 
 
-	this.chkCoordinateCorrection = new YAHOO.widget.Button({
-	                            type: "checkbox",
-	                            label: imrc_labels['imagej']['button2']['off'],
-	                            value: "1",
-	                            container: p,
-	                            checked: false });
-
-	this.chkCoordinateCorrection.subscribe("checkedChange",function(event)
-															{
-																if(event.newValue)
-																{
-																	this.set('label',imrc_labels['imagej']['button2']['on']);
-																}
-																else
-																{
-																	this.set('label',imrc_labels['imagej']['button2']['off']);
-																}
-
-															});
-
-
-	this.imagej.getBody().appendChild(p);
+	// this.chkCoordinateCorrection = new YAHOO.widget.Button({
+	//                             type: "checkbox",
+	//                             label: imrc_labels['imagej']['button2']['off'],
+	//                             value: "1",
+	//                             container: p,
+	//                             checked: false });
+	// 
+	// this.chkCoordinateCorrection.subscribe("checkedChange",function(event)
+	// 														{
+	// 															if(event.newValue)
+	// 															{
+	// 																this.set('label',imrc_labels['imagej']['button2']['on']);
+	// 															}
+	// 															else
+	// 															{
+	// 																this.set('label',imrc_labels['imagej']['button2']['off']);
+	// 															}
+	// 
+	// 														});
+	// 
+	// 
+	// this.imagej.getBody().appendChild(p);
 
 
 	var input=document.createElement('input');
@@ -552,7 +552,7 @@ imagej.prototype.check_url=function()
 	var url='cgi-bin/LeicaConfocal.cgi?action=create&step=imagej&black='+this.chkremoveblacks.get('checked');
 	url+='&template_step1='+template_step1;
 
-	url+='&coor='+this.chkCoordinateCorrection.get("checked");
+	// url+='&coor='+this.chkCoordinateCorrection.get("checked");
 
 	url+='&template_step2='+template_step2;
 	url+="&name="+document.getElementById("micro").value;
