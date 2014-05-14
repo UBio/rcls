@@ -54,7 +54,10 @@ itemWindow.prototype.expanded=function(event,me)
 		me.options.isExpanded=true;
 	}
 }
-
+itemWindow.prototype.focus=function()
+{
+	this.windowPanel.focus();
+}
 itemWindow.prototype.getFooter=function()
 {
 	return this.footer;

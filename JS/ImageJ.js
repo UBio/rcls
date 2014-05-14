@@ -631,7 +631,7 @@ imagej.prototype.run=function(event,me)
 											{
 												results="<p><b>Load:</b><ul>"+schemas+"</ul></p><p><b>ERROR:</b><ul>"+schemasErr+"</ul></P>";
 											}
-											new dialog_alert("Info",'','info','IMAGEJ_FINISH');
+											new dialog_alert("Info",'','info','IMAGEJ_FINISH',null,results);
 																						
 										}
 										else

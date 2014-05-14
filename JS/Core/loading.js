@@ -6,7 +6,7 @@ loading=function(container)
 						isExpanded:false,
 						close:false,
 						modal:true,
-						center:true,
+						center:false,
 						visible:true
 					};
 
@@ -30,12 +30,10 @@ loading.prototype.create_window=function()
 
 	var div=document.createElement('div');
 	div.className='title';
-	var label=document.createElement('label');
-	label.innerHTML="iMSRC";
-	
-	div.appendChild(label);
+	var divIMG=document.createElement('div');
+	divIMG.className='logo';
+	div.appendChild(divIMG);
 	this.panel.getBody().appendChild(div);
-	
 	
 	
 }

@@ -2,6 +2,12 @@
 {
     width: 700px;
 }*/
+#Loading_c
+{
+	z-index:9999999;
+	top:169px;
+	margin-left:22%;
+}
 .top
 {
 	background-color:#304369;
@@ -32,10 +38,20 @@
 .myTitle
 {
 /*    border: 1px solid;*/
-    color: #FEF232;
+/*    color: #FEF232;
     font-size: 91px;
-    width: 291px;
+    width: 291px;*/
 	float:left;
+}
+.title .logo
+{
+	background:url("../IMG/LogoiMSRCweb.png");
+	height:288px;
+	background-repeat:no-repeat;
+}
+.myTitle img
+{
+	margin-top:5px;
 }
 .title label
 {

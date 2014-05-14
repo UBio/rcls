@@ -108,10 +108,10 @@ var imrc_labels={
 				button1:'Run Autofocus & Play',
 				button2:{on:'Autofocus: On',off:'Autofocus: Off'},
 				button3:'Low resolution Image',
-				label1:'Select Low Resolution Scanning Settings:'
+				label1:'Select Low Resolution Scan Settings:'
 	},
 	'imagej':{
-				title:'2st SCAN',
+				title:'2nd SCAN',
 				button1:{on:'NoIR: On',off:'NoIR: Off'},
 				button2:{on:'Coordinete correction: On',off:'Coordinete correction: Off'},
 				button3:'Advanced Options',
@@ -131,7 +131,7 @@ var imrc_labels={
 						}
 	},
 	'high':{
-				title:'High resolution scanning',
+				title:'Scan Launcher',
 				button1:{on:'Autofocus: On',off:'Autofocus: Off'},
 				button2:'Run high scanning',
 				label1: 'Scan all templates',

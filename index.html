@@ -114,7 +114,7 @@
 <body  class="yui-skin-sam">
 	<div id='top' class="top" >
 		<div class="head">
-			<div class="myTitle">iMSRC</div>
+			<div class="myTitle"><img src="IMG/LogoiMSRCweb_p.png"/></div>
 			<div id="currentMicro"></div>
 		</div>
 		<div id="barmenu" class="yuimenubar yuimenubarnav">
@@ -175,9 +175,9 @@ function fnLoadHandler(oEvent, message) {
 
 YAHOO.util.Event.on(window, "load", fnLoadHandler, "Loading ..."); 
 YAHOO.util.Event.onDOMReady(function () {
+	Loading=new loading(document.body);
 
 console.log('ini'); 
-Loading=new loading(document.body);
 	// 
 	document.getElementById('bottom').style.display='none';
 
@@ -188,6 +188,8 @@ Loading=new loading(document.body);
 	
 	var MyMicro=new micro("SelectMicro",document.getElementById('pSelectMicro'),manager);
 	MyMicro.show();
+	
+	
 	
 	
 	var dialogResetApp=new ResetApp(manager);
