@@ -6,6 +6,7 @@ use File::Basename;
 use FindBin qw($Bin);
 use LWP::Simple;
 use lib "$Bin/../cgi-bin";
+use lib "$Bin/../libexe";
 use INITIALIZE::LICENSE::check;
 
 my $help;
@@ -33,6 +34,8 @@ sub help
 # 	print "FAIL!!!!!!! no existe el directorio temporal\n";
 # 	exit -1;
 # }
+
+
 $ENV{PERL5LIB}.=":$Bin/../libexe:$Bin/../cgi-bin:$Bin/../cgi-bin/INITIALIZE";
 print 'PERL5LIB='.$ENV{PERL5LIB}."\n";
 my $confocal_root=`cd .. && pwd`;

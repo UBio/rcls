@@ -45,7 +45,7 @@ our $HTTP_ERROR_410="This Image Dont have black fields";
 our $HTTP_ERROR_411="This Image dont have tissues or cell";
 our $HTTP_ERROR_412="unknown error";
 our $HTTP_ERROR_413="Missing grid File, please you must indicated gridx and gridy values";
-our $HTTP_ERROR_414="The mane of the Macro yet exists";
+our $HTTP_ERROR_414="Macro’s name already in use please change it";
 our $HTTP_ERROR_415="ERROR in Socket Creation : Connection refused";
 our $HTTP_ERROR_416="ImageJ";
 our $HTTP_ERROR_417="Sorry, Macro protected, Permission denied";
@@ -76,16 +76,17 @@ our $HTTP_ERROR_440="Check config file: Section template, dir template enpty";
 our $HTTP_ERROR_441="Check config file: Section template, dir images not exists";
 our $HTTP_ERROR_442="Check config file: Section template, dir images empty";
 
-sub print_http_response($;$)
+sub print_http_response($;$$)
 {
-	my ($http_error_num,$content) = @_;
+	my ($http_error_num,$content,$moreinfo) = @_;
 	
 	my($http_response)=new CGI();
 	# my $http_error_num=500;
 	my($status_line)=$http_error_num." ".status_message($http_error_num);
 
 	print $http_response->header(-status=>$status_line,-type =>'text/html');
-	print $content;
+	print $content."<p>".$moreinfo."</p>";
+	print STDERR $content."".$moreinfo;
  
 };
 1;

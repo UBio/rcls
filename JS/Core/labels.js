@@ -154,8 +154,8 @@ var imrc_labels={
 				select:{
 					title:'Type of macros',
 					options:[
-								{value:'blacks',text:'Objects detection'},
-								{value:'detect',text:'Remove Non Informative Areas'},
+								{value:'detect',text:'Objects detection'},
+								{value:'blacks',text:'Remove Non Informative Areas'},
 								{value:'stitching',text:'Mosaic images stitching'}
 							]
 						}

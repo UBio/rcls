@@ -130,7 +130,6 @@ UploadMacro.prototype.upload=function(event, args)
 	input.setAttribute('name','typeMacro');
 	input.setAttribute('value',me.ListTypeMacros.getValue());
 	me.form_add_macro.appendChild(input);
-	
 	var callback = {
 		   
 		  upload: function(o) {

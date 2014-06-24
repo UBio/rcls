@@ -87,6 +87,9 @@ if($error_mount ne 'OK')
 
 my $allMacros=read_dir_macros(-dir=>$cfg_confocal->val( 'MACROS', 'dir' ));
 my $micro=0;
+my %resultTemplates;
+my %resultImages; 
+my $warnnings;
 for(my $i=0;$i<=$#ini;$i++)
 {
 	my $name=$ini[$i];
@@ -99,8 +102,8 @@ for(my $i=0;$i<=$#ini;$i++)
 
 
 	
-	my %resultTemplates=read_dir_templates(-dir=>$templatesdir);
-	my %resultImages=read_dir_images(-dir=>$MatrixScreenerImages);
+	%resultTemplates=read_dir_templates(-dir=>$templatesdir);
+	%resultImages=read_dir_images(-dir=>$MatrixScreenerImages);
 	my $instance='';
 	if(($resultTemplates{error} eq '') && ($resultImages{error} eq ''))
 	{
@@ -113,17 +116,17 @@ for(my $i=0;$i<=$#ini;$i++)
 	{
 		$instance="{'instance':'".$ENV{CONFOCAL_INSTANCE}."','name':'".$name."','ip':'".$host."','warnnings':[";		
 		$instance.="'".$resultTemplates{error}."','".$resultImages{error}."']}";
+		$warnnings.=$resultTemplates{error}.",".$resultImages{error};
 		# print STDERR $resultTemplates{error}."\n";
 		# print STDERR $resultImages{error}."\n";
 		
 	}
 	$result.=",".$instance;
 }
-
 if($micro==0)
 {
 	# our $HTTP_ERROR_424="The volumenes are not mounted, please reload this page, if the problem will continue, you send a incidence to bioinformatics";
-	print_http_response(424,$HTTP_ERROR_424);
+	print_http_response(424,$HTTP_ERROR_424,$warnnings);
 	exit -1;
 }
 $result=~s/^,//;

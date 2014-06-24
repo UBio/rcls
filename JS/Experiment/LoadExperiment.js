@@ -183,7 +183,8 @@ LoadExperiment.prototype.setExperiment=function(xmlDocument)
 LoadExperiment.prototype.setExperimentRestParameters=function(xmlDocument)
 {
 	var existsMicro=this.MyMicro.setCurrentMicro(xmlDocument.getElementsByTagName('microscope')[0].getAttribute("name"));
-	var LOG=new Array();
+	var LOG;
+	var more_info='';
 	if(existsMicro)
 	{
 		var existsTemplateLow=this.lowObj.setTemplate(xmlDocument.getElementsByTagName('low')[0].getAttribute("template"));
@@ -202,7 +203,7 @@ LoadExperiment.prototype.setExperimentRestParameters=function(xmlDocument)
 					if(!existsTemplateRemoveBlacks)
 					{
 						// alert('the routine remove black not exists');
-						LOG[0]='LOAD_EXP_RM_BLACK';
+						LOG='LOAD_EXP_RM_BLACK';
 					}
 					// if(existsTemplateRemoveBlacks)
 					// {
@@ -222,35 +223,41 @@ LoadExperiment.prototype.setExperimentRestParameters=function(xmlDocument)
 							var existsCodeColor=this.stitchingObj.setCodeColor(xmlDocument.getElementsByTagName('stitching')[0].getAttribute("code_color"));
 							if(!existsCodeColor)
 							{
-								LOG[0]='LOAD_EXP_RM_BLACK';
+								LOG='LOAD_EXP_RM_BLACK';
+								more_info=xmlDocument.getElementsByTagName('stitching')[0].getAttribute("code_color");
 							}
 						}
 						else
 						{
-							LOG[1]='LOAD_EXP_STITCH';
+							LOG='LOAD_EXP_STITCH';
+							more_info=xmlDocument.getElementsByTagName('stitching')[0].getAttribute("routine_name");
 						}
 					// }
 				
 				}
 				else
 				{
-					LOG[2]='LOAD_EXP_HIGH';				
+					LOG='LOAD_EXP_HIGH';
+					more_info=xmlDocument.getElementsByTagName('detection')[0].getAttribute("template");				
 				}
 			}
 			else
 			{
-				LOG[3]='LOAD_EXP_DETECTIOM';			
+				LOG='LOAD_EXP_DETECTIOM';
+				more_info=xmlDocument.getElementsByTagName('detection')[0].getAttribute("routine_name");		
 			}
 		}
 		else
 		{
-			LOG[4]='LOAD_EXP_LOW';
+			LOG='LOAD_EXP_LOW';
+			more_info=xmlDocument.getElementsByTagName('low')[0].getAttribute("template");
 		}
 	}
 	else
 	{
-		LOG.push('LOAD_EXP_MICRO') 
+		LOG='LOAD_EXP_MICRO';
+		more_info=xmlDocument.getElementsByTagName('microscope')[0].getAttribute("name");
 	}
-	new dialog_alert("Notice",'','notice',LOG);
+	new dialog_alert("Notice",'','notice',LOG,null,more_info);
 	// new dialog_alert("Notice",'Finished','notice');
 }

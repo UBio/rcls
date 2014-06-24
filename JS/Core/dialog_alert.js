@@ -64,11 +64,22 @@ dialog_alert=function(head,msg,type,num_error,context,more_info)
 				error_msg='<ul>';
 				for(var i=0;i<num_error.length;i++)
 				{
-					error_msg+='<li>'+errors[num_error[i]]+'</li>';
+					if(num_error[i]!=undefined)
+					{
+						error_msg+='<li>'+errors[num_error[i]]+'</li>';
+					}
 				}
 				error_msg+='</ul>';
 			}
 		}
+	}
+	if(more_info!=undefined)
+	{
+		more_info=': '+more_info;
+	}
+	else
+	{
+		more_info='';
 	}
 	var id="error_dialog"+"_"+Math.floor(Math.random()*1000000);
 	if(type != 'tooltip')
@@ -80,7 +91,7 @@ dialog_alert=function(head,msg,type,num_error,context,more_info)
 				   draggable: false,
 				   close: false,
 					modal:true,
-				   text: error_msg+': '+more_info,
+				   text: error_msg+more_info,
 				   icon: YAHOO.widget.SimpleDialog.ICON_WARN,
 				   constraintoviewport: true,
 				 });

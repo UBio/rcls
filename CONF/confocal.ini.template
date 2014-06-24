@@ -1,5 +1,9 @@
 [INI]
 
+[USER]
+wwww=confocal
+uid=10000
+
 [LICENSE]
 license={LICENSENUMBER}
 
@@ -28,6 +32,9 @@ verbose=0
 redirect=0
 errorlog=LOGS/erro-w.log
 outputlog=LOGS/output-w.log
+
+[DISPLAY]
+xvfb={XVFBPATH}
 
 [JAVAVM]
 preScript={XVFBPATH} :15& export DISPLAY=:15 

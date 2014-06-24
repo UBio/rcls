@@ -840,7 +840,8 @@ foreach $NameImageFileStep1 (@all_slide_and_chamber)
 																	-inix=>$iniPosition[0],-iniy=>$iniPosition[1],
 																	-parcentricity_x=>$parcentricity_correction{$magnetificationStep1}{X}-$parcentricity_correction{$magnetificationStep2}{X},
 																	-parcentricity_y=>$parcentricity_correction{$magnetificationStep1}{Y}-$parcentricity_correction{$magnetificationStep2}{Y},
-																	-control_image=>$image_control_grid
+																	-control_image=>$image_control_grid,
+																	-rotate=>$rotate
 																	);
 	
 		$log_rcls->print(-msg=>"ERROR: $error{code} MSG: ".$template->getNameTemplate()." Rotate: $rotate Slide: $slide Chamber: $chamber Z:$z");

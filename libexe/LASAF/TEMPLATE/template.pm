@@ -1763,8 +1763,10 @@ sub  createTemplateFromFile
 	my %graph_black;
 	
 	my $imageUtils=Image::utils->new(-file=>$args{-control_image});
-	$imageUtils->rotate();
-
+	if($args{-rotate}!=0)
+	{
+		$imageUtils->rotate();
+	}
 	if($#black>0)
 	{
 		
