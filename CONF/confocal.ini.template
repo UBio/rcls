@@ -2,7 +2,7 @@
 
 [USER]
 wwww=confocal
-uid=10000
+uid=1000
 
 [LICENSE]
 license={LICENSENUMBER}

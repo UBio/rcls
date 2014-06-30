@@ -38,6 +38,9 @@ sub new_mount
 {
 	my (%args) = @_;
 	my $ip=$args{-ip};
+	my $cfg_confocal = Config::IniFiles->new( -file => $ENV{CONFOCAL_INI});	
+	my $UID=$cfg_confocal->val('USER','uid');
+	
 	my $shared_images=$args{-dir_shared_images};
 	my $shared_templates=$args{-dir_shared_templates};
 	my $user=$args{-user};
@@ -68,9 +71,9 @@ sub new_mount
 	open(MNT,">".$dir_bin_mounts."/mount\.".$name_micro);
 	print MNT "#!/bin/bash\n";
 	# print MNT "echo 'Mounting Images: $name'\n";
-	print MNT 'mount -t cifs //'.$ip.'/'.$win_shared_images.' '. $shared_images.' -o user='.$user.",uid=33,password='".$passwors."' -rw\n";
+	print MNT 'mount -t cifs //'.$ip.'/'.$win_shared_images.' '. $shared_images.' -o user='.$user.",uid=".$UID.",password='".$passwors."' -rw\n";
 	# print MNT "echo 'Mounting Templates: $name'\n";
-	print MNT 'mount -t cifs //'.$ip.'/'.$win_shared_templates.' '. $shared_templates.' -o user='.$user.",uid=33,password='".$passwors."' -rw\n";
+	print MNT 'mount -t cifs //'.$ip.'/'.$win_shared_templates.' '. $shared_templates.' -o user='.$user.",uid=".$UID.",password='".$passwors."' -rw\n";
 	close MNT;
 	
 	open(MNT,">".$dir_bin_mounts."/umount\.".$name_micro);
