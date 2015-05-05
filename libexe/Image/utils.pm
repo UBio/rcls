@@ -399,6 +399,8 @@ sub write
 	}
 	# print "\n\n\n".$args{-file}."\n\n\n";
 	my ($file,$dir,$extaux) = fileparse($args{-file}, qr/\.[^.]*/);
+	#$this->{image}->Set(compression=>'JPEG');
+	$this->{image}->Set(quality=>90);
 	my $x=$this->{image}->write($format.":".$dir."/".$file.'.'.$ext);
 	if($x ne '')
 	{
