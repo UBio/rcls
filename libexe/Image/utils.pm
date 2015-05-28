@@ -169,6 +169,25 @@ sub whitebox
 	}
 	$this->{image}->Draw(fill=>"white",primitive=>"Rectangle",points=>$args{-box},stroke=>"white");
 }
+sub crop
+{
+        my ($this,%args)=@_;
+        my $imageCrop=Image::Magick->new;
+	my $title=$args{-title};
+	$imageCrop=$this->{image};
+	my $geometry="$args{-width}x$args{-height}+$args{-x}+$args{-y}";
+
+	$imageCrop->Crop(geometry=>$geometry);
+	
+	
+	return $imageCrop;
+}
+sub composite
+{
+	my ($this,%args)=@_;
+	my $images=$args{-images};
+	$images->[0]->Write($args{-file});
+}
 
 sub binary
 {
@@ -203,6 +222,7 @@ sub paddedBinary
  	my $cmd3=$this->{convert}." ".'\( -size '.$width.'x'.$height.' xc:black \) '.$this->{tmp}->{tmp0}.' -composite '.$this->{tmp}->{tmp1};
 	system($cmd1);
 	# print $cmd1."\n";
+
 	system($cmd2);
 	# print $cmd2."\n";
 	system($cmd3);
@@ -292,7 +312,6 @@ sub auto_get_angle90
 	$this->{file}=$this->{tmp}->{rotate};
 	return $this->auto_get_angle();
 }
-
 
 sub auto_get_angle
 {
@@ -400,7 +419,7 @@ sub write
 	# print "\n\n\n".$args{-file}."\n\n\n";
 	my ($file,$dir,$extaux) = fileparse($args{-file}, qr/\.[^.]*/);
 	#$this->{image}->Set(compression=>'JPEG');
-	$this->{image}->Set(quality=>90);
+	$this->{image}->Set(depth => 8);
 	my $x=$this->{image}->write($format.":".$dir."/".$file.'.'.$ext);
 	if($x ne '')
 	{

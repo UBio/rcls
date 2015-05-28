@@ -1784,7 +1784,7 @@ sub  createTemplateFromFile
 	# print STDERR "\txDISTANCE: ".$xDistance.", yDISTANCE: ".$yDistance."\n";
 	$log_rcls->print(-msg=>"xDISTANCE: ".$xDistance.", yDISTANCE: ".$yDistance);
 	my $nfield=0;
-	
+	my @imageCrops;	
 	for(my $iwellx=1;$iwellx<=$this->{WELLX};$iwellx++)
 	{
 
@@ -1801,7 +1801,11 @@ sub  createTemplateFromFile
 		my $tx0=$x0+$args{-inix}-$this->{CONVERSION}->microns2meters(-microns=>$args{-parcentricity_x});
 		my $ty0=$y0+$args{-iniy}-$this->{CONVERSION}->microns2meters(-microns=>$args{-parcentricity_y});
 		
-			
+                my $widthRecorteImage=0;
+                my $heightRocerteImage=0;
+                my $XRecorteImage=0;
+                my $YRecorteImage=0;
+
 		my ($tnewX,$tnewY)=($tx0,$ty0);
 		if($iwellx == 1)
 		{	
@@ -1813,6 +1817,9 @@ sub  createTemplateFromFile
 			# print STDERR "\tWELL: ".$iwellx."\t".$iwelly."\t FIELDS: ".$this->{TOTALFIELDX}."x".$this->{TOTALFIELDY}."\n";
 			$log_rcls->print(-msg=>"WELL: ".$iwellx."\t".$iwelly."\t FIELDS: ".$this->{TOTALFIELDX}."x".$this->{TOTALFIELDY});
 			# print STAT "WELL:$iwellx,$iwelly\n"; 
+			
+
+			
 			for(my $ifieldx=1;$ifieldx<=$this->{TOTALFIELDX};$ifieldx++)
 			{
 				for(my $ifieldy=1;$ifieldy<=$this->{TOTALFIELDY};$ifieldy++)
@@ -1827,20 +1834,29 @@ sub  createTemplateFromFile
 					# sleep 2;
 					# print STDERR ($iwellx*$iwelly).",".(($ifieldx*$ifieldy)+(($iwellx*$iwelly)-1))."\n";
 					
+				        my $enabled="true";
+                                        $graph_black{$iwellx}{$ifieldy}{$ifieldx}="O";
+
+                                        my $newX=sprintf("%.14f",$x0+(($ifieldx-1)*$xDistance));
+                                        my $newY=sprintf("%.14f",$y0+(($ifieldy-1)*$yDistance));					
+
 					if($ifieldx==1 && $ifieldy==1)
 					{
 						$this->newScanWellData(-first_node=>$first,
 												-wx=>$iwellx,-wy=>$iwelly,-zoom=>$this->{ZOOM},
 												-startImageX=>$tnewX,-startImageY=>$tnewY,
 												-endImageX=>($tnewX+$xDistance),-endImageY=>($tnewY+$yDistance));
+						$XRecorteImage=$this->meters2pixel(-meters=>$newX);
+						$YRecorteImage=$this->meters2pixel(-meters=>$newY);
 					}
 					# print $ifieldx."\t".$this->{LABELX}->[$ifieldx]."\t$ifieldy\t".$this->{LABELY}->[$ifieldy]."\n";
-					my $enabled="true";
-					$graph_black{$iwellx}{$ifieldy}{$ifieldx}="O";
+					#my $enabled="true";
+					#$graph_black{$iwellx}{$ifieldy}{$ifieldx}="O";
 					
-					my $newX=sprintf("%.14f",$x0+(($ifieldx-1)*$xDistance));
-					my $newY=sprintf("%.14f",$y0+(($ifieldy-1)*$yDistance));
+					#my $newX=sprintf("%.14f",$x0+(($ifieldx-1)*$xDistance));
+					#my $newY=sprintf("%.14f",$y0+(($ifieldy-1)*$yDistance));
 					
+										
 
 ####################################################################################################################					
 #pintamos un cuadrado rojo lo que hemos detectado sin correcion en caso de haberla hecho			
@@ -1898,6 +1914,8 @@ sub  createTemplateFromFile
 											my $ybox=$this->meters2pixel(-meters=>$newY);
 											my $wbox=$this->meters2pixel(-meters=>$xDistance);
 											my $hbox=$this->meters2pixel(-meters=>$yDistance);
+								                        $widthRecorteImage+=$wbox;
+                        								$heightRocerteImage+=$hbox;
 											my $box=$xbox.",".$ybox." ".($xbox+$wbox).",".($ybox+$hbox);
 											if($this->meters2pixel(-meters=>$h)==1 && $this->meters2pixel(-meters=>$w)==1)
 											{
@@ -1919,6 +1937,8 @@ sub  createTemplateFromFile
 				}
 			}
 		}
+		push @imageCrops,$imageUtils->crop(-width=>$widthRecorteImage,-height=>$heightRocerteImage,-x=>$XRecorteImage,-y=>$YRecorteImage);
+				
 	}
 	
 	# if($#black>0)
@@ -1943,12 +1963,17 @@ sub  createTemplateFromFile
 	# }
 	
 	my $file = basename($args{-output_template});
+
+
 	# my $dir = dirname($args{-file});
 	# my @name=split(/\./,$file);
 	$this->{NAME_TEMPLATE}=$file;
 	# $this->write(-nameTemplate=>$name[0],-dir=>$args{-path_ouput_dir});
 	$this->write(-file=>$args{-output_template});
-	$imageUtils->write(-file=>$args{-control_image});
+	
+	#$imageUtils->resize(-width=>1024);
+	$imageUtils->composite(-images=>\@imageCrops,-file=>$args{-control_image});
+	#$imageUtils->write(-file=>$args{-control_image});
 
 	status_del_file(-name_micro=>$this->{NAME_MICRO});
 	

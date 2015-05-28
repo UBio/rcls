@@ -43,9 +43,8 @@ if($file=~/(.*)\.tif/)
 if(!-e $imgpng)
 {
 	my $result="";
-	print STDERR $image;
 	my $imageUtils=Image::utils->new(-file=>$image);
-	$imageUtils->resize(-width=>600);
+	#$imageUtils->resize(-width=>600);
 
 	$imageUtils->write(-format=>$format,-file=>$image);
 	# $image =~s/tif/$format/;
