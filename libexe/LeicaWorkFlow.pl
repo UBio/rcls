@@ -823,16 +823,16 @@ foreach $NameImageFileStep1 (@all_slide_and_chamber)
 		# print STDERR "Paracentry Correction Y: ".($parcentricity_correction{$magnetificationStep1}{Y}-$parcentricity_correction{$magnetificationStep2}{Y})."\n";
 		# print STDERR "FICHERO: ".$NameImageFileStep1."\n";
 		
-		my($filename, $directories) = fileparse($NameImageFileStep1);
-		my $image_control_grid;
-		if($filename=~/(.*)\.tif/)
-		{
-			$image_control_grid=$directories."/".$1."_control.tif";
-		}
-		system('cp '.$NameImageFileStep1.' '.$image_control_grid);
+		# my($filename, $directories) = fileparse($NameImageFileStep1);
+		# my $image_control_grid;
+		# if($filename=~/(.*)\.tif/)
+		# {
+		# 	$image_control_grid=$directories."/".$1."_control.tif";
+		# }
+		# system('cp '.$NameImageFileStep1.' '.$image_control_grid);
 		
 		# print STDERR "COPIANDO: ".'cp '.$NameImageFileStep1.' '.$image_control_grid;
-		$log_rcls->print(-msg=>"COPIANDO: ".'cp '.$NameImageFileStep1.' '.$image_control_grid);
+		# $log_rcls->print(-msg=>"COPIANDO: ".'cp '.$NameImageFileStep1.' '.$image_control_grid);
 		($gridXStep2,$gridYStep2)=$template->createTemplateFromFile(-sort=>$sort,
 																	-black=>\@blackPoints,
 																	-file=>$outputFileImageJ,
@@ -840,7 +840,7 @@ foreach $NameImageFileStep1 (@all_slide_and_chamber)
 																	-inix=>$iniPosition[0],-iniy=>$iniPosition[1],
 																	-parcentricity_x=>$parcentricity_correction{$magnetificationStep1}{X}-$parcentricity_correction{$magnetificationStep2}{X},
 																	-parcentricity_y=>$parcentricity_correction{$magnetificationStep1}{Y}-$parcentricity_correction{$magnetificationStep2}{Y},
-																	-control_image=>$image_control_grid,
+																	-control_image=>$NameImageFileStep1,
 																	-rotate=>$rotate
 																	);
 	

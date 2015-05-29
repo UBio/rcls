@@ -45,6 +45,7 @@ postScript=kill %1;
 
 [IMAGEMAGIC]
 convert={CONVERTPATH}
+montage={MONTAGEPATH}
 
 [WEB]
 tmp=tmp

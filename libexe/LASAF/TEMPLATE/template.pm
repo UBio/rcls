@@ -1801,11 +1801,11 @@ sub  createTemplateFromFile
 		my $tx0=$x0+$args{-inix}-$this->{CONVERSION}->microns2meters(-microns=>$args{-parcentricity_x});
 		my $ty0=$y0+$args{-iniy}-$this->{CONVERSION}->microns2meters(-microns=>$args{-parcentricity_y});
 		
-                my $widthRecorteImage=0;
-                my $heightRocerteImage=0;
-                my $XRecorteImage=0;
-                my $YRecorteImage=0;
-
+        my $widthRecorteImage=$this->meters2pixel(-meters=>$w);
+		my $heightRocerteImage=$this->meters2pixel(-meters=>$h);
+		my $XRecorteImage=$this->meters2pixel(-meters=>$x0);
+		my $YRecorteImage=$this->meters2pixel(-meters=>$y0);
+		
 		my ($tnewX,$tnewY)=($tx0,$ty0);
 		if($iwellx == 1)
 		{	
@@ -1846,8 +1846,10 @@ sub  createTemplateFromFile
 												-wx=>$iwellx,-wy=>$iwelly,-zoom=>$this->{ZOOM},
 												-startImageX=>$tnewX,-startImageY=>$tnewY,
 												-endImageX=>($tnewX+$xDistance),-endImageY=>($tnewY+$yDistance));
-						$XRecorteImage=$this->meters2pixel(-meters=>$newX);
-						$YRecorteImage=$this->meters2pixel(-meters=>$newY);
+						
+						$widthRecorteImage=$this->meters2pixel(-meters=>$this->{TOTALFIELDX}*$xDistance);
+						$heightRocerteImage=$this->meters2pixel(-meters=>$this->{TOTALFIELDY}*$yDistance);
+
 					}
 					# print $ifieldx."\t".$this->{LABELX}->[$ifieldx]."\t$ifieldy\t".$this->{LABELY}->[$ifieldy]."\n";
 					#my $enabled="true";
@@ -1914,8 +1916,7 @@ sub  createTemplateFromFile
 											my $ybox=$this->meters2pixel(-meters=>$newY);
 											my $wbox=$this->meters2pixel(-meters=>$xDistance);
 											my $hbox=$this->meters2pixel(-meters=>$yDistance);
-								                        $widthRecorteImage+=$wbox;
-                        								$heightRocerteImage+=$hbox;
+
 											my $box=$xbox.",".$ybox." ".($xbox+$wbox).",".($ybox+$hbox);
 											if($this->meters2pixel(-meters=>$h)==1 && $this->meters2pixel(-meters=>$w)==1)
 											{
@@ -1937,7 +1938,7 @@ sub  createTemplateFromFile
 				}
 			}
 		}
-		push @imageCrops,$imageUtils->crop(-width=>$widthRecorteImage,-height=>$heightRocerteImage,-x=>$XRecorteImage,-y=>$YRecorteImage);
+		push @imageCrops,$imageUtils->crop(-width=>$widthRecorteImage,-height=>$heightRocerteImage,-x=>$XRecorteImage,-y=>$YRecorteImage,-label=>"WELL".$iwellx);
 				
 	}
 	
@@ -1972,7 +1973,16 @@ sub  createTemplateFromFile
 	$this->write(-file=>$args{-output_template});
 	
 	#$imageUtils->resize(-width=>1024);
-	$imageUtils->composite(-images=>\@imageCrops,-file=>$args{-control_image});
+	
+	my($filename, $directories) = fileparse($args{-control_image});
+	my $image_control_grid;
+	if($filename=~/(.*)\.tif/)
+	{
+		$image_control_grid=$directories."/".$1."_control.png";
+	}
+	
+	
+	$imageUtils->composite(-images=>\@imageCrops,-file=>$image_control_grid);
 	#$imageUtils->write(-file=>$args{-control_image});
 
 	status_del_file(-name_micro=>$this->{NAME_MICRO});

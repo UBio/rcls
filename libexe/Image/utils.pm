@@ -15,16 +15,20 @@ use Image::Magick;
 use Math::Trig ':pi';
 use Math::Trig;
 use FindBin qw($Bin);
+use File::Temp;
+
 sub new
 {
 	my ($class,%args)=@_;
 	my $this={};
 	my $cfg_confocal = Config::IniFiles->new( -file => $ENV{CONFOCAL_INI});
 	$this->{convert}=$cfg_confocal->val( 'IMAGEMAGIC', 'convert' );
+	$this->{montage}=$cfg_confocal->val( 'IMAGEMAGIC', 'montage' );
+	
 	$this->{image}=	Image::Magick->new();
 	
 	$this->{file}=$args{-file};
-	$this->{base_dir_temp}="/tmp";
+	$this->{base_dir_temp}=$cfg_confocal->val( 'FILES', 'tmp' );
 	$this->{tmp}->{tmpA}=$this->{base_dir_temp}."/autotrim_$$.mpc";
 	$this->{tmp}->{tmpB}=$this->{base_dir_temp}."/autotrim_$$.cache";
 	$this->{tmp}->{tmp00}=$this->{base_dir_temp}."/autotrim_00_$$.png";
@@ -111,7 +115,7 @@ sub box
 		$x0=$1;
 		$y0=$2;
 	}
-	$this->{image}->Annotate(font=>"Arial.ttf",pointsize=>25,text=>$args{-label},fill=>"rgb(255, 255, 255)",x=>$x0+5,y=>$y0+25,antialias=>"true");
+	$this->{image}->Annotate(font=>"Arial.",pointsize=>25,text=>$args{-label},fill=>"rgb(255, 255, 255)",x=>$x0+5,y=>$y0+25,antialias=>"true");
 	$this->{image}->Draw(fill=>"rgba(255, 255, 255, 0.0)",primitive=>"Rectangle",points=>$args{-box},stroke=>"white");
 }
 
@@ -171,13 +175,17 @@ sub whitebox
 }
 sub crop
 {
-        my ($this,%args)=@_;
-        my $imageCrop=Image::Magick->new;
+	my ($this,%args)=@_;
+	my $imageCrop=Image::Magick->new;
 	my $title=$args{-title};
-	$imageCrop=$this->{image};
+	$imageCrop=$this->{image}->Clone();
+	
 	my $geometry="$args{-width}x$args{-height}+$args{-x}+$args{-y}";
 
 	$imageCrop->Crop(geometry=>$geometry);
+	$imageCrop->Set(page => $geometry);
+	$imageCrop->Border(height =>10,width=>10);
+	$imageCrop->Set(label => $args{-label});
 	
 	
 	return $imageCrop;
@@ -185,8 +193,23 @@ sub crop
 sub composite
 {
 	my ($this,%args)=@_;
-	my $images=$args{-images};
-	$images->[0]->Write($args{-file});
+	my @images=@{$args{-images}};
+	# my $comp = new Image::Magick();
+
+	my $allFiles="";
+	
+	for(my $i=0;$i<scalar(@images);$i++)
+	{
+		my  $tmp = File::Temp->new( TEMPLATE => 'tempXXXXXXX',SUFFIX => '.png');
+		my $fname = $this->{base_dir_temp}."/".$tmp->filename;
+		$images[$i]->write($fname);
+		$allFiles.=" $fname";
+	}
+	# $comp->Write($args{-file});
+	 
+	my $cmd=$this->{montage}." $allFiles ".$args{-file};
+	print STDERR $cmd ."\n";
+	system($cmd);
 }
 
 sub binary

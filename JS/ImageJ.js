@@ -457,7 +457,7 @@ imagej.prototype.ViewImage=function(response)
 	}
 	if(response != "")
 	{
-		this.PanelViewImageJ.setBody("<img width='600px' src='"+response+"'/>");
+		this.PanelViewImageJ.setBody("<img src='"+response+"'/>");
 		this.PanelViewImageJ.setFooter("<button id='btnPanelOptiones'>Show Advanced Options</button>");
 	}
 	else

@@ -85,6 +85,7 @@ my $requisitos=0;
 my $pathXvfb=`which Xvfb`;
 my $pathJava=`which java`;
 my $pathConvert=`which convert`;
+my $pathMontage=`which montage`;
 my $GCC=`which gcc`;
 my $GXX=`which g++-4.4`;
 
@@ -174,6 +175,12 @@ else
 				$pathConvert=~s/\n//g;	
 				$linea=~s/\{CONVERTPATH\}/$pathConvert/g;
 			}
+			if($linea =~ /\{MONTAGEPATH\}/)
+			{
+				$pathMontage=~s/\n//g;	
+				$linea=~s/\{MONTAGEPATH\}/$pathMontage/g;
+			}
+			
 			if($linea =~ /\{JAVAPATH\}/)
 			{
 				$pathJava=~s/\n//g;	
